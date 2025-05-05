@@ -62,40 +62,17 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- SQLite -->
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.44.1.0</version>
+        </dependency>
     </dependencies>
 
-    <profiles>
-        <profile>
-            <id>dev</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <environment>dev</environment>
-            </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>com.h2database</groupId>
-                    <artifactId>h2</artifactId>
-                    <version>${h2.version}</version>
-                </dependency>
-            </dependencies>
-        </profile>
 
-        <profile>
-            <id>prod</id>
-            <properties>
-                <environment>prod</environment>
-            </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>mysql</groupId>
-                    <artifactId>mysql-connector-java</artifactId>
-                    <version>${mysql.version}</version>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
+
 
     <build>
         <plugins>
@@ -116,7 +93,7 @@
                     <execution>
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.negocio.adris/com.negocio.adris.HelloApplication</mainClass>
+                            <mainClass>com.negocio.adris/com.negocio.adris.App</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>
@@ -134,7 +111,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.negocio.adris.HelloApplication</mainClass>
+                            <mainClass>com.negocio.adris.App</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
