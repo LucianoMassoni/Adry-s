@@ -1,5 +1,6 @@
 package com.negocio.adris.model.entities;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class Producto {
@@ -12,8 +13,22 @@ public class Producto {
     private double ganancia;
     private double precio;
     private TipoProducto tipo;
-    private Date fechaVencimiento;
+    private LocalDate fechaVencimiento;
 
+    public Producto() {}
+
+    public Producto(long id, String nombre, String marca, double peso, int cantidad, double costo, double ganancia, double precio, TipoProducto tipo, LocalDate fechaVencimiento) {
+        this.id = id;
+        this.nombre = nombre;
+        this.marca = marca;
+        this.peso = peso;
+        this.cantidad = cantidad;
+        this.costo = costo;
+        this.ganancia = ganancia;
+        this.precio = precio;
+        this.tipo = tipo;
+        this.fechaVencimiento = fechaVencimiento;
+    }
 
     public long getId() {
         return id;
@@ -87,11 +102,11 @@ public class Producto {
         this.tipo = tipo;
     }
 
-    public Date getFechaVencimiento() {
+    public LocalDate getFechaVencimiento() {
         return fechaVencimiento;
     }
 
-    public void setFechaVencimiento(Date fechaVencimiento) {
+    public void setFechaVencimiento(LocalDate fechaVencimiento) {
         this.fechaVencimiento = fechaVencimiento;
     }
 }
