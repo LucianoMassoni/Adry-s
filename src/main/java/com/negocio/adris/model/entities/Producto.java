@@ -109,5 +109,21 @@ public class Producto {
     public void setFechaVencimiento(LocalDate fechaVencimiento) {
         this.fechaVencimiento = fechaVencimiento;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", marca='" + marca + '\'' +
+                ", peso=" + peso +
+                ", cantidad=" + cantidad +
+                ", costo=" + costo +
+                ", ganancia=" + ganancia +
+                ", precio=" + precio +
+                ", tipo=" + tipo +
+                ", fechaVencimiento=" + fechaVencimiento +
+                '}';
+    }
 }
 
