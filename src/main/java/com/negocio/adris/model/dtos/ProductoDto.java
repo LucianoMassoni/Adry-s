@@ -1,18 +1,29 @@
 package com.negocio.adris.model.dtos;
 
 import com.negocio.adris.model.entities.TipoProducto;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDate;
 
 public class ProductoDto {
+    @NotBlank(message = "El nombre es necesario")
     private String nombre;
+    @NotBlank(message = "La marca es necesaria")
     private String marca;
+    @Positive(message = "El peso del producto no puede ser negativo")
     private double peso;
+    @Positive(message = "La cantidad de productos no puede ser negativa")
     private int cantidad;
+    @Positive(message = "El costo del producto no puede ser negativo")
     private double costo;
+    @Positive(message = "La ganancia del producto no puede ser negativa")
     private double ganancia;
+    @Positive(message = "El precio de un producto no puede ser negativo")
     private double precio;
     private TipoProducto tipo;
+    @Future(message = "La fecha de vencimiento tiene que ser a futuro")
     private LocalDate fechaVencimiento;
 
     public String getNombre() {
