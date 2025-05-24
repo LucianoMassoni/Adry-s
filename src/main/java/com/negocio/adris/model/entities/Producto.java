@@ -1,7 +1,7 @@
 package com.negocio.adris.model.entities;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Date;
 
 public class Producto {
     private long id;
@@ -9,15 +9,15 @@ public class Producto {
     private String marca;
     private double peso;
     private int cantidad;
-    private double costo;
-    private double ganancia;
-    private double precio;
+    private BigDecimal costo;
+    private BigDecimal ganancia;
+    private BigDecimal precio;
     private TipoProducto tipo;
     private LocalDate fechaVencimiento;
 
     public Producto() {}
 
-    public Producto(long id, String nombre, String marca, double peso, int cantidad, double costo, double ganancia, double precio, TipoProducto tipo, LocalDate fechaVencimiento) {
+    public Producto(long id, String nombre, String marca, double peso, int cantidad, BigDecimal costo, BigDecimal ganancia, BigDecimal precio, TipoProducto tipo, LocalDate fechaVencimiento) {
         this.id = id;
         this.nombre = nombre;
         this.marca = marca;
@@ -70,27 +70,27 @@ public class Producto {
         this.cantidad = cantidad;
     }
 
-    public double getCosto() {
+    public BigDecimal getCosto() {
         return costo;
     }
 
-    public void setCosto(double costo) {
+    public void setCosto(BigDecimal costo) {
         this.costo = costo;
     }
 
-    public double getGanancia() {
+    public BigDecimal getGanancia() {
         return ganancia;
     }
 
-    public void setGanancia(double ganancia) {
+    public void setGanancia(BigDecimal ganancia) {
         this.ganancia = ganancia;
     }
 
-    public double getPrecio() {
+    public BigDecimal getPrecio() {
         return precio;
     }
 
-    public void setPrecio(double precio) {
+    public void setPrecio(BigDecimal precio) {
         this.precio = precio;
     }
 
