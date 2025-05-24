@@ -3,6 +3,7 @@ package com.negocio.adris.model.dtos;
 import com.negocio.adris.model.entities.TipoProducto;
 import jakarta.validation.constraints.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class ProductoDto {
@@ -15,18 +16,18 @@ public class ProductoDto {
     @Positive(message = "La cantidad de productos no puede ser negativa")
     private int cantidad;
     @Positive(message = "El costo del producto no puede ser negativo")
-    private double costo;
+    private BigDecimal costo;
     @Positive(message = "La ganancia del producto no puede ser negativa")
-    private double ganancia;
+    private BigDecimal ganancia;
     @Positive(message = "El precio de un producto no puede ser negativo")
-    private double precio;
+    private BigDecimal precio;
     private TipoProducto tipo;
     @Future(message = "La fecha de vencimiento tiene que ser a futuro")
     private LocalDate fechaVencimiento;
 
     public ProductoDto(){};
     
-    public ProductoDto(String nombre, String marca, double peso, int cantidad, double costo, double ganancia, double precio, TipoProducto tipo, LocalDate fechaVencimiento) {
+    public ProductoDto(String nombre, String marca, double peso, int cantidad, BigDecimal costo, BigDecimal ganancia, BigDecimal precio, TipoProducto tipo, LocalDate fechaVencimiento) {
         this.nombre = nombre;
         this.marca = marca;
         this.peso = peso;
@@ -70,27 +71,27 @@ public class ProductoDto {
         this.cantidad = cantidad;
     }
 
-    public double getCosto() {
+    public BigDecimal getCosto() {
         return costo;
     }
 
-    public void setCosto(double costo) {
+    public void setCosto(BigDecimal costo) {
         this.costo = costo;
     }
 
-    public double getGanancia() {
+    public BigDecimal getGanancia() {
         return ganancia;
     }
 
-    public void setGanancia(double ganancia) {
+    public void setGanancia(BigDecimal ganancia) {
         this.ganancia = ganancia;
     }
 
-    public double getPrecio() {
+    public BigDecimal getPrecio() {
         return precio;
     }
 
-    public void setPrecio(double precio) {
+    public void setPrecio(BigDecimal precio) {
         this.precio = precio;
     }
 
