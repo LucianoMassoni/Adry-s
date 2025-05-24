@@ -1,14 +1,22 @@
 package com.negocio.adris.config;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DBInitializer {
-    public DBInitializer() throws SQLException {
+    private final Provider<Connection> connectionProvider;
+
+    @Inject
+    public DBInitializer(Provider<Connection> connectionProvider){
+        this.connectionProvider = connectionProvider;
+        initialize();
     }
 
-    public static void initialize(){
+    public void initialize(){
         String sql = """
                     CREATE TABLE IF NOT EXISTS Producto(
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -24,8 +32,7 @@ public class DBInitializer {
                     );
                 """;
 
-
-        try(Connection connection = DBConnection.getConnection();
+        try(Connection connection = connectionProvider.get();
             Statement stmt = connection.createStatement()) {
             stmt.executeUpdate(sql);
         } catch (SQLException e) {
