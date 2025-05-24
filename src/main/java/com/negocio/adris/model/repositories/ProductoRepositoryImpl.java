@@ -1,8 +1,10 @@
 package com.negocio.adris.model.repositories;
 
-import com.negocio.adris.config.DBConnection;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.negocio.adris.model.entities.Producto;
 import com.negocio.adris.model.entities.TipoProducto;
+import com.negocio.adris.model.exceptions.ProductoNotFoundException;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -10,6 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductoRepositoryImpl implements ProductoRepository {
+    private final Provider<Connection> connectionProvider;
+
+    @Inject
+    public ProductoRepositoryImpl(Provider<Connection> connectionProvider) {
+        this.connectionProvider = connectionProvider;
+    }
+
     @Override
     public void save(Producto p) {
         String sql = """
@@ -21,7 +30,7 @@ public class ProductoRepositoryImpl implements ProductoRepository {
                     )
                 """;
 
-        try(Connection conn = DBConnection.getConnection();
+        try(Connection conn = connectionProvider.get();
             PreparedStatement preparedStatement = conn.prepareStatement(sql))
         {
           preparedStatement.setString(1, p.getNombre());
@@ -63,8 +72,9 @@ public class ProductoRepositoryImpl implements ProductoRepository {
                     WHERE id = ?
                 """;
 
-            try(Connection conn = DBConnection.getConnection();
+            try(Connection conn = connectionProvider.get();
                 PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+
                 preparedStatement.setString(1, p.getNombre());
                 preparedStatement.setString(2, p.getMarca());
                 preparedStatement.setDouble(3, p.getPeso());
@@ -89,7 +99,7 @@ public class ProductoRepositoryImpl implements ProductoRepository {
     public void delete(int id) {
         String sql = "DELETE FROM Producto WHERE id = ?";
 
-        try(Connection conn = DBConnection.getConnection();
+        try(Connection conn = connectionProvider.get();
             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
             preparedStatement.setInt(1, id);
             preparedStatement.executeUpdate();
@@ -99,38 +109,34 @@ public class ProductoRepositoryImpl implements ProductoRepository {
     }
 
     @Override
-    public Producto findById(int id) {
+    public Producto findById(int id) throws ProductoNotFoundException {
         String sql = "SELECT * FROM Producto WHERE id = ?";
-        Producto producto = null;
 
-        try(Connection conn = DBConnection.getConnection();
+        try(Connection conn = connectionProvider.get();
             PreparedStatement preparedStatement = conn.prepareStatement(sql)){
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
 
-
-            if (resultSet.next()){
-                TipoProducto tipo = TipoProducto.valueOf(resultSet.getString("tipo")); // Simplificado
-                LocalDate localDate = resultSet.getDate("fecha_vencimiento").toLocalDate();
-
-                 producto = new Producto(
-                     resultSet.getInt("id"),
-                     resultSet.getString("nombre"),
-                     resultSet.getString("marca"),
-                     resultSet.getDouble("peso"),
-                     resultSet.getInt("cantidad"),
-                     resultSet.getDouble("costo"),
-                     resultSet.getDouble("ganancia"),
-                     resultSet.getDouble("precio"),
-                     tipo,
-                     localDate
-                 );
+            if(!resultSet.next()){
+                throw new ProductoNotFoundException("Producto con ID " + id + " no encontrado");
             }
+
+             return new Producto(
+                 resultSet.getInt("id"),
+                 resultSet.getString("nombre"),
+                 resultSet.getString("marca"),
+                 resultSet.getDouble("peso"),
+                 resultSet.getInt("cantidad"),
+                 resultSet.getDouble("costo"),
+                 resultSet.getDouble("ganancia"),
+                 resultSet.getDouble("precio"),
+                 TipoProducto.valueOf(resultSet.getString("tipo")),
+                 resultSet.getDate("fecha_vencimiento").toLocalDate()
+             );
+
         } catch (SQLException e) {
             throw new RuntimeException("Error al encontrar un producto por Id" + e.getMessage(), e);
         }
-        return producto;
-
     }
 
     @Override
@@ -138,7 +144,7 @@ public class ProductoRepositoryImpl implements ProductoRepository {
         List<Producto> productos = new ArrayList<>();
         String sql = "SELECT * FROM Producto";
 
-        try(Connection conn = DBConnection.getConnection();
+        try(Connection conn = connectionProvider.get();
             Statement statement = conn.createStatement();
             ResultSet resultSet = statement.executeQuery(sql)){
 
