@@ -1,9 +1,7 @@
 package com.negocio.adris.model.dtos;
 
 import com.negocio.adris.model.entities.TipoProducto;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
 
@@ -25,6 +23,20 @@ public class ProductoDto {
     private TipoProducto tipo;
     @Future(message = "La fecha de vencimiento tiene que ser a futuro")
     private LocalDate fechaVencimiento;
+
+    public ProductoDto(){};
+    
+    public ProductoDto(String nombre, String marca, double peso, int cantidad, double costo, double ganancia, double precio, TipoProducto tipo, LocalDate fechaVencimiento) {
+        this.nombre = nombre;
+        this.marca = marca;
+        this.peso = peso;
+        this.cantidad = cantidad;
+        this.costo = costo;
+        this.ganancia = ganancia;
+        this.precio = precio;
+        this.tipo = tipo;
+        this.fechaVencimiento = fechaVencimiento;
+    }
 
     public String getNombre() {
         return nombre;
