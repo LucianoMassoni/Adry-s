@@ -16,4 +16,6 @@ module com.negocio.adris {
     exports com.negocio.adris.model.repositories;
     exports com.negocio.adris.model.service;
     exports com.negocio.adris.model.entities;
+
+    exports com.negocio.adris.config to com.google.guice;
 }
