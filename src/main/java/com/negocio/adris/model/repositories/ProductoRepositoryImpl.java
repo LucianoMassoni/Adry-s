@@ -37,9 +37,9 @@ public class ProductoRepositoryImpl implements ProductoRepository {
           preparedStatement.setString(2, p.getMarca());
           preparedStatement.setDouble(3, p.getPeso());
           preparedStatement.setInt(4, p.getCantidad());
-          preparedStatement.setDouble(5, p.getCosto());
-          preparedStatement.setDouble(6, p.getGanancia());
-          preparedStatement.setDouble(7, p.getPrecio());
+          preparedStatement.setBigDecimal(5, p.getCosto());
+          preparedStatement.setBigDecimal(6, p.getGanancia());
+          preparedStatement.setBigDecimal(7, p.getPrecio());
           preparedStatement.setString(8,p.getTipo().name());
           preparedStatement.setDate(9, Date.valueOf(p.getFechaVencimiento()));
 
@@ -79,9 +79,9 @@ public class ProductoRepositoryImpl implements ProductoRepository {
                 preparedStatement.setString(2, p.getMarca());
                 preparedStatement.setDouble(3, p.getPeso());
                 preparedStatement.setInt(4, p.getCantidad());
-                preparedStatement.setDouble(5, p.getCosto());
-                preparedStatement.setDouble(6, p.getGanancia());
-                preparedStatement.setDouble(7, p.getPrecio());
+                preparedStatement.setBigDecimal(5, p.getCosto());
+                preparedStatement.setBigDecimal(6, p.getGanancia());
+                preparedStatement.setBigDecimal(7, p.getPrecio());
                 preparedStatement.setString(8, p.getTipo().name());
                 preparedStatement.setDate(9, Date.valueOf(p.getFechaVencimiento()));
                 preparedStatement.setLong(10, p.getId());
@@ -127,9 +127,9 @@ public class ProductoRepositoryImpl implements ProductoRepository {
                  resultSet.getString("marca"),
                  resultSet.getDouble("peso"),
                  resultSet.getInt("cantidad"),
-                 resultSet.getDouble("costo"),
-                 resultSet.getDouble("ganancia"),
-                 resultSet.getDouble("precio"),
+                 resultSet.getBigDecimal("costo"),
+                 resultSet.getBigDecimal("ganancia"),
+                 resultSet.getBigDecimal("precio"),
                  TipoProducto.valueOf(resultSet.getString("tipo")),
                  resultSet.getDate("fecha_vencimiento").toLocalDate()
              );
@@ -155,9 +155,9 @@ public class ProductoRepositoryImpl implements ProductoRepository {
                     resultSet.getString("marca"),
                     resultSet.getDouble("peso"),
                     resultSet.getInt("cantidad"),
-                    resultSet.getDouble("costo"),
-                    resultSet.getDouble("ganancia"),
-                    resultSet.getDouble("precio"),
+                    resultSet.getBigDecimal("costo"),
+                    resultSet.getBigDecimal("ganancia"),
+                    resultSet.getBigDecimal("precio"),
                     TipoProducto.valueOf(resultSet.getString("tipo")),
                     resultSet.getDate("fecha_vencimiento").toLocalDate()
                 );
@@ -169,4 +169,6 @@ public class ProductoRepositoryImpl implements ProductoRepository {
 
         return productos;
     }
+
+
 }
