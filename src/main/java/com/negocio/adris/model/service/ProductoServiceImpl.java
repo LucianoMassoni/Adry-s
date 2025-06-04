@@ -41,6 +41,7 @@ public class ProductoServiceImpl implements ProductoService {
                 dto.getNombre(),
                 dto.getMarca(),
                 dto.getPeso(),
+                dto.getUnidadMedida(),
                 dto.getCantidad(),
                 dto.getCosto(),
                 dto.getGanancia(),
@@ -98,21 +99,20 @@ public class ProductoServiceImpl implements ProductoService {
     }
 
     @Override
-    public List<Producto> obtenerTodosProductos() {
+    public List<Producto> obtenerTodosProductos() throws ProductoNotFoundException {
         return repo.findAll();
     }
 
     @Override
     public void eliminarProducto(int id) throws ProductoNotFoundException {
+        // Busca el producto para que, en caso de que no exista tire la exception.
         Producto p = repo.findById(id);
         repo.delete(id);
     }
 
     @Override
     public Producto obtenerProductoPorId(int id) throws ProductoNotFoundException {
-        Producto p = repo.findById(id);
-
-        return p;
+        return repo.findById(id);
     }
 
 }
