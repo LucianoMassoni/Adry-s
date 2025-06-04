@@ -10,5 +10,5 @@ public interface ProductoRepository {
     void update(Producto p);
     void delete(int id);
     Producto findById(int id) throws ProductoNotFoundException;
-    List<Producto> findAll();
+    List<Producto> findAll() throws ProductoNotFoundException;
 }
