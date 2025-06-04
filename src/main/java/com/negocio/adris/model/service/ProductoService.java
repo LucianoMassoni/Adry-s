@@ -9,7 +9,7 @@ import java.util.List;
 public interface ProductoService {
     void crearProducto(ProductoDto productoDto);
     void modificarProducto(int id, ProductoDto productoDto) throws ProductoNotFoundException;
-    List<Producto> obtenerTodosProductos();
+    List<Producto> obtenerTodosProductos() throws ProductoNotFoundException;
     void eliminarProducto(int id) throws ProductoNotFoundException;
     Producto obtenerProductoPorId(int id) throws ProductoNotFoundException;
 }
