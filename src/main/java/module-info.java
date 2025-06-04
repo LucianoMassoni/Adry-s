@@ -18,4 +18,5 @@ module com.negocio.adris {
     exports com.negocio.adris.model.entities;
 
     exports com.negocio.adris.config to com.google.guice;
+    exports com.negocio.adris.model.enums;
 }
