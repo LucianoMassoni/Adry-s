@@ -1,5 +1,8 @@
 package com.negocio.adris.model.entities;
 
+import com.negocio.adris.model.enums.TipoProducto;
+import com.negocio.adris.model.enums.UnidadMedida;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -9,6 +12,7 @@ public class Producto {
     private String marca;
     private double peso;
     private int cantidad;
+    private UnidadMedida unidadMedida;
     private BigDecimal costo;
     private BigDecimal ganancia;
     private BigDecimal precio;
@@ -17,11 +21,12 @@ public class Producto {
 
     public Producto() {}
 
-    public Producto(long id, String nombre, String marca, double peso, int cantidad, BigDecimal costo, BigDecimal ganancia, BigDecimal precio, TipoProducto tipo, LocalDate fechaVencimiento) {
+    public Producto(long id, String nombre, String marca, double peso, UnidadMedida unidadMedida, int cantidad, BigDecimal costo, BigDecimal ganancia, BigDecimal precio, TipoProducto tipo, LocalDate fechaVencimiento) {
         this.id = id;
         this.nombre = nombre;
         this.marca = marca;
         this.peso = peso;
+        this.unidadMedida = unidadMedida;
         this.cantidad = cantidad;
         this.costo = costo;
         this.ganancia = ganancia;
@@ -52,6 +57,14 @@ public class Producto {
 
     public void setMarca(String marca) {
         this.marca = marca;
+    }
+
+    public UnidadMedida getUnidadMedida() {
+        return unidadMedida;
+    }
+
+    public void setUnidadMedida(UnidadMedida unidadMedida) {
+        this.unidadMedida = unidadMedida;
     }
 
     public double getPeso() {
@@ -117,6 +130,7 @@ public class Producto {
                 ", nombre='" + nombre + '\'' +
                 ", marca='" + marca + '\'' +
                 ", peso=" + peso +
+                ", medida=" + unidadMedida.getSimbolo() +
                 ", cantidad=" + cantidad +
                 ", costo=" + costo +
                 ", ganancia=" + ganancia +
