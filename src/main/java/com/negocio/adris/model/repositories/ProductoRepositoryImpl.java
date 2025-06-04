@@ -3,11 +3,11 @@ package com.negocio.adris.model.repositories;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.negocio.adris.model.entities.Producto;
-import com.negocio.adris.model.entities.TipoProducto;
+import com.negocio.adris.model.enums.TipoProducto;
+import com.negocio.adris.model.enums.UnidadMedida;
 import com.negocio.adris.model.exceptions.ProductoNotFoundException;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,10 +23,10 @@ public class ProductoRepositoryImpl implements ProductoRepository {
     public void save(Producto p) {
         String sql = """
                     INSERT INTO Producto(
-                        nombre, marca, peso, cantidad, costo, ganancia, precio, tipo, fecha_vencimiento
+                        nombre, marca, peso, unidad_medida,cantidad, costo, ganancia, precio, tipo, fecha_vencimiento
                     )
                     VALUES(
-                        ?, ?, ?, ?, ?, ?, ?, ?, ?
+                        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
                     )
                 """;
 
@@ -36,19 +36,20 @@ public class ProductoRepositoryImpl implements ProductoRepository {
           preparedStatement.setString(1, p.getNombre());
           preparedStatement.setString(2, p.getMarca());
           preparedStatement.setDouble(3, p.getPeso());
-          preparedStatement.setInt(4, p.getCantidad());
-          preparedStatement.setBigDecimal(5, p.getCosto());
-          preparedStatement.setBigDecimal(6, p.getGanancia());
-          preparedStatement.setBigDecimal(7, p.getPrecio());
-          preparedStatement.setString(8,p.getTipo().name());
-          preparedStatement.setDate(9, Date.valueOf(p.getFechaVencimiento()));
+          preparedStatement.setString(4, p.getUnidadMedida().name());
+          preparedStatement.setInt(5, p.getCantidad());
+          preparedStatement.setBigDecimal(6, p.getCosto());
+          preparedStatement.setBigDecimal(7, p.getGanancia());
+          preparedStatement.setBigDecimal(8, p.getPrecio());
+          preparedStatement.setString(9,p.getTipo().name());
+          preparedStatement.setDate(10, Date.valueOf(p.getFechaVencimiento()));
 
           preparedStatement.executeUpdate();
 
             try (Statement stmt = conn.createStatement();
                  ResultSet rs = stmt.executeQuery("SELECT last_insert_rowid()")) {
                 if (rs.next()) {
-                    p.setId(rs.getInt(1)); // Asigna el ID generado
+                    p.setId(rs.getLong(1)); // Asigna el ID generado
                 }
             }
         } catch (SQLException e) {
@@ -63,6 +64,7 @@ public class ProductoRepositoryImpl implements ProductoRepository {
                         nombre = ?,
                         marca = ?,
                         peso = ?,
+                        unidad_medida = ?,
                         cantidad = ?,
                         costo = ?,
                         ganancia = ?,
@@ -79,12 +81,14 @@ public class ProductoRepositoryImpl implements ProductoRepository {
                 preparedStatement.setString(2, p.getMarca());
                 preparedStatement.setDouble(3, p.getPeso());
                 preparedStatement.setInt(4, p.getCantidad());
-                preparedStatement.setBigDecimal(5, p.getCosto());
-                preparedStatement.setBigDecimal(6, p.getGanancia());
-                preparedStatement.setBigDecimal(7, p.getPrecio());
-                preparedStatement.setString(8, p.getTipo().name());
-                preparedStatement.setDate(9, Date.valueOf(p.getFechaVencimiento()));
-                preparedStatement.setLong(10, p.getId());
+                preparedStatement.setString(4, p.getUnidadMedida().name());
+                preparedStatement.setInt(5, p.getCantidad());
+                preparedStatement.setBigDecimal(6, p.getCosto());
+                preparedStatement.setBigDecimal(7, p.getGanancia());
+                preparedStatement.setBigDecimal(8, p.getPrecio());
+                preparedStatement.setString(9,p.getTipo().name());
+                preparedStatement.setDate(10, Date.valueOf(p.getFechaVencimiento()));
+                preparedStatement.setLong(11, p.getId());
 
                 preparedStatement.executeUpdate();
 
@@ -122,10 +126,11 @@ public class ProductoRepositoryImpl implements ProductoRepository {
             }
 
              return new Producto(
-                 resultSet.getInt("id"),
+                 resultSet.getLong("id"),
                  resultSet.getString("nombre"),
                  resultSet.getString("marca"),
                  resultSet.getDouble("peso"),
+                 UnidadMedida.valueOf(resultSet.getString("unidad_medida")),
                  resultSet.getInt("cantidad"),
                  resultSet.getBigDecimal("costo"),
                  resultSet.getBigDecimal("ganancia"),
@@ -140,7 +145,7 @@ public class ProductoRepositoryImpl implements ProductoRepository {
     }
 
     @Override
-    public List<Producto> findAll() {
+    public List<Producto> findAll() throws ProductoNotFoundException {
         List<Producto> productos = new ArrayList<>();
         String sql = "SELECT * FROM Producto";
 
@@ -150,10 +155,11 @@ public class ProductoRepositoryImpl implements ProductoRepository {
 
             while (resultSet.next()){
                 Producto p = new Producto(
-                    resultSet.getInt("id"),
+                    resultSet.getLong("id"),
                     resultSet.getString("nombre"),
                     resultSet.getString("marca"),
                     resultSet.getDouble("peso"),
+                    UnidadMedida.valueOf(resultSet.getString("unidad_medida")),
                     resultSet.getInt("cantidad"),
                     resultSet.getBigDecimal("costo"),
                     resultSet.getBigDecimal("ganancia"),
@@ -163,6 +169,7 @@ public class ProductoRepositoryImpl implements ProductoRepository {
                 );
                 productos.add(p);
             }
+            if (productos.isEmpty()) throw new ProductoNotFoundException("No hay productos cargados");
         } catch (SQLException e) {
             throw new RuntimeException("Error al obtener todos los productos" + e.getMessage(), e);
         }
