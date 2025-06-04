@@ -1,6 +1,7 @@
 package com.negocio.adris.model.dtos;
 
-import com.negocio.adris.model.entities.TipoProducto;
+import com.negocio.adris.model.enums.TipoProducto;
+import com.negocio.adris.model.enums.UnidadMedida;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
@@ -13,6 +14,7 @@ public class ProductoDto {
     private String marca;
     @Positive(message = "El peso del producto no puede ser negativo")
     private double peso;
+    private UnidadMedida unidadMedida;
     @Positive(message = "La cantidad de productos no puede ser negativa")
     private int cantidad;
     @Positive(message = "El costo del producto no puede ser negativo")
@@ -27,10 +29,11 @@ public class ProductoDto {
 
     public ProductoDto(){};
     
-    public ProductoDto(String nombre, String marca, double peso, int cantidad, BigDecimal costo, BigDecimal ganancia, BigDecimal precio, TipoProducto tipo, LocalDate fechaVencimiento) {
+    public ProductoDto(String nombre, String marca, double peso, UnidadMedida unidadMedida, int cantidad, BigDecimal costo, BigDecimal ganancia, BigDecimal precio, TipoProducto tipo, LocalDate fechaVencimiento) {
         this.nombre = nombre;
         this.marca = marca;
         this.peso = peso;
+        this.unidadMedida = unidadMedida;
         this.cantidad = cantidad;
         this.costo = costo;
         this.ganancia = ganancia;
@@ -61,6 +64,14 @@ public class ProductoDto {
 
     public void setPeso(double peso) {
         this.peso = peso;
+    }
+
+    public UnidadMedida getUnidadMedida() {
+        return unidadMedida;
+    }
+
+    public void setUnidadMedida(UnidadMedida unidadMedida) {
+        this.unidadMedida = unidadMedida;
     }
 
     public int getCantidad() {
