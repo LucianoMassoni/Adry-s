@@ -76,7 +76,7 @@ public class ProductoServiceImpl implements ProductoService {
     }
 
     @Override
-    public void modificarProducto(int id, ProductoDto dto) throws ProductoNotFoundException {
+    public void modificarProducto(long id, ProductoDto dto) throws ProductoNotFoundException {
         validarProducto(dto);
 
         verificarCostoGananciaPrecio(dto.getCosto(), dto.getGanancia(), dto.getPrecio());
@@ -104,14 +104,14 @@ public class ProductoServiceImpl implements ProductoService {
     }
 
     @Override
-    public void eliminarProducto(int id) throws ProductoNotFoundException {
+    public void eliminarProducto(long id) throws ProductoNotFoundException {
         // Busca el producto para que, en caso de que no exista tire la exception.
         Producto p = repo.findById(id);
         repo.delete(id);
     }
 
     @Override
-    public Producto obtenerProductoPorId(int id) throws ProductoNotFoundException {
+    public Producto obtenerProductoPorId(long id) throws ProductoNotFoundException {
         return repo.findById(id);
     }
 
