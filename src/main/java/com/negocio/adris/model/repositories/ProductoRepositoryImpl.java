@@ -100,12 +100,12 @@ public class ProductoRepositoryImpl implements ProductoRepository {
     }
 
     @Override
-    public void delete(int id) {
+    public void delete(long id) {
         String sql = "DELETE FROM Producto WHERE id = ?";
 
         try(Connection conn = connectionProvider.get();
             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-            preparedStatement.setInt(1, id);
+            preparedStatement.setLong(1, id);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Error al eliminar un producto por Id" + e.getMessage(), e);
@@ -113,12 +113,12 @@ public class ProductoRepositoryImpl implements ProductoRepository {
     }
 
     @Override
-    public Producto findById(int id) throws ProductoNotFoundException {
+    public Producto findById(long id) throws ProductoNotFoundException {
         String sql = "SELECT * FROM Producto WHERE id = ?";
 
         try(Connection conn = connectionProvider.get();
             PreparedStatement preparedStatement = conn.prepareStatement(sql)){
-            preparedStatement.setInt(1, id);
+            preparedStatement.setLong(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if(!resultSet.next()){
