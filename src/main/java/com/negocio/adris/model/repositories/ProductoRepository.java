@@ -8,7 +8,7 @@ import java.util.List;
 public interface ProductoRepository {
     void save(Producto p);
     void update(Producto p);
-    void delete(int id);
-    Producto findById(int id) throws ProductoNotFoundException;
+    void delete(long id);
+    Producto findById(long id) throws ProductoNotFoundException;
     List<Producto> findAll() throws ProductoNotFoundException;
 }
