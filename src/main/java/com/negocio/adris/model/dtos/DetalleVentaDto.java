@@ -3,6 +3,7 @@ package com.negocio.adris.model.dtos;
 import com.negocio.adris.model.entities.Producto;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import java.math.BigDecimal;
 
@@ -11,7 +12,7 @@ public class DetalleVentaDto {
     private Producto producto;
     @Positive(message = "La cantidad no puede ser negativa")
     private int cantidad;
-    @Positive(message = "El descuento no puede ser negativo")
+    @PositiveOrZero(message = "El descuento no puede ser negativo")
     private BigDecimal descuento;
     @Positive(message = "El total no puede ser negativo")
     private BigDecimal subtotal;
