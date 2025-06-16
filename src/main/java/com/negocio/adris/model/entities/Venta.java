@@ -1,15 +1,24 @@
 package com.negocio.adris.model.entities;
 
+import com.negocio.adris.model.dtos.DetalleVentaDto;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class Venta {
     private long id;
     private LocalDateTime fecha;
-    private List<DetalleVenta> productos;
-    private double total;
+    private BigDecimal total;
 
+    public Venta(){}
 
+    public Venta(long id, LocalDateTime fecha, BigDecimal total){
+        this.id = id;
+        this.fecha = fecha;
+        this.total = total;
+    }
 
     public long getId() {
         return id;
@@ -27,19 +36,11 @@ public class Venta {
         this.fecha = fecha;
     }
 
-    public List<DetalleVenta> getProductos() {
-        return productos;
-    }
-
-    public void setProductos(List<DetalleVenta> productos) {
-        this.productos = productos;
-    }
-
-    public double getTotal() {
+    public BigDecimal getTotal() {
         return total;
     }
 
-    public void setTotal(double total) {
+    public void setTotal(BigDecimal total) {
         this.total = total;
     }
 }
