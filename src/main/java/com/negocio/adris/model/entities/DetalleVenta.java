@@ -1,16 +1,27 @@
 package com.negocio.adris.model.entities;
 
+import java.math.BigDecimal;
+
 public class DetalleVenta {
     private long id;
     private long ventaId;
     private long productoId;
-    private String nombreProducto;
-    private double cantidad;
-    //private UnidadMedida unidadMedida;  TODO: esto es para cuando agregue el enum de UnidadMedida
-    private double precioUnitario;
-    private double descuento;
-    private double subtotal;
+    private int cantidad;
+    private BigDecimal precioUnitario;
+    private BigDecimal descuento;
+    private BigDecimal subtotal;
 
+    public DetalleVenta(){}
+
+    public DetalleVenta(long id, long ventaId, long productoId, int cantidad, BigDecimal precioUnitario, BigDecimal descuento, BigDecimal subtotal) {
+        this.id = id;
+        this.ventaId = ventaId;
+        this.productoId = productoId;
+        this.cantidad = cantidad;
+        this.precioUnitario = precioUnitario;
+        this.descuento = descuento;
+        this.subtotal = subtotal;
+    }
 
     public long getId() {
         return id;
@@ -36,43 +47,35 @@ public class DetalleVenta {
         this.productoId = productoId;
     }
 
-    public String getNombreProducto() {
-        return nombreProducto;
-    }
-
-    public void setNombreProducto(String nombreProducto) {
-        this.nombreProducto = nombreProducto;
-    }
-
-    public double getCantidad() {
+    public int getCantidad() {
         return cantidad;
     }
 
-    public void setCantidad(double cantidad) {
+    public void setCantidad(int cantidad) {
         this.cantidad = cantidad;
     }
 
-    public double getPrecioUnitario() {
+    public BigDecimal getPrecioUnitario() {
         return precioUnitario;
     }
 
-    public void setPrecioUnitario(double precioUnitario) {
+    public void setPrecioUnitario(BigDecimal precioUnitario) {
         this.precioUnitario = precioUnitario;
     }
 
-    public double getDescuento() {
+    public BigDecimal getDescuento() {
         return descuento;
     }
 
-    public void setDescuento(double descuento) {
+    public void setDescuento(BigDecimal descuento) {
         this.descuento = descuento;
     }
 
-    public double getSubtotal() {
+    public BigDecimal getSubtotal() {
         return subtotal;
     }
 
-    public void setSubtotal(double subtotal) {
+    public void setSubtotal(BigDecimal subtotal) {
         this.subtotal = subtotal;
     }
 }
