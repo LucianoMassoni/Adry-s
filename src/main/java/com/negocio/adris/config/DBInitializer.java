@@ -23,12 +23,31 @@ public class DBInitializer {
                         nombre TEXT NOT NULL,
                         marca TEXT NOT NULL,
                         tipo TEXT NOT NULL,
-                        peso DOUBLE NOT NULL,
+                        peso DOUBLE(10, 2) NOT NULL,
+                        unidad_medida TEXT NOT NULL,
                         cantidad INTEGER NOT NULL,
-                        costo DOUBLE NOT NULL,
-                        ganancia DOUBLE NOT NULL,
-                        precio DOUBLE NOT NULL,
-                        fecha_vencimiento DATE NOT NULL
+                        costo DOUBLE(10, 2) NOT NULL,
+                        ganancia DOUBLE(10, 2) NOT NULL,
+                        precio DOUBLE(10, 2) NOT NULL,
+                        fecha_vencimiento TEXT NOT NULL
+                    );
+                
+                    CREATE TABLE IF NOT EXISTS Venta(
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        total DOUBLE(10, 2) NOT NULL,
+                        fecha TEXT NOT NULL
+                    );
+                
+                    CREATE TABLE IF NOT EXISTS DetalleVenta(
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        id_producto INTEGER NOT NULL,
+                        id_venta INTEGER NOT NULL,
+                        cantidad INTEGER NOT NULL,
+                        precio_unitario DOUBLE NOT NULL,
+                        descuento DOUBLE(10, 2) DEFAULT 0.0,
+                        subtotal DOUBLE(10, 2) NOT NULL,
+                        FOREIGN KEY(id_producto) REFERENCES Producto(id),
+                        FOREIGN KEY(id_venta) REFERENCES Venta(id)
                     );
                 """;
 
