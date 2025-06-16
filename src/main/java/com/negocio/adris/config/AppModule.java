@@ -2,10 +2,8 @@ package com.negocio.adris.config;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
-import com.negocio.adris.model.repositories.ProductoRepository;
-import com.negocio.adris.model.repositories.ProductoRepositoryImpl;
-import com.negocio.adris.model.service.ProductoService;
-import com.negocio.adris.model.service.ProductoServiceImpl;
+import com.negocio.adris.model.repositories.*;
+import com.negocio.adris.model.service.*;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 
@@ -16,9 +14,13 @@ public class AppModule extends AbstractModule {
     protected void configure(){
         // Configuración de repositorios
         bind(ProductoRepository.class).to(ProductoRepositoryImpl.class).in(Singleton.class);
+        bind(DetalleVentaRepository.class).to(DetalleVentaRepositoryImpl.class).in(Singleton.class);
+        bind(VentaRepository.class).to(VentaRepositoryImpl.class).in(Singleton.class);
 
         // Configuración de servicios
         bind(ProductoService.class).to(ProductoServiceImpl.class);
+        bind(DetalleVentaService.class).to(DetalleVentaServiceImpl.class);
+        bind(VentaService.class).to(VentaServiceImpl.class);
 
         // Configuración de Validator
         bind(Validator.class).toProvider(() -> Validation.buildDefaultValidatorFactory().getValidator());
