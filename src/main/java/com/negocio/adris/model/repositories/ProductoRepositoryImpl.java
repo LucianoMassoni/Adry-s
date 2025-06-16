@@ -31,7 +31,7 @@ public class ProductoRepositoryImpl implements ProductoRepository {
                 """;
 
         try(Connection conn = connectionProvider.get();
-            PreparedStatement preparedStatement = conn.prepareStatement(sql))
+            PreparedStatement preparedStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
         {
           preparedStatement.setString(1, p.getNombre());
           preparedStatement.setString(2, p.getMarca());
@@ -46,8 +46,7 @@ public class ProductoRepositoryImpl implements ProductoRepository {
 
           preparedStatement.executeUpdate();
 
-            try (Statement stmt = conn.createStatement();
-                 ResultSet rs = stmt.executeQuery("SELECT last_insert_rowid()")) {
+            try (ResultSet rs = preparedStatement.getGeneratedKeys()) {
                 if (rs.next()) {
                     p.setId(rs.getLong(1)); // Asigna el ID generado
                 }
