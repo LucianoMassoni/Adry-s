@@ -1,6 +1,7 @@
 package com.negocio.adris.model.service;
 
 import com.google.inject.Inject;
+import com.negocio.adris.model.dtos.DetalleVentaDto;
 import com.negocio.adris.model.dtos.VentaDto;
 import com.negocio.adris.model.entities.Venta;
 import com.negocio.adris.model.exceptions.VentaNotFoundException;
@@ -8,6 +9,7 @@ import com.negocio.adris.model.repositories.VentaRepository;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -24,7 +26,7 @@ public class VentaServiceImpl implements VentaService{
         this.detalleVentaService = detalleVentaService;
     }
 
-    private void validarVenta(VentaDto dto){
+    void validarVenta(VentaDto dto){
         Set<ConstraintViolation<VentaDto>> violations = validator.validate(dto);
         if (!violations.isEmpty()){
             String errores = violations.stream()
@@ -34,16 +36,25 @@ public class VentaServiceImpl implements VentaService{
         }
     }
 
+    BigDecimal calcularTotal(List<DetalleVentaDto> detalleVentaDtoList){
+        return detalleVentaDtoList.stream().
+                map(detalle -> detalleVentaService.calcularSubTotal(
+                        detalle.getCantidad(),
+                        detalle.getProducto().getPrecio(),
+                        detalle.getDescuento())).
+                reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
     private Venta convertirDtoAVenta(VentaDto dto){
         return new Venta(
                 0, // Id temporal (la DB le asigna un Id valido cuando lo guarda)
                 dto.getFecha(),
-                dto.getTotal()
+                calcularTotal(dto.getDetalleVentaDtos())
         );
     }
 
     @Override
-    public void CrearVenta(VentaDto dto) {
+    public void crearVenta(VentaDto dto) {
         validarVenta(dto);
         dto.getDetalleVentaDtos().forEach(detalleVentaService::validarDetalleVentaDto);
 
@@ -59,7 +70,7 @@ public class VentaServiceImpl implements VentaService{
         Venta v = repo.findById(id);
 
         v.setFecha(dto.getFecha());
-        v.setTotal(dto.getTotal());
+        v.setTotal(calcularTotal(dto.getDetalleVentaDtos()));
 
         repo.update(v);
     }
