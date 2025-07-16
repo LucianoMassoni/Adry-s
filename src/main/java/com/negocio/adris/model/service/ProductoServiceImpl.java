@@ -33,6 +33,14 @@ public class ProductoServiceImpl implements ProductoService {
                     .collect(Collectors.joining("\n"));
             throw new IllegalArgumentException(errores);
         }
+
+        if (dto.getTipo() != null && dto.getUnidadMedida() != null &&
+                !dto.getTipo().admiteUnidad(dto.getUnidadMedida())) {
+            throw new IllegalArgumentException(
+                    "La unidad de medida " + dto.getUnidadMedida().getSimbolo() +
+                            " no es válida para el tipo de producto " + dto.getTipo()
+            );
+        }
     }
 
     private Producto convertirDtoAProducto(ProductoDto dto){
@@ -46,13 +54,12 @@ public class ProductoServiceImpl implements ProductoService {
                 dto.getCosto(),
                 dto.getGanancia(),
                 dto.getPrecio(),
-                dto.getTipo(),
-                dto.getFechaVencimiento()
+                dto.getTipo()
         );
     }
 
     private void verificarCostoGananciaPrecio(BigDecimal costo, BigDecimal ganancia, BigDecimal precio){
-        BigDecimal precioMinimo = costo.multiply(BigDecimal.ONE.add(ganancia.divide(new BigDecimal(100))));
+        BigDecimal precioMinimo = costo.multiply(BigDecimal.ONE.add(ganancia.divide(new BigDecimal(100)))).subtract(new BigDecimal(50));
         if (precio.compareTo(precioMinimo) < 0) {
             throw new IllegalArgumentException(String.format(
                     "El precio $%.2f no puede ser menor al costo $%.2f más %s%% de ganancia ($%.2f)",
@@ -93,7 +100,6 @@ public class ProductoServiceImpl implements ProductoService {
         p.setGanancia(dto.getGanancia());
         p.setPrecio(dto.getPrecio());
         p.setTipo(dto.getTipo());
-        p.setFechaVencimiento(dto.getFechaVencimiento());
 
         repo.update(p);
     }
