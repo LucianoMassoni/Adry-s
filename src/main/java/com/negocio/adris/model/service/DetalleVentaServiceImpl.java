@@ -8,6 +8,7 @@ import com.negocio.adris.model.repositories.DetalleVentaRepository;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,7 +33,18 @@ public class DetalleVentaServiceImpl implements DetalleVentaService{
         }
     }
 
+    @Override
+    public BigDecimal calcularSubTotal(int cantidad, BigDecimal precio, BigDecimal descuento){
+        // subtotal = cantidad * precio * (1 - descuento/100)
+        return BigDecimal.valueOf(cantidad).
+                multiply(precio).
+                multiply(BigDecimal.ONE.subtract(descuento.divide(BigDecimal.valueOf(100)))
+                );
+    }
+
     public DetalleVenta convertirDtoADetalleVenta(DetalleVentaDto dto, long ventaId){
+        BigDecimal subTotal = calcularSubTotal(dto.getCantidad(), dto.getProducto().getPrecio(), dto.getDescuento());
+
         return new DetalleVenta(
                 0, // id temporal, la DB le asigna un ID válido cuando se guarda
                 ventaId,
@@ -40,7 +52,7 @@ public class DetalleVentaServiceImpl implements DetalleVentaService{
                 dto.getCantidad(),
                 dto.getProducto().getPrecio(),
                 dto.getDescuento(),
-                dto.getSubtotal()
+                subTotal
         );
     }
 
@@ -56,12 +68,14 @@ public class DetalleVentaServiceImpl implements DetalleVentaService{
         validarDetalleVentaDto(dto);
         DetalleVenta detalleVenta = repo.findById(id);
 
+        BigDecimal subTotal = calcularSubTotal(dto.getCantidad(), dto.getProducto().getPrecio(), dto.getDescuento());
+
         detalleVenta.setVentaId(detalleVenta.getVentaId()); // lo repito por las dudas de que me tire error después al hacer el update
         detalleVenta.setProductoId(dto.getProducto().getId());
         detalleVenta.setCantidad(dto.getCantidad());
         detalleVenta.setPrecioUnitario(dto.getProducto().getPrecio());
         detalleVenta.setDescuento(dto.getDescuento());
-        detalleVenta.setSubtotal(dto.getSubtotal());
+        detalleVenta.setSubtotal(subTotal);
 
         repo.update(detalleVenta);
     }
