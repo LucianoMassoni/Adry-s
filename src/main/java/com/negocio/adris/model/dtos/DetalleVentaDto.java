@@ -14,17 +14,15 @@ public class DetalleVentaDto {
     private int cantidad;
     @PositiveOrZero(message = "El descuento no puede ser negativo")
     private BigDecimal descuento;
-    @Positive(message = "El total no puede ser negativo")
-    private BigDecimal subtotal;
+
 
     public DetalleVentaDto() {
     }
 
-    public DetalleVentaDto(Producto producto, int cantidad, BigDecimal descuento, BigDecimal subtotal) {
+    public DetalleVentaDto(Producto producto, int cantidad, BigDecimal descuento) {
         this.producto = producto;
         this.cantidad = cantidad;
         this.descuento = descuento;
-        this.subtotal = subtotal;
     }
 
     public Producto getProducto(){
@@ -50,13 +48,5 @@ public class DetalleVentaDto {
 
     public void setDescuento(BigDecimal descuento) {
         this.descuento = descuento;
-    }
-
-    public BigDecimal getSubtotal() {
-        return subtotal;
-    }
-
-    public void setSubtotal(BigDecimal subtotal) {
-        this.subtotal = subtotal;
     }
 }
