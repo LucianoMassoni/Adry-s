@@ -28,8 +28,7 @@ public class DBInitializer {
                         cantidad INTEGER NOT NULL,
                         costo DOUBLE(10, 2) NOT NULL,
                         ganancia DOUBLE(10, 2) NOT NULL,
-                        precio DOUBLE(10, 2) NOT NULL,
-                        fecha_vencimiento TEXT NOT NULL
+                        precio DOUBLE(10, 2) NOT NULL
                     );
                 
                     CREATE TABLE IF NOT EXISTS Venta(
@@ -48,6 +47,15 @@ public class DBInitializer {
                         subtotal DOUBLE(10, 2) NOT NULL,
                         FOREIGN KEY(id_producto) REFERENCES Producto(id),
                         FOREIGN KEY(id_venta) REFERENCES Venta(id)
+                    );
+                
+                    CREATE TABLE IF NOT EXISTS Cuenta(
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        tipo_cuenta TEXT NOT NULL,
+                        detalle TEXT NOT NULL,
+                        debe DOUBLE(10, 2) NOT NULL,
+                        haber DOUBLE(10, 2) NOT NULL,
+                        fecha TEXT NOT NULL
                     );
                 """;
 
