@@ -17,11 +17,10 @@ public class Producto {
     private BigDecimal ganancia;
     private BigDecimal precio;
     private TipoProducto tipo;
-    private LocalDate fechaVencimiento;
 
     public Producto() {}
 
-    public Producto(long id, String nombre, String marca, double peso, UnidadMedida unidadMedida, int cantidad, BigDecimal costo, BigDecimal ganancia, BigDecimal precio, TipoProducto tipo, LocalDate fechaVencimiento) {
+    public Producto(long id, String nombre, String marca, double peso, UnidadMedida unidadMedida, int cantidad, BigDecimal costo, BigDecimal ganancia, BigDecimal precio, TipoProducto tipo) {
         this.id = id;
         this.nombre = nombre;
         this.marca = marca;
@@ -32,7 +31,6 @@ public class Producto {
         this.ganancia = ganancia;
         this.precio = precio;
         this.tipo = tipo;
-        this.fechaVencimiento = fechaVencimiento;
     }
 
     public long getId() {
@@ -115,13 +113,6 @@ public class Producto {
         this.tipo = tipo;
     }
 
-    public LocalDate getFechaVencimiento() {
-        return fechaVencimiento;
-    }
-
-    public void setFechaVencimiento(LocalDate fechaVencimiento) {
-        this.fechaVencimiento = fechaVencimiento;
-    }
 
     @Override
     public String toString() {
@@ -136,7 +127,6 @@ public class Producto {
                 ", ganancia=" + ganancia +
                 ", precio=" + precio +
                 ", tipo=" + tipo +
-                ", fechaVencimiento=" + fechaVencimiento +
                 '}';
     }
 }

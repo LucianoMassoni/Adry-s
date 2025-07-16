@@ -23,10 +23,10 @@ public class ProductoRepositoryImpl implements ProductoRepository {
     public void save(Producto p) {
         String sql = """
                     INSERT INTO Producto(
-                        nombre, marca, peso, unidad_medida,cantidad, costo, ganancia, precio, tipo, fecha_vencimiento
+                        nombre, marca, peso, unidad_medida,cantidad, costo, ganancia, precio, tipo
                     )
                     VALUES(
-                        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                        ?, ?, ?, ?, ?, ?, ?, ?, ?
                     )
                 """;
 
@@ -42,7 +42,6 @@ public class ProductoRepositoryImpl implements ProductoRepository {
           preparedStatement.setBigDecimal(7, p.getGanancia());
           preparedStatement.setBigDecimal(8, p.getPrecio());
           preparedStatement.setString(9,p.getTipo().name());
-          preparedStatement.setDate(10, Date.valueOf(p.getFechaVencimiento()));
 
           preparedStatement.executeUpdate();
 
@@ -52,7 +51,7 @@ public class ProductoRepositoryImpl implements ProductoRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error al guardar producto" + e.getMessage(), e);
+            throw new RuntimeException("Error al guardar producto " + e.getMessage(), e);
         }
     }
 
@@ -68,8 +67,7 @@ public class ProductoRepositoryImpl implements ProductoRepository {
                         costo = ?,
                         ganancia = ?,
                         precio = ?,
-                        tipo = ?,
-                        fecha_vencimiento = ?
+                        tipo = ?
                     WHERE id = ?
                 """;
 
@@ -86,14 +84,12 @@ public class ProductoRepositoryImpl implements ProductoRepository {
                 preparedStatement.setBigDecimal(7, p.getGanancia());
                 preparedStatement.setBigDecimal(8, p.getPrecio());
                 preparedStatement.setString(9,p.getTipo().name());
-                preparedStatement.setDate(10, Date.valueOf(p.getFechaVencimiento()));
-                preparedStatement.setLong(11, p.getId());
+                preparedStatement.setLong(10, p.getId());
 
                 preparedStatement.executeUpdate();
 
-
             } catch (SQLException e) {
-                throw new RuntimeException("Error al actualizar el producto" + e.getMessage(), e);
+                throw new RuntimeException("Error al actualizar el producto " + e.getMessage(), e);
             }
 
     }
@@ -107,7 +103,7 @@ public class ProductoRepositoryImpl implements ProductoRepository {
             preparedStatement.setLong(1, id);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException("Error al eliminar un producto por Id" + e.getMessage(), e);
+            throw new RuntimeException("Error al eliminar un producto por Id " + e.getMessage(), e);
         }
     }
 
@@ -134,12 +130,11 @@ public class ProductoRepositoryImpl implements ProductoRepository {
                  resultSet.getBigDecimal("costo"),
                  resultSet.getBigDecimal("ganancia"),
                  resultSet.getBigDecimal("precio"),
-                 TipoProducto.valueOf(resultSet.getString("tipo")),
-                 resultSet.getDate("fecha_vencimiento").toLocalDate()
+                 TipoProducto.valueOf(resultSet.getString("tipo"))
              );
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al encontrar un producto por Id" + e.getMessage(), e);
+            throw new RuntimeException("Error al encontrar un producto por Id " + e.getMessage(), e);
         }
     }
 
@@ -163,18 +158,15 @@ public class ProductoRepositoryImpl implements ProductoRepository {
                     resultSet.getBigDecimal("costo"),
                     resultSet.getBigDecimal("ganancia"),
                     resultSet.getBigDecimal("precio"),
-                    TipoProducto.valueOf(resultSet.getString("tipo")),
-                    resultSet.getDate("fecha_vencimiento").toLocalDate()
+                    TipoProducto.valueOf(resultSet.getString("tipo"))
                 );
                 productos.add(p);
             }
             if (productos.isEmpty()) throw new ProductoNotFoundException("No hay productos cargados");
         } catch (SQLException e) {
-            throw new RuntimeException("Error al obtener todos los productos" + e.getMessage(), e);
+            throw new RuntimeException("Error al obtener todos los productos " + e.getMessage(), e);
         }
 
         return productos;
     }
-
-
 }

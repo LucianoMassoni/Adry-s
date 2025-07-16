@@ -24,12 +24,10 @@ public class ProductoDto {
     @Positive(message = "El precio de un producto no puede ser negativo")
     private BigDecimal precio;
     private TipoProducto tipo;
-    @Future(message = "La fecha de vencimiento tiene que ser a futuro")
-    private LocalDate fechaVencimiento;
 
     public ProductoDto(){};
     
-    public ProductoDto(String nombre, String marca, double peso, UnidadMedida unidadMedida, int cantidad, BigDecimal costo, BigDecimal ganancia, BigDecimal precio, TipoProducto tipo, LocalDate fechaVencimiento) {
+    public ProductoDto(String nombre, String marca, double peso, UnidadMedida unidadMedida, int cantidad, BigDecimal costo, BigDecimal ganancia, BigDecimal precio, TipoProducto tipo) {
         this.nombre = nombre;
         this.marca = marca;
         this.peso = peso;
@@ -39,7 +37,6 @@ public class ProductoDto {
         this.ganancia = ganancia;
         this.precio = precio;
         this.tipo = tipo;
-        this.fechaVencimiento = fechaVencimiento;
     }
 
     public String getNombre() {
@@ -114,11 +111,18 @@ public class ProductoDto {
         this.tipo = tipo;
     }
 
-    public LocalDate getFechaVencimiento() {
-        return fechaVencimiento;
-    }
-
-    public void setFechaVencimiento(LocalDate fechaVencimiento) {
-        this.fechaVencimiento = fechaVencimiento;
+    @Override
+    public String toString() {
+        return "ProductoDto{" +
+                "nombre='" + nombre + '\'' +
+                ", marca='" + marca + '\'' +
+                ", peso=" + peso +
+                ", unidadMedida=" + unidadMedida +
+                ", cantidad=" + cantidad +
+                ", costo=" + costo +
+                ", ganancia=" + ganancia +
+                ", precio=" + precio +
+                ", tipo=" + tipo +
+                '}';
     }
 }
