@@ -21,7 +21,7 @@ public class DetalleVentaRepositoryImpl implements DetalleVentaRepository{
     public void save(DetalleVenta detalleVenta) {
         String sql = """
                 INSERT INTO DetalleVenta(
-                 venta_id, producto_id, cantidad, precioUnitario, descuento, subtotal
+                 venta_id, producto_id, cantidad, precio_unitario, descuento, subtotal
                 )
                 VALUES(
                 ?, ?, ?, ?, ?, ?
@@ -47,7 +47,7 @@ public class DetalleVentaRepositoryImpl implements DetalleVentaRepository{
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al guardar DetalleVenta" + e.getMessage(), e);
+            throw new RuntimeException("Error al guardar DetalleVenta " + e.getMessage(), e);
         }
     }
 
@@ -77,7 +77,7 @@ public class DetalleVentaRepositoryImpl implements DetalleVentaRepository{
             preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al actualizar DetalleVenta" + e.getMessage(), e);
+            throw new RuntimeException("Error al actualizar DetalleVenta " + e.getMessage(), e);
         }
     }
 
@@ -90,7 +90,7 @@ public class DetalleVentaRepositoryImpl implements DetalleVentaRepository{
             preparedStatement.setLong(1, id);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException("Error al eliminar detalleVenta por Id" + e.getMessage(), e);
+            throw new RuntimeException("Error al eliminar detalleVenta por Id " + e.getMessage(), e);
         }
     }
 
@@ -118,7 +118,7 @@ public class DetalleVentaRepositoryImpl implements DetalleVentaRepository{
 
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al encontrar detalleVenta por Id" + e.getMessage(), e);
+            throw new RuntimeException("Error al encontrar detalleVenta por Id " + e.getMessage(), e);
         }
     }
 
@@ -150,7 +150,7 @@ public class DetalleVentaRepositoryImpl implements DetalleVentaRepository{
             return list;
 
         } catch (SQLException e) {
-            throw new RuntimeException("error al obtener lista de DetalleVenta" + e.getMessage(), e);
+            throw new RuntimeException("error al obtener lista de DetalleVenta " + e.getMessage(), e);
         }
     }
 
@@ -184,7 +184,7 @@ public class DetalleVentaRepositoryImpl implements DetalleVentaRepository{
             return list;
 
         } catch (SQLException e) {
-            throw new RuntimeException("error al obtener lista de DetalleVenta" + e.getMessage(), e);
+            throw new RuntimeException("error al obtener lista de DetalleVenta " + e.getMessage(), e);
         }
     }
 }
