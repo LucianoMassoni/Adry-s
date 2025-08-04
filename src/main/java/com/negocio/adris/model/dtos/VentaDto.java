@@ -1,5 +1,6 @@
 package com.negocio.adris.model.dtos;
 
+import com.negocio.adris.model.enums.FormaDePago;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
@@ -11,12 +12,15 @@ public class VentaDto {
     private List<DetalleVentaDto> detalleVentaDtos;
     @NotNull(message = "Para realizar una compra se necesita la fecha y hora")
     private LocalDateTime fecha;
+    @NotNull
+    private FormaDePago formaDePago;
 
     public VentaDto() {}
 
-    public VentaDto(List<DetalleVentaDto> detalleVentaDtos, LocalDateTime fecha) {
+    public VentaDto(List<DetalleVentaDto> detalleVentaDtos, LocalDateTime fecha, FormaDePago formaDePago) {
         this.detalleVentaDtos = detalleVentaDtos;
         this.fecha = fecha;
+        this.formaDePago = formaDePago;
     }
 
     public List<DetalleVentaDto> getDetalleVentaDtos() {
@@ -33,5 +37,13 @@ public class VentaDto {
 
     public void setFecha(LocalDateTime fecha) {
         this.fecha = fecha;
+    }
+
+    public FormaDePago getFormaDePago() {
+        return formaDePago;
+    }
+
+    public void setFormaDePago(FormaDePago formaDePago) {
+        this.formaDePago = formaDePago;
     }
 }
