@@ -41,6 +41,10 @@ public class DetalleVentaDto {
         this.cantidad = cantidad;
     }
 
+    public BigDecimal getSubtotal(){
+        BigDecimal subtotal = producto.getPrecio().multiply(BigDecimal.valueOf(cantidad));
+        return subtotal.subtract(subtotal.multiply(descuento.divide(BigDecimal.valueOf(100))));
+    }
 
     public BigDecimal getDescuento() {
         return descuento;

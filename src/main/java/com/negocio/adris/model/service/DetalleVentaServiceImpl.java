@@ -16,11 +16,13 @@ import java.util.stream.Collectors;
 public class DetalleVentaServiceImpl implements DetalleVentaService{
     private final Validator validator;
     private final DetalleVentaRepository repo;
+    private final ProductoService productoService;
 
     @Inject
-    public DetalleVentaServiceImpl(Validator validator, DetalleVentaRepository repo){
+    public DetalleVentaServiceImpl(Validator validator, DetalleVentaRepository repo, ProductoService productoService){
         this.validator = validator;
         this.repo = repo;
+        this.productoService = productoService;
     }
 
     public void validarDetalleVentaDto(DetalleVentaDto dto){
@@ -59,6 +61,8 @@ public class DetalleVentaServiceImpl implements DetalleVentaService{
     @Override
     public void crearDetalleVenta(DetalleVentaDto dto, long ventaId) {
         validarDetalleVentaDto(dto);
+
+        productoService.comprarProducto(dto.getProducto(), dto.getCantidad());
 
         repo.save(convertirDtoADetalleVenta(dto, ventaId));
     }

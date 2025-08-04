@@ -21,7 +21,7 @@ public class DetalleVentaRepositoryImpl implements DetalleVentaRepository{
     public void save(DetalleVenta detalleVenta) {
         String sql = """
                 INSERT INTO DetalleVenta(
-                 venta_id, producto_id, cantidad, precio_unitario, descuento, subtotal
+                 id_venta, id_producto, cantidad, precio_unitario, descuento, subtotal
                 )
                 VALUES(
                 ?, ?, ?, ?, ?, ?
@@ -55,8 +55,8 @@ public class DetalleVentaRepositoryImpl implements DetalleVentaRepository{
     public void update(DetalleVenta detalleVenta) {
         String sql = """
                 UPDATE DetalleVenta SET
-                    venta_id = ?,
-                    producto_id = ?,
+                    id_venta = ?,
+                    id_producto = ?,
                     cantidad = ?,
                     precio_unitario = ?,
                     descuento = ?,
@@ -108,8 +108,8 @@ public class DetalleVentaRepositoryImpl implements DetalleVentaRepository{
             }
             return new DetalleVenta(
                     resultSet.getLong("id"),
-                    resultSet.getLong("venta_id"),
-                    resultSet.getLong("producto_id"),
+                    resultSet.getLong("id_venta"),
+                    resultSet.getLong("id_producto"),
                     resultSet.getInt("cantidad"),
                     resultSet.getBigDecimal("precio_unitario"),
                     resultSet.getBigDecimal("descuento"),
@@ -135,8 +135,8 @@ public class DetalleVentaRepositoryImpl implements DetalleVentaRepository{
             while (resultSet.next()){
                 DetalleVenta dv = new DetalleVenta(
                         resultSet.getLong("id"),
-                        resultSet.getLong("venta_id"),
-                        resultSet.getLong("producto_id"),
+                        resultSet.getLong("id_venta"),
+                        resultSet.getLong("id_producto"),
                         resultSet.getInt("cantidad"),
                         resultSet.getBigDecimal("precio_unitario"),
                         resultSet.getBigDecimal("descuento"),
@@ -156,7 +156,7 @@ public class DetalleVentaRepositoryImpl implements DetalleVentaRepository{
 
     @Override
     public List<DetalleVenta> findAllByVentaId(long ventaId) throws DetalleVentaNotFoundException {
-        String sql = "SELECT * FROM DetalleVenta WHERE venta_id = ?";
+        String sql = "SELECT * FROM DetalleVenta WHERE id_venta = ?";
 
         try (Connection conn = connectionProvider.get();
              PreparedStatement preparedStatement = conn.prepareStatement(sql)){
@@ -169,8 +169,8 @@ public class DetalleVentaRepositoryImpl implements DetalleVentaRepository{
             while (resultSet.next()){
                 DetalleVenta dv = new DetalleVenta(
                         resultSet.getLong("id"),
-                        resultSet.getLong("venta_id"),
-                        resultSet.getLong("producto_id"),
+                        resultSet.getLong("id_venta"),
+                        resultSet.getLong("id_producto"),
                         resultSet.getInt("cantidad"),
                         resultSet.getBigDecimal("precio_unitario"),
                         resultSet.getBigDecimal("descuento"),
