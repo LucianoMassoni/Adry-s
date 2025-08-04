@@ -3,6 +3,7 @@ package com.negocio.adris.model.repositories;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.negocio.adris.model.entities.Venta;
+import com.negocio.adris.model.enums.FormaDePago;
 import com.negocio.adris.model.exceptions.VentaNotFoundException;
 
 import java.sql.*;
@@ -22,15 +23,16 @@ public class VentaRepositoryImpl implements VentaRepository{
     @Override
     public void save(Venta v) {
         String sql = """
-                INSERT INTO Venta(fecha, total)
-                VALUES (?,?)
+                INSERT INTO Venta(forma_de_pago, fecha, total)
+                VALUES (?,?,?)
                 """;
 
         try (Connection conn = connectionProvider.get();
              PreparedStatement preparedStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
 
-            preparedStatement.setString(1, v.getFecha().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-            preparedStatement.setBigDecimal(2, v.getTotal());
+            preparedStatement.setString(1, v.getFormaDePago().toString());
+            preparedStatement.setString(2, v.getFecha().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            preparedStatement.setBigDecimal(3, v.getTotal());
 
             preparedStatement.executeUpdate();
 
@@ -52,6 +54,7 @@ public class VentaRepositoryImpl implements VentaRepository{
     public void update(Venta v) {
         String sql = """
                 UPDATE Venta SET
+                    forma_de_pago = ?,
                     fecha = ?,
                     total = ?
                 WHERE id = ?
@@ -60,9 +63,10 @@ public class VentaRepositoryImpl implements VentaRepository{
         try (Connection conn = connectionProvider.get();
             PreparedStatement preparedStatement = conn.prepareStatement(sql)){
 
-            preparedStatement.setString(1, v.getFecha().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-            preparedStatement.setBigDecimal(2, v.getTotal());
-            preparedStatement.setLong(3, v.getId());
+            preparedStatement.setString(1, v.getFormaDePago().toString());
+            preparedStatement.setString(2, v.getFecha().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            preparedStatement.setBigDecimal(3, v.getTotal());
+            preparedStatement.setLong(4, v.getId());
 
             preparedStatement.executeUpdate();
 
@@ -99,6 +103,7 @@ public class VentaRepositoryImpl implements VentaRepository{
 
             return new Venta(
                     resultSet.getLong("id"),
+                    FormaDePago.valueOf(resultSet.getString("forma_de_pago")),
                     LocalDateTime.parse(resultSet.getString("fecha"), DateTimeFormatter.ISO_LOCAL_DATE_TIME),
                     resultSet.getBigDecimal("total")
             );
@@ -121,6 +126,7 @@ public class VentaRepositoryImpl implements VentaRepository{
             while (resultSet.next()){
                 Venta v = new Venta(
                         resultSet.getLong("id"),
+                        FormaDePago.valueOf(resultSet.getString("forma_de_pago")),
                         LocalDateTime.parse(resultSet.getString("fecha"), DateTimeFormatter.ISO_LOCAL_DATE_TIME),
                         resultSet.getBigDecimal("total")
                 );

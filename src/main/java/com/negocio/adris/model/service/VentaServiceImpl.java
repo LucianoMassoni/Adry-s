@@ -47,10 +47,11 @@ public class VentaServiceImpl implements VentaService{
 
     private Venta convertirDtoAVenta(VentaDto dto){
         return new Venta(
-                0, // Id temporal (la DB le asigna un Id valido cuando lo guarda)
+                        0, // Id temporal (la DB le asigna un Id valido cuando lo guarda)
+                dto.getFormaDePago(),
                 dto.getFecha(),
                 calcularTotal(dto.getDetalleVentaDtos())
-        );
+                );
     }
 
     @Override
@@ -69,6 +70,7 @@ public class VentaServiceImpl implements VentaService{
 
         Venta v = repo.findById(id);
 
+        v.setFormaDePago(dto.getFormaDePago());
         v.setFecha(dto.getFecha());
         v.setTotal(calcularTotal(dto.getDetalleVentaDtos()));
 
