@@ -12,4 +12,6 @@ public interface ProductoService {
     List<Producto> obtenerTodosProductos() throws ProductoNotFoundException;
     void eliminarProducto(long id) throws ProductoNotFoundException;
     Producto obtenerProductoPorId(long id) throws ProductoNotFoundException;
+    List<Producto> obtenerProductosFiltrados(String busqueda) throws ProductoNotFoundException;
+    void comprarProducto(Producto producto, int cantidad);
 }
