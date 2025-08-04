@@ -4,6 +4,7 @@ import com.negocio.adris.model.dtos.DetalleVentaDto;
 import com.negocio.adris.model.dtos.VentaDto;
 import com.negocio.adris.model.entities.Producto;
 import com.negocio.adris.model.entities.Venta;
+import com.negocio.adris.model.enums.FormaDePago;
 import com.negocio.adris.model.enums.TipoProducto;
 import com.negocio.adris.model.enums.UnidadMedida;
 import com.negocio.adris.model.exceptions.VentaNotFoundException;
@@ -18,7 +19,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -49,7 +49,8 @@ public class VentaServiceImplTest {
                 List.of(new DetalleVentaDto(new Producto(1, "a", "b", 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS),
                         1,
                         BigDecimal.valueOf(0))),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                FormaDePago.EFECTIVO
         );
 
         assertDoesNotThrow(() -> ventaService.validarVenta(dto));
@@ -59,7 +60,8 @@ public class VentaServiceImplTest {
     void validarVenta_ConFechaNula_LanzaExcepcion() {
         VentaDto dto = new VentaDto(// Fecha nula
                 List.of(new DetalleVentaDto()),
-                null
+                null,
+                FormaDePago.TARJETA
         );
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
@@ -87,7 +89,8 @@ public class VentaServiceImplTest {
     void crearVenta_ConDetalleInvalido_LanzaExcepcion() {
         VentaDto dto = new VentaDto(
                 List.of(new DetalleVentaDto(null, 1, BigDecimal.ZERO)), // Producto nulo
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                FormaDePago.EFECTIVO
         );
 
         doThrow(new IllegalArgumentException("Producto requerido"))
@@ -105,9 +108,10 @@ public class VentaServiceImplTest {
                 List.of(new DetalleVentaDto(new Producto(1L, "a", "b", 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS),
                         1,
                         BigDecimal.valueOf(0))),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                FormaDePago.TARJETA
         );
-        Venta ventaExistente = new Venta(1L, LocalDateTime.now(), BigDecimal.ZERO);
+        Venta ventaExistente = new Venta(1L, FormaDePago.EFECTIVO, LocalDateTime.now(), BigDecimal.ZERO);
 
         when(ventaRepo.findById(1L)).thenReturn(ventaExistente);
 
@@ -129,7 +133,8 @@ public class VentaServiceImplTest {
                         List.of(new DetalleVentaDto(new Producto(1, "a", "b", 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS),
                                 1,
                                 BigDecimal.valueOf(0))),
-                        LocalDateTime.now()
+                        LocalDateTime.now(),
+                        FormaDePago.TARJETA
                 ), 999L));
     }
 
@@ -152,7 +157,7 @@ public class VentaServiceImplTest {
 
     @Test
     void obtenerVenta_ConIdExistente_RetornaVenta() throws VentaNotFoundException {
-        Venta ventaMock = new Venta(1L, LocalDateTime.now(), BigDecimal.TEN);
+        Venta ventaMock = new Venta(1L, FormaDePago.TARJETA, LocalDateTime.now(), BigDecimal.TEN);
         when(ventaRepo.findById(1L)).thenReturn(ventaMock);
 
         Venta resultado = ventaService.obtenerVenta(1L);
@@ -163,8 +168,8 @@ public class VentaServiceImplTest {
     @Test
     void obtenerTodasLasVentas_ConDatos_RetornaLista() throws VentaNotFoundException {
         List<Venta> ventasMock = List.of(
-                new Venta(1L, LocalDateTime.now(), BigDecimal.TEN),
-                new Venta(2L, LocalDateTime.now(), BigDecimal.valueOf(20))
+                new Venta(1L, FormaDePago.EFECTIVO,LocalDateTime.now(), BigDecimal.TEN),
+                new Venta(2L, FormaDePago.EFECTIVO, LocalDateTime.now(), BigDecimal.valueOf(20))
         );
         when(ventaRepo.findAll()).thenReturn(ventasMock);
 
