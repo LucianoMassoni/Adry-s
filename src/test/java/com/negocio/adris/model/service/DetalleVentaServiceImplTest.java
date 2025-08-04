@@ -23,28 +23,33 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class DetalleVentaServiceImplTest {
-    @Mock
+//    @Mock
     private DetalleVentaRepository repo;
-
+//
     private DetalleVentaServiceImpl detalleVentaService;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+        repo = mock(DetalleVentaRepository.class);
+        ProductoService productoService = mock(ProductoService.class); // 👈 el que te falta
 
-        Injector injector = Guice.createInjector(new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(DetalleVentaRepository.class).toInstance(repo);
-                bind(Validator.class).toProvider(() -> Validation.buildDefaultValidatorFactory().getValidator()); // valido con mi config de validator
-            }
-        });
+        detalleVentaService = new DetalleVentaServiceImpl(validator, repo, productoService);
 
-        detalleVentaService = injector.getInstance(DetalleVentaServiceImpl.class);
+//        MockitoAnnotations.openMocks(this);
+//
+//        Injector injector = Guice.createInjector(new AbstractModule() {
+//            @Override
+//            protected void configure() {
+//                bind(DetalleVentaRepository.class).toInstance(repo);
+//                bind(Validator.class).toProvider(() -> Validation.buildDefaultValidatorFactory().getValidator()); // valido con mi config de validator
+//            }
+//        });
+//
+//        detalleVentaService = injector.getInstance(DetalleVentaServiceImpl.class);
     }
 
     @Test
