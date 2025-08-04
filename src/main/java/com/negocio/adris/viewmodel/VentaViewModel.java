@@ -1,0 +1,93 @@
+package com.negocio.adris.viewmodel;
+
+import com.google.inject.Inject;
+import com.negocio.adris.model.dtos.DetalleVentaDto;
+import com.negocio.adris.model.dtos.VentaDto;
+import com.negocio.adris.model.enums.FormaDePago;
+import com.negocio.adris.model.service.VentaService;
+import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
+public class VentaViewModel {
+    private final LongProperty id = new SimpleLongProperty();
+    private final ObjectProperty<FormaDePago> formaDePago = new SimpleObjectProperty<>();
+    private final ObservableList<DetalleVentaItem> detalleVentas = FXCollections.observableArrayList();
+    private final ReadOnlyObjectWrapper<BigDecimal> total = new ReadOnlyObjectWrapper<>();
+
+    private final VentaService ventaService;
+    @Inject
+    public VentaViewModel(VentaService ventaService){
+        this.ventaService = ventaService;
+
+        detalleVentas.addListener((ListChangeListener<DetalleVentaItem>) c -> {
+            while (c.next()) {
+                if (c.wasAdded()) {
+                    for (DetalleVentaItem item : c.getAddedSubList()) {
+                        item.subtotalProperty().addListener((obs, oldVal, newVal) -> recalcularTotal());
+                    }
+                }
+            }
+            recalcularTotal();
+        });
+    }
+
+    private void recalcularTotal(){
+        BigDecimal suma = detalleVentas.stream().
+                map(DetalleVentaItem::subtotalProperty)
+                .map(ReadOnlyObjectProperty::get)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        total.set(suma);
+    }
+
+    public void guardarVenta(){
+        VentaDto dto = new VentaDto();
+        List<DetalleVentaDto> detalleVentaDtos = detalleVentas.stream()
+                .map(item -> new DetalleVentaDto(
+                        item.productoProperty().get(),
+                        item.cantidadProperty().get(),
+                        item.descuentoProperty().get()
+                )).toList();
+
+        dto.setDetalleVentaDtos(detalleVentaDtos);
+        dto.setFecha(LocalDateTime.now());
+        dto.setFormaDePago(formaDePagoProperty().get());
+
+        System.out.println("dto = " + dto.getFormaDePago() + dto.getDetalleVentaDtos().toString() + dto.getFecha());
+        ventaService.crearVenta(dto);
+        id.set(0);
+        detalleVentas.clear();
+    }
+
+    public void borrarItem(DetalleVentaItem item) {
+        detalleVentas.remove(item);
+    }
+
+    public void agregarCantidad(DetalleVentaItem item){
+        if (item.cantidadProperty().get() < item.productoProperty().get().getCantidad()){
+            item.cantidadProperty().set(item.cantidadProperty().get() + 1);
+        }
+    }
+
+    public void sacarCantidad(DetalleVentaItem item){
+        if (item.cantidadProperty().get() > 1){
+            item.cantidadProperty().set(item.cantidadProperty().get() - 1);
+        }
+    }
+
+    public void cancelar(){
+        id.set(0);
+        detalleVentas.clear();
+    }
+
+    public LongProperty idProperty() { return id; }
+    public ObjectProperty<FormaDePago> formaDePagoProperty() { return formaDePago; }
+    public ObservableList<DetalleVentaItem> getDetalleVentas() { return detalleVentas; }
+    public ReadOnlyObjectProperty<BigDecimal> totalProperty() { return total.getReadOnlyProperty(); }
+}
