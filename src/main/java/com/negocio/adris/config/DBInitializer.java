@@ -33,14 +33,15 @@ public class DBInitializer {
                 
                     CREATE TABLE IF NOT EXISTS Venta(
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        forma_de_pago TEXT NOT NULL,
                         total DOUBLE(10, 2) NOT NULL,
                         fecha TEXT NOT NULL
                     );
                 
                     CREATE TABLE IF NOT EXISTS DetalleVenta(
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        id_producto INTEGER NOT NULL,
                         id_venta INTEGER NOT NULL,
+                        id_producto INTEGER NOT NULL,
                         cantidad INTEGER NOT NULL,
                         precio_unitario DOUBLE NOT NULL,
                         descuento DOUBLE(10, 2) DEFAULT 0.0,
