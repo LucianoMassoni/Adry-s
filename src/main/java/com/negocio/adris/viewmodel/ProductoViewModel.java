@@ -53,11 +53,13 @@ public class ProductoViewModel {
             return BigDecimal.ZERO;
         }, costo, ganancia));
 
-        filtroBusqueda.addListener((obs, oldVal, newVal) -> productosFiltrados.setPredicate(p -> {
-            if (newVal == null || newVal.isBlank()) return true;
-            String busqueda = p.getNombre().toLowerCase() + p.getMarca().toLowerCase();
-            return busqueda.contains(newVal.toLowerCase());
-        }));
+        filtroBusqueda.addListener((obs, oldVal, newVal) -> {
+            try {
+                productos.setAll(service.obtenerProductosFiltrados(newVal));
+            } catch (ProductoNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        });
         cargarProductos();
     }
 
