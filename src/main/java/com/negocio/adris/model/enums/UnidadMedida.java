@@ -5,7 +5,7 @@ public enum UnidadMedida {
     GRAMOS(Kilaje.GRAMOS),
     LITROS(Litraje.LITROS),
     MILILITROS(Litraje.MILILITROS),
-    UNIDAD("Unidad");
+    UNIDAD("U");
 
     private final Object unidad;
 

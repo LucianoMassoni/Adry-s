@@ -3,8 +3,8 @@ package com.negocio.adris.model.enums;
 import java.util.List;
 
 public enum TipoProducto {
-    FIAMBRES(List.of(UnidadMedida.KILOS, UnidadMedida.GRAMOS)),
-    EMBUTIDOS(List.of(UnidadMedida.UNIDAD)),
+    FIAMBRES(List.of(UnidadMedida.UNIDAD)),
+    EMBUTIDOS(List.of(UnidadMedida.KILOS, UnidadMedida.GRAMOS, UnidadMedida.UNIDAD)),
     QUESOS_Y_LACTEOS(List.of(UnidadMedida.KILOS, UnidadMedida.GRAMOS)),
     BEBIDAS_SIN_ALCOHOL(List.of(UnidadMedida.LITROS, UnidadMedida.MILILITROS)),
     BEBIDAS_ALCOHOLICA(List.of(UnidadMedida.LITROS, UnidadMedida.MILILITROS)),
@@ -13,7 +13,7 @@ public enum TipoProducto {
     SNACKS_Y_SUELTOS(List.of(UnidadMedida.UNIDAD)),
     CONGELADOS(List.of(UnidadMedida.UNIDAD)),
     VINOS(List.of(UnidadMedida.LITROS, UnidadMedida.MILILITROS)),
-    OTROS(List.of(UnidadMedida.UNIDAD));
+    OTROS(List.of(UnidadMedida.KILOS, UnidadMedida.GRAMOS, UnidadMedida.LITROS, UnidadMedida.MILILITROS, UnidadMedida.UNIDAD));
 
     private final List<UnidadMedida> unidadesValidas;
 
