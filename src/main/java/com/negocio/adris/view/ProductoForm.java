@@ -36,6 +36,7 @@ public class ProductoForm extends VBox {
         TextField precioSugeridoField = new TextField();
         TextField precioField = new TextField();
         ComboBox<TipoProducto> tipoProductoComboBox = new ComboBox<>();
+        CheckBox esDivisibleBox = new CheckBox("es divisible");
 
         StringConverter<? extends Number> longConverter = new LongStringConverter();
         Bindings.bindBidirectional(idField.textProperty(), viewModel.idProperty(), (StringConverter<Number>) longConverter);
@@ -66,11 +67,14 @@ public class ProductoForm extends VBox {
         precioField.setTextFormatter(precioFormatter);
         viewModel.precioProperty().bindBidirectional(precioFormatter.valueProperty());
 
+        esDivisibleBox.selectedProperty().bindBidirectional(viewModel.esDivisibleProperty());
+
         // PrecioSugerido
         TextFormatter<BigDecimal> precioSugeridoFormatter = Formatters.bigDecimalFormatter();
         precioSugeridoField.setTextFormatter(precioSugeridoFormatter);
         precioSugeridoFormatter.valueProperty().bind(viewModel.precioSugeridoProperty());
         precioSugeridoField.setDisable(true);
+        precioSugeridoField.setVisible(false);
 
         tipoProductoComboBox.setItems(FXCollections.observableArrayList(TipoProducto.values()));
         tipoProductoComboBox.valueProperty().bindBidirectional(viewModel.tipoProperty());
@@ -128,11 +132,12 @@ public class ProductoForm extends VBox {
                 new Label("Peso:"), pesoField,
                 new Label("Tipo de producto:"), tipoProductoComboBox,
                 new Label("Unidad de medida:"), unidadMedidaComboBox,
+                esDivisibleBox,
                 new Label("Cantidad:"), cantidadField,
                 new Label("Costo:"), costoField,
                 new Label("Ganancia:"), gananciaField,
-                new Label("Precio sugerido:"), precioSugeridoField,
                 new Label("Precio:"), precioField,
+                precioSugeridoField,
                 buttonContainer
         );
     }

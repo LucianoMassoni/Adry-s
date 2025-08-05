@@ -28,7 +28,8 @@ public class DBInitializer {
                         cantidad INTEGER NOT NULL,
                         costo DOUBLE(10, 2) NOT NULL,
                         ganancia DOUBLE(10, 2) NOT NULL,
-                        precio DOUBLE(10, 2) NOT NULL
+                        precio DOUBLE(10, 2) NOT NULL,
+                        es_divisible INTEGER
                     );
                 
                     CREATE TABLE IF NOT EXISTS Venta(

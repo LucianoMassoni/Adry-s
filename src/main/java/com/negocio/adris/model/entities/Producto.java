@@ -4,7 +4,6 @@ import com.negocio.adris.model.enums.TipoProducto;
 import com.negocio.adris.model.enums.UnidadMedida;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 public class Producto {
     private long id;
@@ -17,10 +16,11 @@ public class Producto {
     private BigDecimal ganancia;
     private BigDecimal precio;
     private TipoProducto tipo;
+    private boolean esDivisible;
 
     public Producto() {}
 
-    public Producto(long id, String nombre, String marca, double peso, UnidadMedida unidadMedida, int cantidad, BigDecimal costo, BigDecimal ganancia, BigDecimal precio, TipoProducto tipo) {
+    public Producto(long id, String nombre, String marca, double peso, UnidadMedida unidadMedida, int cantidad, BigDecimal costo, BigDecimal ganancia, BigDecimal precio, TipoProducto tipo, boolean esDivisible) {
         this.id = id;
         this.nombre = nombre;
         this.marca = marca;
@@ -31,6 +31,7 @@ public class Producto {
         this.ganancia = ganancia;
         this.precio = precio;
         this.tipo = tipo;
+        this.esDivisible = esDivisible;
     }
 
     public long getId() {
@@ -113,6 +114,13 @@ public class Producto {
         this.tipo = tipo;
     }
 
+    public boolean esDivisible() {
+        return esDivisible;
+    }
+
+    public void setEsDivisible(boolean esDivisible) {
+        this.esDivisible = esDivisible;
+    }
 
     @Override
     public String toString() {
@@ -127,6 +135,7 @@ public class Producto {
                 ", ganancia=" + ganancia +
                 ", precio=" + precio +
                 ", tipo=" + tipo +
+                ", esDivisible=" + esDivisible +
                 '}';
     }
 }

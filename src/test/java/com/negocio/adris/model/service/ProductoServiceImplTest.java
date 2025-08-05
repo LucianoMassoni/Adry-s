@@ -54,7 +54,8 @@ public class ProductoServiceImplTest {
                 BigDecimal.valueOf(900),
                 BigDecimal.valueOf(10),
                 BigDecimal.valueOf(990),
-                TipoProducto.SNACKS_Y_SUELTOS
+                TipoProducto.SNACKS_Y_SUELTOS,
+                false
         );
 
         assertDoesNotThrow(() -> productoService.crearProducto(dto));
@@ -72,7 +73,8 @@ public class ProductoServiceImplTest {
                 BigDecimal.valueOf(900),
                 BigDecimal.valueOf(10),
                 BigDecimal.valueOf(990),
-                TipoProducto.SNACKS_Y_SUELTOS
+                TipoProducto.SNACKS_Y_SUELTOS,
+                false
         );
 
 
@@ -93,7 +95,8 @@ public class ProductoServiceImplTest {
                 BigDecimal.valueOf(900),
                 BigDecimal.valueOf(10),
                 BigDecimal.valueOf(990),
-                TipoProducto.SNACKS_Y_SUELTOS
+                TipoProducto.SNACKS_Y_SUELTOS,
+                false
         );
 
 
@@ -114,7 +117,8 @@ public class ProductoServiceImplTest {
                 BigDecimal.valueOf(900),
                 BigDecimal.valueOf(10),
                 BigDecimal.valueOf(990),
-                TipoProducto.SNACKS_Y_SUELTOS
+                TipoProducto.SNACKS_Y_SUELTOS,
+                false
         );
 
 
@@ -135,7 +139,8 @@ public class ProductoServiceImplTest {
                 BigDecimal.valueOf(900),
                 BigDecimal.valueOf(10),
                 BigDecimal.valueOf(990),
-                TipoProducto.SNACKS_Y_SUELTOS
+                TipoProducto.SNACKS_Y_SUELTOS,
+                false
         );
 
 
@@ -156,7 +161,8 @@ public class ProductoServiceImplTest {
                 BigDecimal.valueOf(0),
                 BigDecimal.valueOf(10),
                 BigDecimal.valueOf(990),
-                TipoProducto.SNACKS_Y_SUELTOS
+                TipoProducto.SNACKS_Y_SUELTOS,
+                false
         );
 
 
@@ -177,7 +183,8 @@ public class ProductoServiceImplTest {
                 BigDecimal.valueOf(900),
                 BigDecimal.valueOf(0),
                 BigDecimal.valueOf(990),
-                TipoProducto.SNACKS_Y_SUELTOS
+                TipoProducto.SNACKS_Y_SUELTOS,
+                false
         );
 
 
@@ -198,7 +205,8 @@ public class ProductoServiceImplTest {
                 BigDecimal.valueOf(900),
                 BigDecimal.valueOf(10),
                 BigDecimal.valueOf(0), 
-                TipoProducto.SNACKS_Y_SUELTOS
+                TipoProducto.SNACKS_Y_SUELTOS,
+                false
         );
 
 
@@ -220,7 +228,8 @@ public class ProductoServiceImplTest {
                 BigDecimal.valueOf(900),
                 BigDecimal.valueOf(10),
                 BigDecimal.valueOf(990),
-                TipoProducto.SNACKS_Y_SUELTOS
+                TipoProducto.SNACKS_Y_SUELTOS,
+                false
         );
 
         when(repo.findById(1)).thenReturn(productoMock);
@@ -254,7 +263,8 @@ public class ProductoServiceImplTest {
                 BigDecimal.valueOf(90.0),
                 BigDecimal.valueOf(0.2),
                 BigDecimal.valueOf(108.0),
-                TipoProducto.PANIFICADOS);
+                TipoProducto.PANIFICADOS,
+                false);
         when(repo.findById(1)).thenReturn(productoMock);
 
         productoService.eliminarProducto(1);
@@ -288,7 +298,8 @@ public class ProductoServiceImplTest {
                 BigDecimal.valueOf(90.0),
                 BigDecimal.valueOf(0.2),
                 BigDecimal.valueOf(108.0),
-                TipoProducto.PANIFICADOS);
+                TipoProducto.PANIFICADOS,
+                false);
 
         when(repo.findById(1)).thenReturn(productoExistente);
 
@@ -302,7 +313,9 @@ public class ProductoServiceImplTest {
                 BigDecimal.valueOf(95.0),
                 BigDecimal.valueOf(0.15),
                 BigDecimal.valueOf(109.25),
-                TipoProducto.PANIFICADOS);
+                TipoProducto.PANIFICADOS,
+                false
+        );
 
         // Ejecutar modificación
         productoService.modificarProducto(1, dto);
@@ -325,7 +338,9 @@ public class ProductoServiceImplTest {
                 BigDecimal.valueOf(95.0),
                 BigDecimal.valueOf(0.15),
                 BigDecimal.valueOf(109.25),
-                TipoProducto.PANIFICADOS);
+                TipoProducto.PANIFICADOS,
+                false
+        );
 
         assertThrows(IllegalArgumentException.class, () -> productoService.crearProducto(dto));
     }

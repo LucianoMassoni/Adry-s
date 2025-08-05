@@ -28,6 +28,7 @@ public class ProductoViewModel {
     private final ObjectProperty<BigDecimal> precioSugerido = new SimpleObjectProperty<>();
     private final ObjectProperty<BigDecimal> precio = new SimpleObjectProperty<>();
     private final ObjectProperty<TipoProducto> tipo = new SimpleObjectProperty<>();
+    private final BooleanProperty esDivisible = new SimpleBooleanProperty();
 
     private final ObservableList<Producto> productos = FXCollections.observableArrayList();
     private final FilteredList<Producto> productosFiltrados = new FilteredList<>(productos, p -> true);
@@ -68,6 +69,7 @@ public class ProductoViewModel {
     }
 
     public void limpiarFormulario() {
+        id.set(0);
         nombre.set("");
         marca.set("");
         peso.set(0);
@@ -77,6 +79,7 @@ public class ProductoViewModel {
         ganancia.set(BigDecimal.ZERO);
         precio.set(BigDecimal.ZERO);
         tipo.set(null);
+        esDivisible.set(false);
     }
 
     public void cargarProducto(Producto p) throws ProductoNotFoundException {
@@ -90,6 +93,7 @@ public class ProductoViewModel {
         ganancia.set(p.getGanancia());
         precio.set(p.getPrecio());
         tipo.set(p.getTipo());
+        esDivisible.set(p.esDivisible());
     }
 
     public void guardarProducto() throws ProductoNotFoundException {
@@ -102,7 +106,8 @@ public class ProductoViewModel {
                 costo.get(),
                 ganancia.get(),
                 precio.get(),
-                tipo.get()
+                tipo.get(),
+                esDivisible.get()
         );
 
         productoService.crearProducto(dto);
@@ -120,7 +125,8 @@ public class ProductoViewModel {
                 costo.get(),
                 ganancia.get(),
                 precio.get(),
-                tipo.get()
+                tipo.get(),
+                esDivisible.get()
         );
 
         productoService.modificarProducto(id.get(), dto);
@@ -147,6 +153,7 @@ public class ProductoViewModel {
     public ObjectProperty<BigDecimal> precioSugeridoProperty() { return precioSugerido; }
     public ObjectProperty<BigDecimal> precioProperty() { return precio; }
     public ObjectProperty<TipoProducto> tipoProperty() { return tipo; }
+    public BooleanProperty esDivisibleProperty() { return esDivisible; }
 
     public StringProperty filtroBusquedaProperty() { return filtroBusqueda; }
     public ObservableList<Producto> getProductosFiltrados() { return productosFiltrados; }

@@ -56,7 +56,8 @@ public class ProductoServiceImpl implements ProductoService {
                 dto.getCosto(),
                 dto.getGanancia(),
                 dto.getPrecio(),
-                dto.getTipo()
+                dto.getTipo(),
+                dto.esDivisible()
         );
     }
 
@@ -102,6 +103,7 @@ public class ProductoServiceImpl implements ProductoService {
         p.setGanancia(dto.getGanancia());
         p.setPrecio(dto.getPrecio());
         p.setTipo(dto.getTipo());
+        p.setEsDivisible(dto.esDivisible());
 
         repo.update(p);
     }

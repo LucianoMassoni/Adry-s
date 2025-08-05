@@ -23,10 +23,10 @@ public class ProductoRepositoryImpl implements ProductoRepository {
     public void save(Producto p) {
         String sql = """
                     INSERT INTO Producto(
-                        nombre, marca, peso, unidad_medida,cantidad, costo, ganancia, precio, tipo
+                        nombre, marca, peso, unidad_medida,cantidad, costo, ganancia, precio, tipo, es_divisible
                     )
                     VALUES(
-                        ?, ?, ?, ?, ?, ?, ?, ?, ?
+                        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
                     )
                 """;
 
@@ -42,6 +42,7 @@ public class ProductoRepositoryImpl implements ProductoRepository {
           preparedStatement.setBigDecimal(7, p.getGanancia());
           preparedStatement.setBigDecimal(8, p.getPrecio());
           preparedStatement.setString(9,p.getTipo().name());
+          preparedStatement.setBoolean(10, p.esDivisible());
 
           preparedStatement.executeUpdate();
 
@@ -67,7 +68,8 @@ public class ProductoRepositoryImpl implements ProductoRepository {
                         costo = ?,
                         ganancia = ?,
                         precio = ?,
-                        tipo = ?
+                        tipo = ?,
+                        es_divisible = ?
                     WHERE id = ?
                 """;
 
@@ -84,7 +86,8 @@ public class ProductoRepositoryImpl implements ProductoRepository {
                 preparedStatement.setBigDecimal(7, p.getGanancia());
                 preparedStatement.setBigDecimal(8, p.getPrecio());
                 preparedStatement.setString(9,p.getTipo().name());
-                preparedStatement.setLong(10, p.getId());
+                preparedStatement.setBoolean(10, p.esDivisible());
+                preparedStatement.setLong(11, p.getId());
 
                 preparedStatement.executeUpdate();
 
@@ -130,7 +133,8 @@ public class ProductoRepositoryImpl implements ProductoRepository {
                  resultSet.getBigDecimal("costo"),
                  resultSet.getBigDecimal("ganancia"),
                  resultSet.getBigDecimal("precio"),
-                 TipoProducto.valueOf(resultSet.getString("tipo"))
+                 TipoProducto.valueOf(resultSet.getString("tipo")),
+                 resultSet.getBoolean("es_divisible")
              );
 
         } catch (SQLException e) {
@@ -158,7 +162,8 @@ public class ProductoRepositoryImpl implements ProductoRepository {
                     resultSet.getBigDecimal("costo"),
                     resultSet.getBigDecimal("ganancia"),
                     resultSet.getBigDecimal("precio"),
-                    TipoProducto.valueOf(resultSet.getString("tipo"))
+                    TipoProducto.valueOf(resultSet.getString("tipo")),
+                    resultSet.getBoolean("es_divisible")
                 );
                 productos.add(p);
             }

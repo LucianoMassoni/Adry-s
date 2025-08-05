@@ -24,10 +24,11 @@ public class ProductoDto {
     @Positive(message = "El precio de un producto no puede ser negativo")
     private BigDecimal precio;
     private TipoProducto tipo;
+    private boolean esDivisible;
 
     public ProductoDto(){};
     
-    public ProductoDto(String nombre, String marca, double peso, UnidadMedida unidadMedida, int cantidad, BigDecimal costo, BigDecimal ganancia, BigDecimal precio, TipoProducto tipo) {
+    public ProductoDto(String nombre, String marca, double peso, UnidadMedida unidadMedida, int cantidad, BigDecimal costo, BigDecimal ganancia, BigDecimal precio, TipoProducto tipo, boolean esDivisible) {
         this.nombre = nombre;
         this.marca = marca;
         this.peso = peso;
@@ -37,6 +38,7 @@ public class ProductoDto {
         this.ganancia = ganancia;
         this.precio = precio;
         this.tipo = tipo;
+        this.esDivisible = esDivisible;
     }
 
     public String getNombre() {
@@ -111,6 +113,14 @@ public class ProductoDto {
         this.tipo = tipo;
     }
 
+    public boolean esDivisible() {
+        return esDivisible;
+    }
+
+    public void setEsDivisible(boolean esDivisible) {
+        this.esDivisible = esDivisible;
+    }
+
     @Override
     public String toString() {
         return "ProductoDto{" +
@@ -123,6 +133,7 @@ public class ProductoDto {
                 ", ganancia=" + ganancia +
                 ", precio=" + precio +
                 ", tipo=" + tipo +
+                ", esDivisible=" + esDivisible +
                 '}';
     }
 }
