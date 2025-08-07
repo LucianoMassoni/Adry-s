@@ -12,26 +12,29 @@ public class ProductoDto {
     private String nombre;
     @NotBlank(message = "La marca es necesaria")
     private String marca;
-    @Positive(message = "El peso del producto no puede ser negativo")
+    @PositiveOrZero(message = "El peso del producto no puede ser negativo")
     private double peso;
+    @PositiveOrZero(message = "El peso del producto no puede ser negativo")
+    private double pesoActual;
     private UnidadMedida unidadMedida;
-    @Positive(message = "La cantidad de productos no puede ser negativa")
+    @PositiveOrZero(message = "La cantidad de productos no puede ser negativa")
     private int cantidad;
-    @Positive(message = "El costo del producto no puede ser negativo")
+    @PositiveOrZero(message = "El costo del producto no puede ser negativo")
     private BigDecimal costo;
-    @Positive(message = "La ganancia del producto no puede ser negativa")
+    @PositiveOrZero(message = "La ganancia del producto no puede ser negativa")
     private BigDecimal ganancia;
-    @Positive(message = "El precio de un producto no puede ser negativo")
+    @PositiveOrZero(message = "El precio de un producto no puede ser negativo")
     private BigDecimal precio;
     private TipoProducto tipo;
     private boolean esDivisible;
 
     public ProductoDto(){};
     
-    public ProductoDto(String nombre, String marca, double peso, UnidadMedida unidadMedida, int cantidad, BigDecimal costo, BigDecimal ganancia, BigDecimal precio, TipoProducto tipo, boolean esDivisible) {
+    public ProductoDto(String nombre, String marca, double peso, double pesoActual, UnidadMedida unidadMedida, int cantidad, BigDecimal costo, BigDecimal ganancia, BigDecimal precio, TipoProducto tipo, boolean esDivisible) {
         this.nombre = nombre;
         this.marca = marca;
         this.peso = peso;
+        this.pesoActual = pesoActual;
         this.unidadMedida = unidadMedida;
         this.cantidad = cantidad;
         this.costo = costo;
@@ -64,6 +67,15 @@ public class ProductoDto {
     public void setPeso(double peso) {
         this.peso = peso;
     }
+
+    public double getPesoActual() {
+        return pesoActual;
+    }
+
+    public void setPesoActual(double pesoActual) {
+        this.pesoActual = pesoActual;
+    }
+
 
     public UnidadMedida getUnidadMedida() {
         return unidadMedida;
@@ -127,6 +139,7 @@ public class ProductoDto {
                 "nombre='" + nombre + '\'' +
                 ", marca='" + marca + '\'' +
                 ", peso=" + peso +
+                ", pesoActual=" + pesoActual +
                 ", unidadMedida=" + unidadMedida +
                 ", cantidad=" + cantidad +
                 ", costo=" + costo +

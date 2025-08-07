@@ -21,6 +21,7 @@ public class ProductoViewModel {
     private final StringProperty nombre = new SimpleStringProperty();
     private final StringProperty marca = new SimpleStringProperty();
     private final DoubleProperty peso = new SimpleDoubleProperty();
+    private final DoubleProperty pesoActual = new SimpleDoubleProperty();
     private final ObjectProperty<UnidadMedida> unidadMedida = new SimpleObjectProperty<>();
     private final IntegerProperty cantidad = new SimpleIntegerProperty();
     private final ObjectProperty<BigDecimal> costo = new SimpleObjectProperty<>();
@@ -73,6 +74,7 @@ public class ProductoViewModel {
         nombre.set("");
         marca.set("");
         peso.set(0);
+        pesoActual.set(0);
         unidadMedida.set(null);
         cantidad.set(0);
         costo.set(BigDecimal.ZERO);
@@ -87,6 +89,7 @@ public class ProductoViewModel {
         nombre.set(p.getNombre());
         marca.set(p.getMarca());
         peso.set(p.getPeso());
+        pesoActual.set(p.getPesoActual());
         unidadMedida.set(p.getUnidadMedida());
         cantidad.set(p.getCantidad());
         costo.set(p.getCosto());
@@ -101,6 +104,7 @@ public class ProductoViewModel {
                 nombre.get(),
                 marca.get(),
                 peso.get(),
+                pesoActual.get(),
                 unidadMedida.get(),
                 cantidad.get(),
                 costo.get(),
@@ -120,6 +124,7 @@ public class ProductoViewModel {
                 nombre.get(),
                 marca.get(),
                 peso.get(),
+                pesoActual.get(),
                 unidadMedida.get(),
                 cantidad.get(),
                 costo.get(),
@@ -146,6 +151,7 @@ public class ProductoViewModel {
     public StringProperty nombreProperty() {return nombre; }
     public StringProperty marcaProperty() { return marca; }
     public DoubleProperty pesoProperty() { return peso; }
+    public DoubleProperty pesoACtualProperty() { return pesoActual; }
     public ObjectProperty<UnidadMedida> unidadMedidaProperty() { return unidadMedida; }
     public IntegerProperty cantidadProperty() { return cantidad; }
     public ObjectProperty<BigDecimal> costoProperty() { return costo; }

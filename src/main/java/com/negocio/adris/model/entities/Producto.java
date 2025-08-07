@@ -10,6 +10,7 @@ public class Producto {
     private String nombre;
     private String marca;
     private double peso;
+    private double pesoActual;
     private int cantidad;
     private UnidadMedida unidadMedida;
     private BigDecimal costo;
@@ -20,11 +21,12 @@ public class Producto {
 
     public Producto() {}
 
-    public Producto(long id, String nombre, String marca, double peso, UnidadMedida unidadMedida, int cantidad, BigDecimal costo, BigDecimal ganancia, BigDecimal precio, TipoProducto tipo, boolean esDivisible) {
+    public Producto(long id, String nombre, String marca, double peso, double pesoActual, UnidadMedida unidadMedida, int cantidad, BigDecimal costo, BigDecimal ganancia, BigDecimal precio, TipoProducto tipo, boolean esDivisible) {
         this.id = id;
         this.nombre = nombre;
         this.marca = marca;
         this.peso = peso;
+        this.pesoActual = pesoActual;
         this.unidadMedida = unidadMedida;
         this.cantidad = cantidad;
         this.costo = costo;
@@ -72,6 +74,14 @@ public class Producto {
 
     public void setPeso(double peso) {
         this.peso = peso;
+    }
+
+    public double getPesoActual() {
+        return pesoActual;
+    }
+
+    public void setPesoActual(double pesoActual) {
+        this.pesoActual = pesoActual;
     }
 
     public int getCantidad() {
@@ -129,6 +139,7 @@ public class Producto {
                 ", nombre='" + nombre + '\'' +
                 ", marca='" + marca + '\'' +
                 ", peso=" + peso +
+                ", pesoActual=" + pesoActual +
                 ", medida=" + unidadMedida.getSimbolo() +
                 ", cantidad=" + cantidad +
                 ", costo=" + costo +

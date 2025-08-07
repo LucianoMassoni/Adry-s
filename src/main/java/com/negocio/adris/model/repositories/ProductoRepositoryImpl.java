@@ -23,10 +23,10 @@ public class ProductoRepositoryImpl implements ProductoRepository {
     public void save(Producto p) {
         String sql = """
                     INSERT INTO Producto(
-                        nombre, marca, peso, unidad_medida,cantidad, costo, ganancia, precio, tipo, es_divisible
+                        nombre, marca, peso, peso_actual, unidad_medida,cantidad, costo, ganancia, precio, tipo, es_divisible
                     )
                     VALUES(
-                        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
                     )
                 """;
 
@@ -36,13 +36,14 @@ public class ProductoRepositoryImpl implements ProductoRepository {
           preparedStatement.setString(1, p.getNombre());
           preparedStatement.setString(2, p.getMarca());
           preparedStatement.setDouble(3, p.getPeso());
-          preparedStatement.setString(4, p.getUnidadMedida().name());
-          preparedStatement.setInt(5, p.getCantidad());
-          preparedStatement.setBigDecimal(6, p.getCosto());
-          preparedStatement.setBigDecimal(7, p.getGanancia());
-          preparedStatement.setBigDecimal(8, p.getPrecio());
-          preparedStatement.setString(9,p.getTipo().name());
-          preparedStatement.setBoolean(10, p.esDivisible());
+          preparedStatement.setDouble(4, p.getPesoActual());
+          preparedStatement.setString(5, p.getUnidadMedida().name());
+          preparedStatement.setInt(6, p.getCantidad());
+          preparedStatement.setBigDecimal(7, p.getCosto());
+          preparedStatement.setBigDecimal(8, p.getGanancia());
+          preparedStatement.setBigDecimal(9, p.getPrecio());
+          preparedStatement.setString(10,p.getTipo().name());
+          preparedStatement.setBoolean(11, p.esDivisible());
 
           preparedStatement.executeUpdate();
 
@@ -63,6 +64,7 @@ public class ProductoRepositoryImpl implements ProductoRepository {
                         nombre = ?,
                         marca = ?,
                         peso = ?,
+                        peso_actual = ?,
                         unidad_medida = ?,
                         cantidad = ?,
                         costo = ?,
@@ -79,15 +81,15 @@ public class ProductoRepositoryImpl implements ProductoRepository {
                 preparedStatement.setString(1, p.getNombre());
                 preparedStatement.setString(2, p.getMarca());
                 preparedStatement.setDouble(3, p.getPeso());
-                preparedStatement.setInt(4, p.getCantidad());
-                preparedStatement.setString(4, p.getUnidadMedida().name());
-                preparedStatement.setInt(5, p.getCantidad());
-                preparedStatement.setBigDecimal(6, p.getCosto());
-                preparedStatement.setBigDecimal(7, p.getGanancia());
-                preparedStatement.setBigDecimal(8, p.getPrecio());
-                preparedStatement.setString(9,p.getTipo().name());
-                preparedStatement.setBoolean(10, p.esDivisible());
-                preparedStatement.setLong(11, p.getId());
+                preparedStatement.setDouble(4, p.getPesoActual());
+                preparedStatement.setString(5, p.getUnidadMedida().name());
+                preparedStatement.setInt(6, p.getCantidad());
+                preparedStatement.setBigDecimal(7, p.getCosto());
+                preparedStatement.setBigDecimal(8, p.getGanancia());
+                preparedStatement.setBigDecimal(9, p.getPrecio());
+                preparedStatement.setString(10,p.getTipo().name());
+                preparedStatement.setBoolean(11, p.esDivisible());
+                preparedStatement.setLong(12, p.getId());
 
                 preparedStatement.executeUpdate();
 
@@ -128,6 +130,7 @@ public class ProductoRepositoryImpl implements ProductoRepository {
                  resultSet.getString("nombre"),
                  resultSet.getString("marca"),
                  resultSet.getDouble("peso"),
+                 resultSet.getDouble("peso_actual"),
                  UnidadMedida.valueOf(resultSet.getString("unidad_medida")),
                  resultSet.getInt("cantidad"),
                  resultSet.getBigDecimal("costo"),
@@ -157,6 +160,7 @@ public class ProductoRepositoryImpl implements ProductoRepository {
                     resultSet.getString("nombre"),
                     resultSet.getString("marca"),
                     resultSet.getDouble("peso"),
+                    resultSet.getDouble("peso_actual"),
                     UnidadMedida.valueOf(resultSet.getString("unidad_medida")),
                     resultSet.getInt("cantidad"),
                     resultSet.getBigDecimal("costo"),

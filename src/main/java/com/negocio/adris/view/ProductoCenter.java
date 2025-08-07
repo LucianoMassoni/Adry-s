@@ -64,6 +64,7 @@ public class ProductoCenter extends VBox {
 
         listView.setPrefHeight(600);
 
+        this.getStyleClass().add("productoCenter");
         this.setSpacing(10);
         this.setPadding(new Insets(10));
         this.getChildren().addAll(busquedaField, listView);

@@ -24,6 +24,7 @@ public class DBInitializer {
                         marca TEXT NOT NULL,
                         tipo TEXT NOT NULL,
                         peso DOUBLE(10, 2) NOT NULL,
+                        peso_actual DOUBLE(10, 2) NOT NULL,
                         unidad_medida TEXT NOT NULL,
                         cantidad INTEGER NOT NULL,
                         costo DOUBLE(10, 2) NOT NULL,
