@@ -38,10 +38,7 @@ public class VentaServiceImpl implements VentaService{
 
     BigDecimal calcularTotal(List<DetalleVentaDto> detalleVentaDtoList){
         return detalleVentaDtoList.stream().
-                map(detalle -> detalleVentaService.calcularSubTotal(
-                        detalle.getCantidad(),
-                        detalle.getProducto().getPrecio(),
-                        detalle.getDescuento())).
+                map(detalleVentaService::getSubTotal).
                 reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 

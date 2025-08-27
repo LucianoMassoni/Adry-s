@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface DetalleVentaService {
-    BigDecimal calcularSubTotal(int cantidad, BigDecimal precio, BigDecimal descuento);
+    BigDecimal getSubTotal(DetalleVentaDto dto);
     void validarDetalleVentaDto(DetalleVentaDto dto);
     void crearDetalleVenta(DetalleVentaDto dto, long ventaId);
     void modificarDetalleVenta(DetalleVentaDto dto, long id) throws DetalleVentaNotFoundException;

@@ -55,8 +55,9 @@ public class DetalleVentaServiceImplTest {
     @Test
     void validarDto_Correcto(){
         DetalleVentaDto dto = new DetalleVentaDto(
-                new Producto(1, "a", "b", 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS),
-                1,
+                new Producto(1, "a", "b", 12, 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS, false),
+                BigDecimal.valueOf(1),
+                UnidadMedida.UNIDAD,
                 BigDecimal.valueOf(0)
         );
         assertDoesNotThrow(() -> detalleVentaService.validarDetalleVentaDto(dto));
@@ -66,7 +67,8 @@ public class DetalleVentaServiceImplTest {
     void validarDto_productoIncorrecto(){
         DetalleVentaDto dto = new DetalleVentaDto(
                 null,
-                2,
+                BigDecimal.valueOf(2),
+                UnidadMedida.UNIDAD,
                 BigDecimal.valueOf(0)
         );
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> detalleVentaService.validarDetalleVentaDto(dto));
@@ -76,8 +78,9 @@ public class DetalleVentaServiceImplTest {
     @Test
     void validarDto_CantidadIncorrecta(){
         DetalleVentaDto dto = new DetalleVentaDto(
-                new Producto(1, "a", "b", 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS),
-                0,
+                new Producto(1, "a", "b", 12, 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS, false),
+                BigDecimal.valueOf(0),
+                UnidadMedida.UNIDAD,
                 BigDecimal.valueOf(0)
         );
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> detalleVentaService.validarDetalleVentaDto(dto));
@@ -87,8 +90,9 @@ public class DetalleVentaServiceImplTest {
     @Test
     void validarDto_descuentoIncorrecto(){
         DetalleVentaDto dto = new DetalleVentaDto(
-                new Producto(1, "a", "b", 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS),
-                2,
+                new Producto(1, "a", "b", 12, 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS, false),
+                BigDecimal.valueOf(2),
+                UnidadMedida.UNIDAD,
                 BigDecimal.valueOf(-2)
         );
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> detalleVentaService.validarDetalleVentaDto(dto));
@@ -98,8 +102,9 @@ public class DetalleVentaServiceImplTest {
     @Test
     void ConvertirDtoADetalleVenta_Correcto(){
         DetalleVentaDto dto = new DetalleVentaDto(
-                new Producto(1, "a", "b", 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS),
-                2,
+                new Producto(1, "a", "b", 12, 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS, false),
+                BigDecimal.valueOf(2),
+                UnidadMedida.UNIDAD,
                 BigDecimal.valueOf(0)
         );
 
@@ -113,8 +118,9 @@ public class DetalleVentaServiceImplTest {
     @Test
     void ConvertirDtoADetalleVenta_aplicandoDescuento_Correcto(){
         DetalleVentaDto dto = new DetalleVentaDto(
-                new Producto(1, "a", "b", 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS),
-                2,
+                new Producto(1, "a", "b", 12, 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS, false),
+                BigDecimal.valueOf(2),
+                UnidadMedida.UNIDAD,
                 BigDecimal.valueOf(10)
         );
 
@@ -128,8 +134,9 @@ public class DetalleVentaServiceImplTest {
     @Test
     void CrearDetalleVenta_Correcto() {
         DetalleVentaDto dto = new DetalleVentaDto(
-                new Producto(1, "a", "b", 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS),
-                2,
+                new Producto(1, "a", "b", 12, 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS, false),
+                BigDecimal.valueOf(2),
+                UnidadMedida.UNIDAD,
                 BigDecimal.valueOf(0)
         );
 
@@ -140,8 +147,9 @@ public class DetalleVentaServiceImplTest {
     void modificarDetalleVenta_ConDatosValidos_ActualizaCorrectamente() throws DetalleVentaNotFoundException {
         // Configuración
         DetalleVentaDto dto = new DetalleVentaDto(
-                new Producto(1, "a", "b", 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS),
-                2,
+                new Producto(1, "a", "b", 12, 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS, false),
+                BigDecimal.valueOf(2),
+                UnidadMedida.UNIDAD,
                 BigDecimal.ZERO
         );
         DetalleVenta detalleExistente = new DetalleVenta(/* datos iniciales */);
@@ -160,8 +168,9 @@ public class DetalleVentaServiceImplTest {
         when(repo.findById(anyLong())).thenThrow(new DetalleVentaNotFoundException("No encontrado"));
 
         assertThrows(DetalleVentaNotFoundException.class, () -> detalleVentaService.modificarDetalleVenta( new DetalleVentaDto(
-                new Producto(1, "a", "b", 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS),
-                2,
+                new Producto(1, "a", "b", 12, 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS, false),
+                BigDecimal.valueOf(2),
+                UnidadMedida.UNIDAD,
                 BigDecimal.ZERO
         ), 999));
     }
@@ -184,7 +193,7 @@ public class DetalleVentaServiceImplTest {
 
     @Test
     void obtenerDetalleVenta_ConIdExistente_RetornaDetalle() throws DetalleVentaNotFoundException {
-        DetalleVenta detalleMock = new DetalleVenta(1, 1, 1, 1, BigDecimal.valueOf(2), BigDecimal.valueOf(10), BigDecimal.valueOf(20));
+        DetalleVenta detalleMock = new DetalleVenta(1, 1, 1, BigDecimal.valueOf(1), BigDecimal.valueOf(2), BigDecimal.valueOf(10), BigDecimal.valueOf(20));
         when(repo.findById(1L)).thenReturn(detalleMock);
 
         DetalleVenta resultado = detalleVentaService.obtenerDetalleVenta(1L);

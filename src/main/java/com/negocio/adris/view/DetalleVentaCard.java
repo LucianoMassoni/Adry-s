@@ -1,6 +1,7 @@
 package com.negocio.adris.view;
 
 
+import com.negocio.adris.model.enums.UnidadMedida;
 import com.negocio.adris.viewmodel.DetalleVentaItem;
 import javafx.animation.FadeTransition;
 import javafx.beans.binding.Bindings;
@@ -11,6 +12,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.util.Duration;
 
 import java.util.function.Consumer;
@@ -89,6 +91,7 @@ public class DetalleVentaCard extends HBox {
         Label marca = new Label();
         Label peso = new Label();
         Label cantidad = new Label();
+        Label unidadMedida = new Label();
         Label descuento = new Label();
         Label subtotal =  new Label();
 
@@ -112,6 +115,15 @@ public class DetalleVentaCard extends HBox {
         );
 
         cantidad.textProperty().bind(item.cantidadProperty().asString());
+        unidadMedida.textProperty().bind(
+                Bindings.createStringBinding(
+                        () -> {
+                            UnidadMedida um = item.unidadMedidaProperty().get();
+                            return um != null ? um.getSimbolo() : "";
+                        },
+                        item.unidadMedidaProperty()
+                )
+        );
 
         descuento.textProperty().bind(
                 Bindings.createStringBinding(
@@ -133,7 +145,17 @@ public class DetalleVentaCard extends HBox {
                 )
         );
 
-        HBox cantidadHolder = new HBox(botonMenosCantidad, cantidad, botonMasCantidad);
+        HBox cantidadHolder = new HBox();
+
+        if (item.productoProperty().get().esDivisible()){
+            Region regionD = new Region();
+            Region regionI = new Region();
+            HBox.setHgrow(regionI, Priority.ALWAYS);
+            HBox.setHgrow(regionD, Priority.ALWAYS);
+            cantidadHolder.getChildren().addAll(regionI, cantidad, unidadMedida, regionD);
+        } else {
+            cantidadHolder.getChildren().addAll(botonMenosCantidad, cantidad, botonMasCantidad);
+        }
 
         HBox.setHgrow(info, Priority.ALWAYS);
         info.setMaxWidth(Double.MAX_VALUE);

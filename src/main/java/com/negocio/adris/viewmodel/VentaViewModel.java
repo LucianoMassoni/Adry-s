@@ -52,13 +52,13 @@ public class VentaViewModel {
                 .map(item -> new DetalleVentaDto(
                         item.productoProperty().get(),
                         item.cantidadProperty().get(),
+                        item.unidadMedidaProperty().get(),
                         item.descuentoProperty().get()
                 )).toList();
 
         dto.setDetalleVentaDtos(detalleVentaDtos);
         dto.setFecha(LocalDateTime.now());
         dto.setFormaDePago(formaDePagoProperty().get());
-
         System.out.println("dto = " + dto.getFormaDePago() + dto.getDetalleVentaDtos().toString() + dto.getFecha());
         ventaService.crearVenta(dto);
         id.set(0);
@@ -70,14 +70,14 @@ public class VentaViewModel {
     }
 
     public void agregarCantidad(DetalleVentaItem item){
-        if (item.cantidadProperty().get() < item.productoProperty().get().getCantidad()){
-            item.cantidadProperty().set(item.cantidadProperty().get() + 1);
+        if (item.cantidadProperty().get().compareTo(BigDecimal.valueOf(item.productoProperty().get().getCantidad())) < 0){
+            item.cantidadProperty().set(item.cantidadProperty().get().add(BigDecimal.ONE));
         }
     }
 
     public void sacarCantidad(DetalleVentaItem item){
-        if (item.cantidadProperty().get() > 1){
-            item.cantidadProperty().set(item.cantidadProperty().get() - 1);
+        if (item.cantidadProperty().get().compareTo(BigDecimal.ONE) > 0){
+            item.cantidadProperty().set(item.cantidadProperty().get().subtract(BigDecimal.ONE));
         }
     }
 

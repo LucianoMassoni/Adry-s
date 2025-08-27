@@ -36,18 +36,30 @@ public class DetalleVentaServiceImpl implements DetalleVentaService{
     }
 
     @Override
-    public BigDecimal calcularSubTotal(int cantidad, BigDecimal precio, BigDecimal descuento){
-        // subtotal = cantidad * precio * (1 - descuento/100)
-        return BigDecimal.valueOf(cantidad).
-                multiply(precio).
-                multiply(BigDecimal.ONE.subtract(descuento.divide(BigDecimal.valueOf(100)))
-                );
+    public BigDecimal getSubTotal(DetalleVentaDto dto){
+        if (!dto.getProducto().esDivisible()){
+            return dto.getCantidad().
+                    multiply(dto.getProducto().getPrecio()).
+                    multiply(BigDecimal.ONE.subtract(dto.getDescuento().divide(BigDecimal.valueOf(100)))
+                    );
+        }
+
+        return productoService.getPrecioPorGramosComprados(dto.getProducto(), dto.getUnidadMedida(), dto.getCantidad());
     }
 
-    public DetalleVenta convertirDtoADetalleVenta(DetalleVentaDto dto, long ventaId){
-        BigDecimal subTotal = calcularSubTotal(dto.getCantidad(), dto.getProducto().getPrecio(), dto.getDescuento());
+//    @Override
+//    public BigDecimal calcularSubTotal(int cantidad, BigDecimal precio, BigDecimal descuento){
+//        // subtotal = cantidad * precio * (1 - descuento/100)
+//        return BigDecimal.valueOf(cantidad).
+//                multiply(precio).
+//                multiply(BigDecimal.ONE.subtract(descuento.divide(BigDecimal.valueOf(100)))
+//                );
+//    }
 
-        return new DetalleVenta(
+    public DetalleVenta convertirDtoADetalleVenta(DetalleVentaDto dto, long ventaId){
+        BigDecimal subTotal = getSubTotal(dto);
+
+        DetalleVenta detalleVenta = new DetalleVenta(
                 0, // id temporal, la DB le asigna un ID válido cuando se guarda
                 ventaId,
                 dto.getProducto().getId(),
@@ -56,13 +68,19 @@ public class DetalleVentaServiceImpl implements DetalleVentaService{
                 dto.getDescuento(),
                 subTotal
         );
+
+        if (dto.getProducto().esDivisible()){
+
+        }
+
+        return detalleVenta;
     }
 
     @Override
     public void crearDetalleVenta(DetalleVentaDto dto, long ventaId) {
         validarDetalleVentaDto(dto);
 
-        productoService.comprarProducto(dto.getProducto(), dto.getCantidad());
+        productoService.comprarProducto(dto.getProducto(), dto.getCantidad(), dto.getUnidadMedida());
 
         repo.save(convertirDtoADetalleVenta(dto, ventaId));
     }
@@ -72,7 +90,7 @@ public class DetalleVentaServiceImpl implements DetalleVentaService{
         validarDetalleVentaDto(dto);
         DetalleVenta detalleVenta = repo.findById(id);
 
-        BigDecimal subTotal = calcularSubTotal(dto.getCantidad(), dto.getProducto().getPrecio(), dto.getDescuento());
+        BigDecimal subTotal = getSubTotal(dto);
 
         detalleVenta.setVentaId(detalleVenta.getVentaId()); // lo repito por las dudas de que me tire error después al hacer el update
         detalleVenta.setProductoId(dto.getProducto().getId());

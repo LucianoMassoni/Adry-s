@@ -1,27 +1,31 @@
 package com.negocio.adris.model.dtos;
 
 import com.negocio.adris.model.entities.Producto;
+import com.negocio.adris.model.enums.UnidadMedida;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 public class DetalleVentaDto {
     @NotNull(message = "DetalleVenta necesita un producto al cual hacer referencia")
     private Producto producto;
-    @Positive(message = "La cantidad no puede ser negativa")
-    private int cantidad;
+    private BigDecimal cantidad;
     @PositiveOrZero(message = "El descuento no puede ser negativo")
     private BigDecimal descuento;
+    private Optional<Double> peso;
+    private Optional<BigDecimal> precioPorPeso;
+    private UnidadMedida unidadMedida;
 
 
     public DetalleVentaDto() {
     }
 
-    public DetalleVentaDto(Producto producto, int cantidad, BigDecimal descuento) {
+    public DetalleVentaDto(Producto producto, BigDecimal cantidad, UnidadMedida unidadMedida, BigDecimal descuento) {
         this.producto = producto;
         this.cantidad = cantidad;
+        this.unidadMedida = unidadMedida;
         this.descuento = descuento;
     }
 
@@ -33,17 +37,12 @@ public class DetalleVentaDto {
         this.producto = producto;
     }
 
-    public int getCantidad() {
+    public BigDecimal getCantidad() {
         return cantidad;
     }
 
-    public void setCantidad(int cantidad) {
+    public void setCantidad(BigDecimal cantidad) {
         this.cantidad = cantidad;
-    }
-
-    public BigDecimal getSubtotal(){
-        BigDecimal subtotal = producto.getPrecio().multiply(BigDecimal.valueOf(cantidad));
-        return subtotal.subtract(subtotal.multiply(descuento.divide(BigDecimal.valueOf(100))));
     }
 
     public BigDecimal getDescuento() {
@@ -52,5 +51,29 @@ public class DetalleVentaDto {
 
     public void setDescuento(BigDecimal descuento) {
         this.descuento = descuento;
+    }
+
+    public Optional<Double> getPeso() {
+        return peso;
+    }
+
+    public void setPeso(Optional<Double> peso) {
+        this.peso = peso;
+    }
+
+    public Optional<BigDecimal> getPrecioPorPeso() {
+        return precioPorPeso;
+    }
+
+    public void setPrecioPorPeso(Optional<BigDecimal> precioPorPeso) {
+        this.precioPorPeso = precioPorPeso;
+    }
+
+    public UnidadMedida getUnidadMedida() {
+        return unidadMedida;
+    }
+
+    public void setUnidadMedida(UnidadMedida unidadMedida) {
+        this.unidadMedida = unidadMedida;
     }
 }

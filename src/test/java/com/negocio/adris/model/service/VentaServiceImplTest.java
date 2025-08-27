@@ -46,8 +46,9 @@ public class VentaServiceImplTest {
     @Test
     void validarVenta_ConDtoValido_NoLanzaExcepcion() {
         VentaDto dto = new VentaDto(
-                List.of(new DetalleVentaDto(new Producto(1, "a", "b", 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS),
-                        1,
+                List.of(new DetalleVentaDto(new Producto(1, "a", "b", 12, 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS, false),
+                        BigDecimal.valueOf(1),
+                        UnidadMedida.UNIDAD,
                         BigDecimal.valueOf(0))),
                 LocalDateTime.now(),
                 FormaDePago.EFECTIVO
@@ -72,11 +73,11 @@ public class VentaServiceImplTest {
 
     @Test
     void calcularTotal_ConDetalles_RetornaSumaCorrecta() {
-        Producto producto = new Producto(1, "a", "b", 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS);
-        DetalleVentaDto detalle1 = new DetalleVentaDto(producto, 2, BigDecimal.valueOf(10)); // 1000 * 2 - 10% = 1800
-        DetalleVentaDto detalle2 = new DetalleVentaDto(producto, 1, BigDecimal.valueOf(5));  // 1000 * 1 - 5% = 950
+        Producto producto = new Producto(1, "a", "b", 12, 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS, false);
+        DetalleVentaDto detalle1 = new DetalleVentaDto(producto, BigDecimal.valueOf(2), UnidadMedida.UNIDAD, BigDecimal.valueOf(10)); // 1000 * 2 - 10% = 1800
+        DetalleVentaDto detalle2 = new DetalleVentaDto(producto, BigDecimal.valueOf(1), UnidadMedida.UNIDAD, BigDecimal.valueOf(5));  // 1000 * 1 - 5% = 950
 
-        when(detalleVentaService.calcularSubTotal(anyInt(), any(), any()))
+        when(detalleVentaService.getSubTotal(any()))
                 .thenReturn(BigDecimal.valueOf(1800))
                 .thenReturn(BigDecimal.valueOf(950));
 
@@ -88,7 +89,7 @@ public class VentaServiceImplTest {
     @Test
     void crearVenta_ConDetalleInvalido_LanzaExcepcion() {
         VentaDto dto = new VentaDto(
-                List.of(new DetalleVentaDto(null, 1, BigDecimal.ZERO)), // Producto nulo
+                List.of(new DetalleVentaDto(null, BigDecimal.valueOf(1), UnidadMedida.UNIDAD, BigDecimal.ZERO)), // Producto nulo
                 LocalDateTime.now(),
                 FormaDePago.EFECTIVO
         );
@@ -105,8 +106,9 @@ public class VentaServiceImplTest {
     @Test
     void modificarVenta_ConIdExistente_ActualizaCorrectamente() throws VentaNotFoundException {
         VentaDto dto = new VentaDto(
-                List.of(new DetalleVentaDto(new Producto(1L, "a", "b", 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS),
-                        1,
+                List.of(new DetalleVentaDto(new Producto(1L, "a", "b", 12, 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS, false),
+                        BigDecimal.valueOf(1),
+                        UnidadMedida.UNIDAD,
                         BigDecimal.valueOf(0))),
                 LocalDateTime.now(),
                 FormaDePago.TARJETA
@@ -115,7 +117,7 @@ public class VentaServiceImplTest {
 
         when(ventaRepo.findById(1L)).thenReturn(ventaExistente);
 
-        when(detalleVentaService.calcularSubTotal(anyInt(), any(BigDecimal.class), any(BigDecimal.class))).thenReturn(BigDecimal.valueOf(1000));
+        when(detalleVentaService.getSubTotal(any())).thenReturn(BigDecimal.valueOf(1000));
 
         ventaService.modificarVenta(dto, 1L);
 
@@ -130,8 +132,9 @@ public class VentaServiceImplTest {
 
         assertThrows(VentaNotFoundException.class,
                 () -> ventaService.modificarVenta(new VentaDto(
-                        List.of(new DetalleVentaDto(new Producto(1, "a", "b", 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS),
-                                1,
+                        List.of(new DetalleVentaDto(new Producto(1, "a", "b", 12, 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS, false),
+                                BigDecimal.valueOf(1),
+                                UnidadMedida.UNIDAD,
                                 BigDecimal.valueOf(0))),
                         LocalDateTime.now(),
                         FormaDePago.TARJETA

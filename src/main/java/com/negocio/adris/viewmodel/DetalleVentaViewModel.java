@@ -2,6 +2,7 @@ package com.negocio.adris.viewmodel;
 
 import com.google.inject.Inject;
 import com.negocio.adris.model.entities.Producto;
+import com.negocio.adris.model.enums.UnidadMedida;
 import com.negocio.adris.model.service.DetalleVentaService;
 import com.negocio.adris.model.service.VentaService;
 import javafx.beans.property.*;
@@ -15,8 +16,10 @@ public class DetalleVentaViewModel {
 
     private final LongProperty id = new SimpleLongProperty();
     private final ObjectProperty<Producto> producto = new SimpleObjectProperty<>();
-    private final IntegerProperty cantidad = new SimpleIntegerProperty(1);
+    private final ObjectProperty<BigDecimal> cantidad = new SimpleObjectProperty<>(BigDecimal.ONE);
+    private final ObjectProperty<UnidadMedida> unidadMedida = new SimpleObjectProperty<>();
     private final ObjectProperty<BigDecimal> descuento = new SimpleObjectProperty<>();
+    private final ObjectProperty<BigDecimal> subtotal = new SimpleObjectProperty<>();
 
 
     @Inject
@@ -28,24 +31,28 @@ public class DetalleVentaViewModel {
 
     public void limpiarFormulario(){
         producto.set(null);
-        cantidad.set(1);
+        cantidad.set(BigDecimal.ONE);
+        unidadMedida.set(null);
         descuento.set(BigDecimal.ZERO);
+        subtotal.set(BigDecimal.ZERO);
     }
-
-
 
     public DetalleVentaItem crearDtoActual(){
         if (producto.get() == null)
             throw new IllegalArgumentException("se necesita un producto para cargar");
+
         return new DetalleVentaItem(
                 producto.get(),
                 cantidad.get(),
+                unidadMedida.get(),
                 descuento.get()
         );
     }
 
     public LongProperty idProperty() { return id; }
     public ObjectProperty<Producto> productoProperty() { return producto; }
-    public IntegerProperty cantidadProperty() { return cantidad; }
+    public ObjectProperty<BigDecimal> cantidadProperty() { return cantidad; }
+    public ObjectProperty<UnidadMedida> unidadMedidaProperty() { return unidadMedida; }
     public ObjectProperty<BigDecimal> descuentoProperty() { return descuento; }
+    public ObjectProperty<BigDecimal> subtotalProperty() { return subtotal; }
 }

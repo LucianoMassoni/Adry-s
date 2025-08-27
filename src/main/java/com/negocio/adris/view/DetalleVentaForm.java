@@ -1,17 +1,19 @@
 package com.negocio.adris.view;
 
 import com.negocio.adris.model.entities.Producto;
+import com.negocio.adris.model.enums.UnidadMedida;
 import com.negocio.adris.utils.Formatters;
 import com.negocio.adris.viewmodel.DetalleVentaItem;
 import com.negocio.adris.viewmodel.DetalleVentaViewModel;
 import com.negocio.adris.viewmodel.ProductoViewModel;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
-import javafx.util.converter.IntegerStringConverter;
 import javafx.util.converter.LongStringConverter;
 
 import java.math.BigDecimal;
@@ -31,6 +33,7 @@ public class DetalleVentaForm extends VBox {
         TextField idField = new TextField();
         ComboBox<Producto> productoCardComboBox = new ComboBox<>();
         TextField cantidadField = new TextField();
+        ComboBox<UnidadMedida> unidadMedidaComboBox = new ComboBox<>();
         TextField descuentoField = new TextField();
 
         HBox buttonHolder = new HBox();
@@ -45,8 +48,35 @@ public class DetalleVentaForm extends VBox {
 
 
         // cantidad
-        StringConverter<? extends Number> intergerConverter = new IntegerStringConverter();
-        Bindings.bindBidirectional(cantidadField.textProperty(), detalleVentaViewModel.cantidadProperty(), (StringConverter<Number>) intergerConverter);
+        TextFormatter<BigDecimal> cantidadFormatter = Formatters.bigDecimalFormatter();
+        cantidadFormatter.setValue(detalleVentaViewModel.cantidadProperty().getValue());
+        cantidadField.setTextFormatter(cantidadFormatter);
+        detalleVentaViewModel.cantidadProperty().bindBidirectional(cantidadFormatter.valueProperty());
+
+        // unidadMedida
+        unidadMedidaComboBox.valueProperty().bindBidirectional(detalleVentaViewModel.unidadMedidaProperty());
+        final ObservableList<UnidadMedida> unidades = FXCollections.observableArrayList();
+        unidadMedidaComboBox.setItems(unidades);
+
+        detalleVentaViewModel.productoProperty().addListener((obs, oldProducto, newProducto) -> {
+            if (newProducto == null){
+                unidades.setAll();
+                unidadMedidaComboBox.setDisable(true);
+                detalleVentaViewModel.unidadMedidaProperty().set(null);
+                return;
+            }
+
+            unidades.setAll(newProducto.getTipo().getUnidadesValidas());
+            unidadMedidaComboBox.setDisable(!newProducto.esDivisible());
+
+            if (!newProducto.esDivisible()){
+                detalleVentaViewModel.unidadMedidaProperty().set(newProducto.getUnidadMedida());
+            } else {
+                detalleVentaViewModel.unidadMedidaProperty().set(null);
+            }
+
+        });
+
 
         // descuento
         TextFormatter<BigDecimal> descuentoFormatter = Formatters.bigDecimalFormatter();
@@ -132,6 +162,7 @@ public class DetalleVentaForm extends VBox {
                 idField,
                 new Label("producto:"), productoCardComboBox,
                 new Label("cantidad:"), cantidadField,
+                new Label("unidad medida:"), unidadMedidaComboBox,
                 new Label("descuento: %"), descuentoField,
                 buttonHolder
         );
