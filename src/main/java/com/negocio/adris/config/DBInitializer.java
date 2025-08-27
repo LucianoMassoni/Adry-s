@@ -44,7 +44,7 @@ public class DBInitializer {
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         id_venta INTEGER NOT NULL,
                         id_producto INTEGER NOT NULL,
-                        cantidad INTEGER NOT NULL,
+                        cantidad DOUBLE(10, 2) NOT NULL,
                         precio_unitario DOUBLE NOT NULL,
                         descuento DOUBLE(10, 2) DEFAULT 0.0,
                         subtotal DOUBLE(10, 2) NOT NULL,

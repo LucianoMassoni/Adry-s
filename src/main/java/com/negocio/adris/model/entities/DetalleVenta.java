@@ -6,14 +6,14 @@ public class DetalleVenta {
     private long id;
     private long ventaId;
     private long productoId;
-    private int cantidad;
+    private BigDecimal cantidad;
     private BigDecimal precioUnitario;
     private BigDecimal descuento;
     private BigDecimal subtotal;
 
     public DetalleVenta(){}
 
-    public DetalleVenta(long id, long ventaId, long productoId, int cantidad, BigDecimal precioUnitario, BigDecimal descuento, BigDecimal subtotal) {
+    public DetalleVenta(long id, long ventaId, long productoId, BigDecimal cantidad, BigDecimal precioUnitario, BigDecimal descuento, BigDecimal subtotal) {
         this.id = id;
         this.ventaId = ventaId;
         this.productoId = productoId;
@@ -47,11 +47,11 @@ public class DetalleVenta {
         this.productoId = productoId;
     }
 
-    public int getCantidad() {
+    public BigDecimal getCantidad() {
         return cantidad;
     }
 
-    public void setCantidad(int cantidad) {
+    public void setCantidad(BigDecimal cantidad) {
         this.cantidad = cantidad;
     }
 

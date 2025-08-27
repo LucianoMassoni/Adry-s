@@ -33,7 +33,7 @@ public class DetalleVentaRepositoryImpl implements DetalleVentaRepository{
         {
             preparedStatement.setLong(1, detalleVenta.getVentaId());
             preparedStatement.setLong(2, detalleVenta.getProductoId());
-            preparedStatement.setInt(3, detalleVenta.getCantidad());
+            preparedStatement.setBigDecimal(3, detalleVenta.getCantidad());
             preparedStatement.setBigDecimal(4, detalleVenta.getPrecioUnitario());
             preparedStatement.setBigDecimal(5, detalleVenta.getDescuento());
             preparedStatement.setBigDecimal(6, detalleVenta.getSubtotal());
@@ -68,7 +68,7 @@ public class DetalleVentaRepositoryImpl implements DetalleVentaRepository{
             PreparedStatement preparedStatement = conn.prepareStatement(sql)){
             preparedStatement.setLong(1, detalleVenta.getVentaId());
             preparedStatement.setLong(2, detalleVenta.getProductoId());
-            preparedStatement.setInt(3, detalleVenta.getCantidad());
+            preparedStatement.setBigDecimal(3, detalleVenta.getCantidad());
             preparedStatement.setBigDecimal(4, detalleVenta.getPrecioUnitario());
             preparedStatement.setBigDecimal(5, detalleVenta.getDescuento());
             preparedStatement.setBigDecimal(6, detalleVenta.getSubtotal());
@@ -110,7 +110,7 @@ public class DetalleVentaRepositoryImpl implements DetalleVentaRepository{
                     resultSet.getLong("id"),
                     resultSet.getLong("id_venta"),
                     resultSet.getLong("id_producto"),
-                    resultSet.getInt("cantidad"),
+                    resultSet.getBigDecimal("cantidad"),
                     resultSet.getBigDecimal("precio_unitario"),
                     resultSet.getBigDecimal("descuento"),
                     resultSet.getBigDecimal("subtotal")
@@ -137,7 +137,7 @@ public class DetalleVentaRepositoryImpl implements DetalleVentaRepository{
                         resultSet.getLong("id"),
                         resultSet.getLong("id_venta"),
                         resultSet.getLong("id_producto"),
-                        resultSet.getInt("cantidad"),
+                        resultSet.getBigDecimal("cantidad"),
                         resultSet.getBigDecimal("precio_unitario"),
                         resultSet.getBigDecimal("descuento"),
                         resultSet.getBigDecimal("subtotal")
@@ -171,7 +171,7 @@ public class DetalleVentaRepositoryImpl implements DetalleVentaRepository{
                         resultSet.getLong("id"),
                         resultSet.getLong("id_venta"),
                         resultSet.getLong("id_producto"),
-                        resultSet.getInt("cantidad"),
+                        resultSet.getBigDecimal("cantidad"),
                         resultSet.getBigDecimal("precio_unitario"),
                         resultSet.getBigDecimal("descuento"),
                         resultSet.getBigDecimal("subtotal")
