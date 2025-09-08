@@ -73,8 +73,10 @@ public class VentaCenter extends VBox {
                         card.setSeleccionado(isSelected());
 
                         card.setOnBorrar(ventaViewModel::borrarItem);
-                        card.setOnAgregar(ventaViewModel::agregarCantidad);
-                        card.setOnSacar(ventaViewModel::sacarCantidad);
+                        if (!item.productoProperty().get().esDivisible()){
+                            card.setOnAgregar(ventaViewModel::agregarCantidad);
+                            card.setOnSacar(ventaViewModel::sacarCantidad);
+                        }
 
                         selectedProperty().addListener((obs, wasSelected, isNowSelected) -> card.setSeleccionado(isNowSelected));
 
