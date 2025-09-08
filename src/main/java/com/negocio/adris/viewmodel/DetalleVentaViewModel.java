@@ -41,6 +41,11 @@ public class DetalleVentaViewModel {
         if (producto.get() == null)
             throw new IllegalArgumentException("se necesita un producto para cargar");
 
+        if (!producto.getValue().esDivisible()){
+            if (cantidad.get().intValue() > producto.get().getCantidad())
+                throw new IllegalArgumentException("No hay " + cantidad.get() + " de " + producto.get().getNombre() + ". hay: " + producto.get().getCantidad());
+        }
+
         return new DetalleVentaItem(
                 producto.get(),
                 cantidad.get(),
