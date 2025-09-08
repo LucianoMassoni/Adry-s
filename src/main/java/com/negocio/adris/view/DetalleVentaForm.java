@@ -146,7 +146,12 @@ public class DetalleVentaForm extends VBox {
             try {
                 DetalleVentaItem detalleVentaItem = detalleVentaViewModel.crearDtoActual();
                 onDetalleAgregado.accept(detalleVentaItem);
-            } catch (IllegalArgumentException ignored) {}
+            } catch (IllegalArgumentException ex) {
+                Alert a = new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK);
+                a.setTitle("Adry's");
+                a.setHeaderText("Error");
+                a.show();
+            }
             detalleVentaViewModel.limpiarFormulario();
             cambioProgramatico = false;
         });
