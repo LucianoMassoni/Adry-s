@@ -69,9 +69,9 @@ public class DetalleVentaServiceImpl implements DetalleVentaService{
                 subTotal
         );
 
-        if (dto.getProducto().esDivisible()){
-
-        }
+//        if (dto.getProducto().esDivisible()){
+//
+//        }
 
         return detalleVenta;
     }
@@ -80,9 +80,10 @@ public class DetalleVentaServiceImpl implements DetalleVentaService{
     public void crearDetalleVenta(DetalleVentaDto dto, long ventaId) {
         validarDetalleVentaDto(dto);
 
+        DetalleVenta detalleVenta = convertirDtoADetalleVenta(dto, ventaId);
         productoService.comprarProducto(dto.getProducto(), dto.getCantidad(), dto.getUnidadMedida());
 
-        repo.save(convertirDtoADetalleVenta(dto, ventaId));
+        repo.save(detalleVenta);
     }
 
     @Override
