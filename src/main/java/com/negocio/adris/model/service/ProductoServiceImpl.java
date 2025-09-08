@@ -51,7 +51,7 @@ public class ProductoServiceImpl implements ProductoService {
                 dto.getNombre(),
                 dto.getMarca(),
                 dto.getPeso(),
-                dto.getPeso(),
+                dto.getPeso(),  // cuando se crea el producto, el peso actual es el mismo que el peso.
                 dto.getUnidadMedida(),
                 dto.getCantidad(),
                 dto.getCosto(),
@@ -99,6 +99,7 @@ public class ProductoServiceImpl implements ProductoService {
         p.setNombre(dto.getNombre());
         p.setMarca(dto.getMarca());
         p.setPeso(dto.getPeso());
+        p.setPesoActual(dto.getPesoActual());
         p.setCantidad(dto.getCantidad());
         p.setCosto(dto.getCosto());
         p.setGanancia(dto.getGanancia());
@@ -132,45 +133,46 @@ public class ProductoServiceImpl implements ProductoService {
         if (busqueda == null || busqueda.isEmpty())
             return productos;
         return productos.stream().
-                filter(p -> (p.getNombre().toLowerCase() + " " + p.getMarca().toLowerCase()).contains(busqueda))
+                filter(p -> (p.getNombre().toLowerCase() + " " + p.getMarca().toLowerCase()).contains(busqueda.toLowerCase()))
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public void comprarProducto(Producto producto, int cantidad) {
-        producto.setCantidad(producto.getCantidad() - cantidad);
+    private Producto compraProductoDivisible(Producto producto, BigDecimal cantidad, UnidadMedida unidadMedida){
+        if (unidadMedida.equals(UnidadMedida.KILOS)){
+            if (producto.getUnidadMedida().equals(UnidadMedida.KILOS) && producto.getPesoActual() < cantidad.intValue()) throw new IllegalArgumentException("No hay suficiente " + producto.getNombre());
+            producto.setPesoActual(producto.getPesoActual() - cantidad.intValue());
+        } else {
+            if (producto.getUnidadMedida().equals(UnidadMedida.GRAMOS) && producto.getPesoActual() < cantidad.intValue()) throw new IllegalArgumentException("No hay suficiente " + producto.getNombre());
 
-        if (producto.getCantidad() < 0) throw new IllegalArgumentException("No hay " + cantidad + " de " + producto.getNombre());
+            producto.setPesoActual(producto.getPesoActual() - (double) cantidad.intValue() /1000);
+        }
+        return producto;
+    }
+
+    @Override
+    public void comprarProducto(Producto producto, BigDecimal cantidad, UnidadMedida unidadMedida) {
+        if (producto.esDivisible()){
+            producto = compraProductoDivisible(producto, cantidad, unidadMedida);
+        } else {
+            producto.setCantidad(producto.getCantidad() - cantidad.intValue());
+            if (producto.getCantidad() < 0) throw new IllegalArgumentException("No hay " + cantidad + " de " + producto.getNombre());
+        }
 
         repo.update(producto);
     }
 
-    public void descontarStockPorPeso(Producto p, UnidadMedida medida, double peso){
-        if (medida.equals(UnidadMedida.KILOS) && !medida.equals(p.getUnidadMedida())) throw new IllegalArgumentException("El producto no se mide en kilos");
-
-        double pesoActualProductoEnGramos = p.getUnidadMedida().equals(UnidadMedida.KILOS) ? p.getPesoActual() * 1000 : p.getPesoActual();
-        double pesoEnGramos = medida.equals(UnidadMedida.KILOS) ? peso * 1000 : peso;
-
-        if (pesoEnGramos > pesoActualProductoEnGramos) throw new IllegalArgumentException("no hay " + peso + "  "+ medida.getSimbolo() + " de " + p.getNombre() +" hay: " + p.getPesoActual() + " " + p.getUnidadMedida().getSimbolo());
-
-        pesoActualProductoEnGramos -= pesoEnGramos;
-
-        p.setPesoActual(p.getUnidadMedida().equals(UnidadMedida.KILOS) ? pesoActualProductoEnGramos / 1000 : pesoActualProductoEnGramos);
-
-        repo.update(p);
-    }
-
-    public BigDecimal precioPorGramosComprados(Producto p, UnidadMedida medida, double peso){
+    @Override
+    public BigDecimal getPrecioPorGramosComprados(Producto p, UnidadMedida medida, BigDecimal cantidad){
         if (medida.equals(UnidadMedida.KILOS) && !medida.equals(p.getUnidadMedida())) throw new IllegalArgumentException("El producto no se mide en kilos");
 
         double pesoActualProductoEnGramos = p.getUnidadMedida().equals(UnidadMedida.KILOS) ? p.getPesoActual() * 1000 : p.getPesoActual();
         double pesoProductoEnGramos = p.getUnidadMedida().equals(UnidadMedida.KILOS) ? p.getPeso() * 1000 : p.getPeso();
-        double pesoEnGramos = medida.equals(UnidadMedida.KILOS) ? peso * 1000 : peso;
+        BigDecimal pesoEnGramos = medida.equals(UnidadMedida.KILOS) ? cantidad.multiply(BigDecimal.valueOf(1000)) : cantidad;
 
-        if (pesoEnGramos > pesoActualProductoEnGramos) throw new IllegalArgumentException("no hay " + peso + "  "+ medida.getSimbolo() + " de " + p.getNombre() +" hay: " + p.getPesoActual() + " " + p.getUnidadMedida().getSimbolo());
+        if (pesoEnGramos.compareTo(BigDecimal.valueOf(pesoActualProductoEnGramos)) > 0) throw new IllegalArgumentException("no hay " + cantidad + "  "+ medida.getSimbolo() + " de " + p.getNombre() +" hay: " + p.getPesoActual() + " " + p.getUnidadMedida().getSimbolo());
 
         BigDecimal precioProductoPorGramos = p.getPrecio().divide(BigDecimal.valueOf(pesoProductoEnGramos), 8, RoundingMode.HALF_UP);
 
-        return precioProductoPorGramos.multiply(BigDecimal.valueOf(pesoEnGramos)).setScale(2, RoundingMode.HALF_UP);
+        return precioProductoPorGramos.multiply(pesoEnGramos).setScale(2, RoundingMode.HALF_UP);
     }
 }
