@@ -9,10 +9,7 @@ import com.negocio.adris.viewmodel.ProductoViewModel;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.util.StringConverter;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
@@ -40,40 +37,51 @@ public class ProductoForm extends VBox {
         ComboBox<TipoProducto> tipoProductoComboBox = new ComboBox<>();
         CheckBox esDivisibleBox = new CheckBox("es divisible");
 
+        // id
         StringConverter<? extends Number> longConverter = new LongStringConverter();
         Bindings.bindBidirectional(idField.textProperty(), viewModel.idProperty(), (StringConverter<Number>) longConverter);
         idField.setVisible(false);
 
+        // nombre
         nombreField.textProperty().bindBidirectional(viewModel.nombreProperty());
 
+        // marca
         marcaField.textProperty().bindBidirectional(viewModel.marcaProperty());
 
+        // peso
         StringConverter<? extends Number> doubleConverter = new DoubleStringConverter();
         Bindings.bindBidirectional(pesoField.textProperty(), viewModel.pesoProperty(), (StringConverter<Number>) doubleConverter);
         pesoField.setMaxWidth(50);
 
+        // peso actual
         StringConverter<? extends Number> doubleConverter1 = new DoubleStringConverter();
         Bindings.bindBidirectional(pesoActualField.textProperty(), viewModel.pesoACtualProperty(), (StringConverter<Number>) doubleConverter1);
         pesoActualField.setMaxWidth(50);
 
+        // unidad medida
         unidadMedidaComboBox.setItems(FXCollections.observableArrayList(UnidadMedida.values()));
         unidadMedidaComboBox.valueProperty().bindBidirectional(viewModel.unidadMedidaProperty());
 
+        // cantidad
         StringConverter<? extends Number> integerConverter = new IntegerStringConverter();
         Bindings.bindBidirectional(cantidadField.textProperty(), viewModel.cantidadProperty(), (StringConverter<Number>) integerConverter);
 
+        // costo
         TextFormatter<BigDecimal> costoFormatter = Formatters.bigDecimalFormatter();
         costoField.setTextFormatter(costoFormatter);
         viewModel.costoProperty().bindBidirectional(costoFormatter.valueProperty());
 
+        // ganancia
         TextFormatter<BigDecimal> gananciaFormatter = Formatters.bigDecimalFormatter();
         gananciaField.setTextFormatter(gananciaFormatter);
         viewModel.gananciaProperty().bindBidirectional(gananciaFormatter.valueProperty());
 
+        // precio
         TextFormatter<BigDecimal> precioFormatter = Formatters.bigDecimalFormatter();
         precioField.setTextFormatter(precioFormatter);
         viewModel.precioProperty().bindBidirectional(precioFormatter.valueProperty());
 
+        // es divisible
         esDivisibleBox.selectedProperty().bindBidirectional(viewModel.esDivisibleProperty());
 
         // PrecioSugerido
@@ -83,23 +91,46 @@ public class ProductoForm extends VBox {
         precioSugeridoField.setDisable(true);
         precioSugeridoField.setVisible(false);
 
+        // tipo producto
         tipoProductoComboBox.setItems(FXCollections.observableArrayList(TipoProducto.values()));
         tipoProductoComboBox.valueProperty().bindBidirectional(viewModel.tipoProperty());
+
+        esDivisibleBox.selectedProperty().addListener((obs, oldv, newv) ->{
+            if (newv){
+                pesoActualField.setDisable(false);
+            } else {
+                pesoActualField.setDisable(true);
+            }
+        });
+        esDivisibleBox.setOnAction(e ->{
+            pesoActualField.setDisable(!esDivisibleBox.isSelected());
+        });
 
         Button botonCrear = new Button("crear producto");
         Button botonModificar = new Button("Modificar");
         Button botonCancelar = new Button("cancelar");
 
-        HBox buttonContainer = new HBox();
-        buttonContainer.getChildren().addAll(botonCrear, botonModificar, botonCancelar);
-        //botonModificar.setStyle("visibility: hidden;");
+        Region region = new Region();
 
+        StackPane guardarStack = new StackPane(botonCrear, botonModificar);
+
+        botonCrear.visibleProperty().bind(idField.textProperty().isEqualTo("0"));
+        botonCrear.managedProperty().bind(botonCrear.visibleProperty());
+
+        botonModificar.visibleProperty().bind(idField.textProperty().isNotEqualTo("0"));
+        botonModificar.managedProperty().bind(botonModificar.visibleProperty());
+
+        HBox buttonContainer = new HBox(guardarStack, region, botonCancelar);
+
+        HBox.setHgrow(region, Priority.ALWAYS);
+        region.setMaxWidth(Double.MAX_VALUE);
 
         botonCrear.setOnAction(e -> {
             try {
                 viewModel.guardarProducto();
             } catch (ProductoNotFoundException | IllegalArgumentException ex) {
                 Alert a = new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK);
+                a.setTitle("Adry's");
                 a.show();
             }
         });
@@ -131,7 +162,10 @@ public class ProductoForm extends VBox {
             }
         });
 
-        botonCancelar.setOnAction(e -> viewModel.limpiarFormulario());
+        botonCancelar.setOnAction(e -> {
+            viewModel.limpiarFormulario();
+            pesoActualField.setDisable(true);
+        });
 
         Region separador = new Region();
         HBox pesoContainer = new HBox(new Label("Peso:"), pesoField, separador, new Label("Peso actual:"), pesoActualField);
@@ -145,10 +179,10 @@ public class ProductoForm extends VBox {
                 idField,
                 new Label("Nombre:"), nombreField,
                 new Label("Marca:"), marcaField,
+                esDivisibleBox,
                 pesoContainer,
                 new Label("Tipo de producto:"), tipoProductoComboBox,
                 new Label("Unidad de medida:"), unidadMedidaComboBox,
-                esDivisibleBox,
                 new Label("Cantidad:"), cantidadField,
                 new Label("Costo:"), costoField,
                 new Label("Ganancia:"), gananciaField,
