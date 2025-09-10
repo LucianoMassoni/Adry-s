@@ -2,6 +2,7 @@ package com.negocio.adris.view;
 
 import com.negocio.adris.model.entities.Producto;
 import com.negocio.adris.model.enums.UnidadMedida;
+import com.negocio.adris.utils.AdrysAlert;
 import com.negocio.adris.utils.Formatters;
 import com.negocio.adris.viewmodel.DetalleVentaItem;
 import com.negocio.adris.viewmodel.DetalleVentaViewModel;
@@ -147,9 +148,7 @@ public class DetalleVentaForm extends VBox {
                 DetalleVentaItem detalleVentaItem = detalleVentaViewModel.crearDtoActual();
                 onDetalleAgregado.accept(detalleVentaItem);
             } catch (IllegalArgumentException ex) {
-                Alert a = new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK);
-                a.setTitle("Adry's");
-                a.setHeaderText("Error");
+                Alert a = new AdrysAlert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK);
                 a.show();
             }
             detalleVentaViewModel.limpiarFormulario();

@@ -2,6 +2,7 @@ package com.negocio.adris.view;
 
 
 import com.negocio.adris.model.entities.Producto;
+import com.negocio.adris.utils.AdrysAlert;
 import javafx.animation.FadeTransition;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -120,7 +121,7 @@ public class ProductoCard extends HBox {
 
         botonBorrar.setOnAction(actionEvent -> {
             if (onBorrar != null) {
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Quieres borrar el Producto?");
+                Alert alert = new AdrysAlert(Alert.AlertType.CONFIRMATION, "Quieres borrar el Producto?");
                 alert.showAndWait()
                         .filter( response -> response == ButtonType.OK)
                         .ifPresent(response -> onBorrar.accept(producto));

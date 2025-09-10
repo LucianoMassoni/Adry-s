@@ -4,6 +4,7 @@ package com.negocio.adris.view;
 import com.negocio.adris.model.enums.TipoProducto;
 import com.negocio.adris.model.enums.UnidadMedida;
 import com.negocio.adris.model.exceptions.ProductoNotFoundException;
+import com.negocio.adris.utils.AdrysAlert;
 import com.negocio.adris.utils.Formatters;
 import com.negocio.adris.viewmodel.ProductoViewModel;
 import javafx.beans.binding.Bindings;
@@ -129,8 +130,7 @@ public class ProductoForm extends VBox {
             try {
                 viewModel.guardarProducto();
             } catch (ProductoNotFoundException | IllegalArgumentException ex) {
-                Alert a = new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK);
-                a.setTitle("Adry's");
+                Alert a = new AdrysAlert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK);
                 a.show();
             }
         });
@@ -139,7 +139,7 @@ public class ProductoForm extends VBox {
             try {
                 viewModel.modificarProducto();
             } catch (ProductoNotFoundException | IllegalArgumentException ex) {
-                Alert a = new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK);
+                Alert a = new AdrysAlert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK);
                 a.show();
             }
         });

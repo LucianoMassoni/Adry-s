@@ -1,6 +1,7 @@
 package com.negocio.adris.view;
 
 import com.negocio.adris.model.enums.FormaDePago;
+import com.negocio.adris.utils.AdrysAlert;
 import com.negocio.adris.viewmodel.DetalleVentaItem;
 import com.negocio.adris.viewmodel.VentaViewModel;
 import javafx.beans.binding.Bindings;
@@ -153,7 +154,7 @@ public class VentaCenter extends VBox {
         // botonCancelar
         Button botonCancelar = new Button("Cancelar");
         botonCancelar.setOnAction(actionEvent -> {
-            Alert a = new Alert(Alert.AlertType.CONFIRMATION);
+            Alert a = new AdrysAlert(Alert.AlertType.CONFIRMATION);
             a.showAndWait().
                     filter(response -> response == ButtonType.OK)
                     .ifPresent(response -> {

@@ -2,6 +2,7 @@ package com.negocio.adris.view;
 
 
 import com.negocio.adris.model.enums.UnidadMedida;
+import com.negocio.adris.utils.AdrysAlert;
 import com.negocio.adris.viewmodel.DetalleVentaItem;
 import javafx.animation.FadeTransition;
 import javafx.beans.binding.Bindings;
@@ -187,7 +188,7 @@ public class DetalleVentaCard extends HBox {
 
         botonBorrar.setOnAction(actionEvent -> {
             if (onBorrar != null){
-                Alert a = new Alert(Alert.AlertType.CONFIRMATION, "quiere borrar el producto?");
+                Alert a = new AdrysAlert(Alert.AlertType.CONFIRMATION, "quiere borrar el producto?");
                 a.showAndWait()
                         .filter(response -> response == ButtonType.OK)
                         .ifPresent(response -> onBorrar.accept(item));
