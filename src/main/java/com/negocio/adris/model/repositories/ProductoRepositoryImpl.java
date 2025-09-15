@@ -37,12 +37,20 @@ public class ProductoRepositoryImpl implements ProductoRepository {
           preparedStatement.setString(2, p.getMarca());
           preparedStatement.setDouble(3, p.getPeso());
           preparedStatement.setDouble(4, p.getPesoActual());
-          preparedStatement.setString(5, p.getUnidadMedida().name());
+          if (p.getUnidadMedida() == null) {
+              preparedStatement.setNull(5, Types.VARCHAR);
+          } else {
+              preparedStatement.setString(5, p.getUnidadMedida().name());
+          }
           preparedStatement.setInt(6, p.getCantidad());
           preparedStatement.setBigDecimal(7, p.getCosto());
           preparedStatement.setBigDecimal(8, p.getGanancia());
           preparedStatement.setBigDecimal(9, p.getPrecio());
-          preparedStatement.setString(10,p.getTipo().name());
+          if (p.getTipo() == null){
+              preparedStatement.setNull(10, Types.VARCHAR);
+          } else {
+              preparedStatement.setString(10, p.getTipo().name());
+          }
           preparedStatement.setBoolean(11, p.esDivisible());
 
           preparedStatement.executeUpdate();
@@ -82,12 +90,20 @@ public class ProductoRepositoryImpl implements ProductoRepository {
                 preparedStatement.setString(2, p.getMarca());
                 preparedStatement.setDouble(3, p.getPeso());
                 preparedStatement.setDouble(4, p.getPesoActual());
-                preparedStatement.setString(5, p.getUnidadMedida().name());
+                if (p.getUnidadMedida() == null) {
+                    preparedStatement.setNull(5, Types.VARCHAR);
+                } else {
+                    preparedStatement.setString(5, p.getUnidadMedida().name());
+                }
                 preparedStatement.setInt(6, p.getCantidad());
                 preparedStatement.setBigDecimal(7, p.getCosto());
                 preparedStatement.setBigDecimal(8, p.getGanancia());
                 preparedStatement.setBigDecimal(9, p.getPrecio());
-                preparedStatement.setString(10,p.getTipo().name());
+                if (p.getTipo() == null){
+                    preparedStatement.setNull(10, Types.VARCHAR);
+                } else {
+                    preparedStatement.setString(10, p.getTipo().name());
+                }
                 preparedStatement.setBoolean(11, p.esDivisible());
                 preparedStatement.setLong(12, p.getId());
 
@@ -125,18 +141,23 @@ public class ProductoRepositoryImpl implements ProductoRepository {
                 throw new ProductoNotFoundException("Producto con ID " + id + " no encontrado");
             }
 
-             return new Producto(
+            String unidadMedidaStr = resultSet.getString("unidad_medida");
+            UnidadMedida unidadMedida = (unidadMedidaStr == null) ? null : UnidadMedida.valueOf(unidadMedidaStr);
+            String tipoStr = resultSet.getString("tipo");
+            TipoProducto tipo = (tipoStr == null) ? null : TipoProducto.valueOf(tipoStr);
+
+            return new Producto(
                  resultSet.getLong("id"),
                  resultSet.getString("nombre"),
                  resultSet.getString("marca"),
                  resultSet.getDouble("peso"),
                  resultSet.getDouble("peso_actual"),
-                 UnidadMedida.valueOf(resultSet.getString("unidad_medida")),
+                 unidadMedida,
                  resultSet.getInt("cantidad"),
                  resultSet.getBigDecimal("costo"),
                  resultSet.getBigDecimal("ganancia"),
                  resultSet.getBigDecimal("precio"),
-                 TipoProducto.valueOf(resultSet.getString("tipo")),
+                 tipo,
                  resultSet.getBoolean("es_divisible")
              );
 
@@ -155,18 +176,23 @@ public class ProductoRepositoryImpl implements ProductoRepository {
             ResultSet resultSet = statement.executeQuery(sql)){
 
             while (resultSet.next()){
+                String unidadMedidaStr = resultSet.getString("unidad_medida");
+                UnidadMedida unidadMedida = (unidadMedidaStr == null) ? null : UnidadMedida.valueOf(unidadMedidaStr);
+                String tipoStr = resultSet.getString("tipo");
+                TipoProducto tipo = (tipoStr == null) ? null : TipoProducto.valueOf(tipoStr);
+
                 Producto p = new Producto(
                     resultSet.getLong("id"),
                     resultSet.getString("nombre"),
                     resultSet.getString("marca"),
                     resultSet.getDouble("peso"),
                     resultSet.getDouble("peso_actual"),
-                    UnidadMedida.valueOf(resultSet.getString("unidad_medida")),
+                    unidadMedida,
                     resultSet.getInt("cantidad"),
                     resultSet.getBigDecimal("costo"),
                     resultSet.getBigDecimal("ganancia"),
                     resultSet.getBigDecimal("precio"),
-                    TipoProducto.valueOf(resultSet.getString("tipo")),
+                    tipo,
                     resultSet.getBoolean("es_divisible")
                 );
                 productos.add(p);
