@@ -21,6 +21,13 @@ public class Producto {
 
     public Producto() {}
 
+    public Producto(long id, String nombre, String marca, boolean esDivisible) {
+        this.id = id;
+        this.nombre = nombre;
+        this.marca = marca;
+        this.esDivisible = esDivisible;
+    }
+
     public Producto(long id, String nombre, String marca, double peso, double pesoActual, UnidadMedida unidadMedida, int cantidad, BigDecimal costo, BigDecimal ganancia, BigDecimal precio, TipoProducto tipo, boolean esDivisible) {
         this.id = id;
         this.nombre = nombre;
