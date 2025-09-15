@@ -1,6 +1,7 @@
 package com.negocio.adris.viewmodel;
 
 import com.google.inject.Inject;
+import com.negocio.adris.model.dtos.ProductoDivisibleDto;
 import com.negocio.adris.model.dtos.ProductoDto;
 import com.negocio.adris.model.entities.Producto;
 import com.negocio.adris.model.enums.TipoProducto;
@@ -99,7 +100,16 @@ public class ProductoViewModel {
         esDivisible.set(p.esDivisible());
     }
 
-    public void guardarProducto() throws ProductoNotFoundException {
+    private void guardarProductoDivisible(){
+        ProductoDivisibleDto dto = new ProductoDivisibleDto(
+                nombre.get(),
+                marca.get(),
+                esDivisible.get()
+        );
+        productoService.crearProductoDivisible(dto);
+    }
+
+    private void guardarProductoNoDivisible(){
         ProductoDto dto = new ProductoDto(
                 nombre.get(),
                 marca.get(),
@@ -115,11 +125,29 @@ public class ProductoViewModel {
         );
 
         productoService.crearProducto(dto);
+    }
+
+    public void guardarProducto() throws ProductoNotFoundException {
+        if (esDivisible.get()){
+            guardarProductoDivisible();
+        } else {
+            guardarProductoNoDivisible();
+        }
         limpiarFormulario();
         cargarProductos();
     }
 
-    public void modificarProducto() throws ProductoNotFoundException {
+    private void modificarProductoDivisible() throws ProductoNotFoundException {
+        ProductoDivisibleDto dto = new ProductoDivisibleDto(
+                nombre.get(),
+                marca.get(),
+                esDivisible.get()
+        );
+
+        productoService.modificarProductoDivisible(id.get(), dto);
+    }
+
+    private void modificarProductoNoDivisible() throws ProductoNotFoundException {
         ProductoDto dto = new ProductoDto(
                 nombre.get(),
                 marca.get(),
@@ -135,6 +163,14 @@ public class ProductoViewModel {
         );
 
         productoService.modificarProducto(id.get(), dto);
+    }
+
+    public void modificarProducto() throws ProductoNotFoundException {
+        if (esDivisible.get()){
+            modificarProductoDivisible();
+        } else {
+            modificarProductoNoDivisible();
+        }
         limpiarFormulario();
         cargarProductos();
     }
