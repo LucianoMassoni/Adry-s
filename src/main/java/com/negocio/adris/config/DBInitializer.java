@@ -22,14 +22,14 @@ public class DBInitializer {
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         nombre TEXT NOT NULL,
                         marca TEXT NOT NULL,
-                        tipo TEXT NOT NULL,
-                        peso DOUBLE(10, 2) NOT NULL,
-                        peso_actual DOUBLE(10, 2) NOT NULL,
-                        unidad_medida TEXT NOT NULL,
-                        cantidad INTEGER NOT NULL,
-                        costo DOUBLE(10, 2) NOT NULL,
-                        ganancia DOUBLE(10, 2) NOT NULL,
-                        precio DOUBLE(10, 2) NOT NULL,
+                        tipo TEXT,
+                        peso DOUBLE(10, 2),
+                        peso_actual DOUBLE(10, 2),
+                        unidad_medida TEXT,
+                        cantidad INTEGER,
+                        costo DOUBLE(10, 2),
+                        ganancia DOUBLE(10, 2),
+                        precio DOUBLE(10, 2),
                         es_divisible INTEGER
                     );
                 
