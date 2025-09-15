@@ -3,6 +3,7 @@ package com.negocio.adris;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.negocio.adris.config.AppModule;
+import com.negocio.adris.config.DBInitializer;
 import com.negocio.adris.view.*;
 import com.negocio.adris.viewmodel.DetalleVentaViewModel;
 import com.negocio.adris.viewmodel.ProductoViewModel;
@@ -21,6 +22,7 @@ public class App extends Application {
     @Override
     public void init(){
         injector = Guice.createInjector(new AppModule());
+        injector.getInstance(DBInitializer.class);
     }
 
     @Override
