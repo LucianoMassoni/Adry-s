@@ -13,7 +13,8 @@ public enum TipoProducto {
     SNACKS_Y_SUELTOS(List.of(UnidadMedida.UNIDAD)),
     CONGELADOS(List.of(UnidadMedida.UNIDAD)),
     VINOS(List.of(UnidadMedida.LITROS, UnidadMedida.MILILITROS)),
-    OTROS(List.of(UnidadMedida.KILOS, UnidadMedida.GRAMOS, UnidadMedida.LITROS, UnidadMedida.MILILITROS, UnidadMedida.UNIDAD));
+    OTROS(List.of(UnidadMedida.KILOS, UnidadMedida.GRAMOS, UnidadMedida.LITROS, UnidadMedida.MILILITROS, UnidadMedida.UNIDAD)),
+    SIN_TIPO(List.of());
 
     private final List<UnidadMedida> unidadesValidas;
 
@@ -43,6 +44,7 @@ public enum TipoProducto {
             case CONGELADOS -> "Congelados";
             case VINOS -> "Vinos";
             case OTROS -> "Otros";
+            case SIN_TIPO -> "";
         };
     }
 }
