@@ -63,6 +63,7 @@ public class ProductoCenter extends VBox {
         });
 
         listView.setPrefHeight(600);
+        listView.getItems().reversed();
 
         this.getStyleClass().add("productoCenter");
         this.setSpacing(10);

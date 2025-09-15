@@ -37,6 +37,10 @@ public class VentaViewModel {
         });
     }
 
+    public void agregarItem(DetalleVentaItem item) {
+        detalleVentas.add(item);
+    }
+
     private void recalcularTotal(){
         BigDecimal suma = detalleVentas.stream().
                 map(DetalleVentaItem::subtotalProperty)
