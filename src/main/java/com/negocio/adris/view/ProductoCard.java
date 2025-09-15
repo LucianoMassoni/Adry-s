@@ -72,11 +72,11 @@ public class ProductoCard extends HBox {
         Label nombre = new Label(producto.getNombre());
         Label marca = new Label(producto.getMarca());
         Label peso = new Label(producto.getPesoActual() + producto.getUnidadMedida().getSimbolo());
-        Label precio = new Label("$" + producto.getPrecio().toString());
+        Label precio = new Label("$" + (producto.getPrecio() == null ? "" : producto.getPrecio().toString()));
         Label cantidad = new Label("cantidad: " + producto.getCantidad());
-        Label costo = new Label("costo: " + producto.getCosto().toString());
-        Label ganancia = new Label("% ganacia: " + producto.getGanancia().toString());
-        Label tipoProducto = new Label("tipo: " + producto.getTipo().toString());
+        Label costo = new Label("costo: " + (producto.getCosto() == null ? "" :  producto.getCosto().toString()));
+        Label ganancia = new Label("% ganacia: " + (producto.getGanancia() == null ? "" : producto.getGanancia().toString()));
+        Label tipoProducto = new Label("tipo: " + (producto.getTipo() == null ? "" : producto.getTipo().toString()));
 
         HBox.setHgrow(infoHolder, Priority.ALWAYS);
         VBox.setVgrow(infoPrincipal, Priority.ALWAYS);

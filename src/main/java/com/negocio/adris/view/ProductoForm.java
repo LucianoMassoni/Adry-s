@@ -96,9 +96,15 @@ public class ProductoForm extends VBox {
         tipoProductoComboBox.setItems(FXCollections.observableArrayList(TipoProducto.values()));
         tipoProductoComboBox.valueProperty().bindBidirectional(viewModel.tipoProperty());
 
-        pesoActualField.setDisable(true);
         esDivisibleBox.selectedProperty().addListener(var -> {
-                pesoActualField.setDisable(!esDivisibleBox.isSelected());
+                pesoActualField.setDisable(esDivisibleBox.isSelected());
+                pesoField.setDisable(esDivisibleBox.isSelected());
+                unidadMedidaComboBox.setDisable(esDivisibleBox.isSelected());
+                cantidadField.setDisable(esDivisibleBox.isSelected());
+                costoField.setDisable(esDivisibleBox.isSelected());
+                gananciaField.setDisable(esDivisibleBox.isSelected());
+                precioField.setDisable(esDivisibleBox.isSelected());
+                tipoProductoComboBox.setDisable(esDivisibleBox.isSelected());
         });
 
 
