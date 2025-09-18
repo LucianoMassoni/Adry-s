@@ -1,8 +1,5 @@
 package com.negocio.adris.model.service;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import com.negocio.adris.model.dtos.DetalleVentaDto;
 import com.negocio.adris.model.entities.DetalleVenta;
 import com.negocio.adris.model.entities.Producto;
@@ -14,8 +11,7 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -56,9 +52,9 @@ public class DetalleVentaServiceImplTest {
     void validarDto_Correcto(){
         DetalleVentaDto dto = new DetalleVentaDto(
                 new Producto(1, "a", "b", 12, 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS, false),
-                BigDecimal.valueOf(1),
-                UnidadMedida.UNIDAD,
-                BigDecimal.valueOf(0)
+                BigDecimal.valueOf(1), //cantidad
+                BigDecimal.valueOf(0),
+                null
         );
         assertDoesNotThrow(() -> detalleVentaService.validarDetalleVentaDto(dto));
     }
@@ -68,8 +64,8 @@ public class DetalleVentaServiceImplTest {
         DetalleVentaDto dto = new DetalleVentaDto(
                 null,
                 BigDecimal.valueOf(2),
-                UnidadMedida.UNIDAD,
-                BigDecimal.valueOf(0)
+                BigDecimal.valueOf(0),
+                null
         );
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> detalleVentaService.validarDetalleVentaDto(dto));
         assertEquals("DetalleVenta necesita un producto al cual hacer referencia", exception.getMessage());
@@ -80,7 +76,7 @@ public class DetalleVentaServiceImplTest {
         DetalleVentaDto dto = new DetalleVentaDto(
                 new Producto(1, "a", "b", 12, 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS, false),
                 BigDecimal.valueOf(0),
-                UnidadMedida.UNIDAD,
+                null,
                 BigDecimal.valueOf(0)
         );
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> detalleVentaService.validarDetalleVentaDto(dto));
@@ -92,8 +88,8 @@ public class DetalleVentaServiceImplTest {
         DetalleVentaDto dto = new DetalleVentaDto(
                 new Producto(1, "a", "b", 12, 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS, false),
                 BigDecimal.valueOf(2),
-                UnidadMedida.UNIDAD,
-                BigDecimal.valueOf(-2)
+                BigDecimal.valueOf(-2),
+                null
         );
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> detalleVentaService.validarDetalleVentaDto(dto));
         assertEquals("El descuento no puede ser negativo", exception.getMessage());
@@ -104,8 +100,8 @@ public class DetalleVentaServiceImplTest {
         DetalleVentaDto dto = new DetalleVentaDto(
                 new Producto(1, "a", "b", 12, 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS, false),
                 BigDecimal.valueOf(2),
-                UnidadMedida.UNIDAD,
-                BigDecimal.valueOf(0)
+                BigDecimal.valueOf(0),
+                null
         );
 
         assertDoesNotThrow(() -> detalleVentaService.convertirDtoADetalleVenta(dto, 2L));
@@ -120,8 +116,8 @@ public class DetalleVentaServiceImplTest {
         DetalleVentaDto dto = new DetalleVentaDto(
                 new Producto(1, "a", "b", 12, 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS, false),
                 BigDecimal.valueOf(2),
-                UnidadMedida.UNIDAD,
-                BigDecimal.valueOf(10)
+                BigDecimal.valueOf(10),
+                null
         );
 
         assertDoesNotThrow(() -> detalleVentaService.convertirDtoADetalleVenta(dto, 2L));
@@ -136,8 +132,8 @@ public class DetalleVentaServiceImplTest {
         DetalleVentaDto dto = new DetalleVentaDto(
                 new Producto(1, "a", "b", 12, 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS, false),
                 BigDecimal.valueOf(2),
-                UnidadMedida.UNIDAD,
-                BigDecimal.valueOf(0)
+                BigDecimal.valueOf(0),
+                null
         );
 
         assertDoesNotThrow(() ->  detalleVentaService.crearDetalleVenta(dto, 2));
@@ -149,8 +145,8 @@ public class DetalleVentaServiceImplTest {
         DetalleVentaDto dto = new DetalleVentaDto(
                 new Producto(1, "a", "b", 12, 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS, false),
                 BigDecimal.valueOf(2),
-                UnidadMedida.UNIDAD,
-                BigDecimal.ZERO
+                BigDecimal.ZERO,
+                null
         );
         DetalleVenta detalleExistente = new DetalleVenta(/* datos iniciales */);
         when(repo.findById(anyLong())).thenReturn(detalleExistente);
@@ -170,8 +166,8 @@ public class DetalleVentaServiceImplTest {
         assertThrows(DetalleVentaNotFoundException.class, () -> detalleVentaService.modificarDetalleVenta( new DetalleVentaDto(
                 new Producto(1, "a", "b", 12, 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS, false),
                 BigDecimal.valueOf(2),
-                UnidadMedida.UNIDAD,
-                BigDecimal.ZERO
+                BigDecimal.ZERO,
+                null
         ), 999));
     }
 

@@ -17,8 +17,8 @@ public class DetalleVentaViewModel {
     private final LongProperty id = new SimpleLongProperty();
     private final ObjectProperty<Producto> producto = new SimpleObjectProperty<>();
     private final ObjectProperty<BigDecimal> cantidad = new SimpleObjectProperty<>(BigDecimal.ONE);
-    private final ObjectProperty<UnidadMedida> unidadMedida = new SimpleObjectProperty<>();
     private final ObjectProperty<BigDecimal> descuento = new SimpleObjectProperty<>();
+    private final ObjectProperty<BigDecimal> precio = new SimpleObjectProperty<>();
     private final ObjectProperty<BigDecimal> subtotal = new SimpleObjectProperty<>();
 
 
@@ -32,8 +32,8 @@ public class DetalleVentaViewModel {
     public void limpiarFormulario(){
         producto.set(null);
         cantidad.set(BigDecimal.ONE);
-        unidadMedida.set(null);
         descuento.set(BigDecimal.ZERO);
+        precio.set(null);
         subtotal.set(BigDecimal.ZERO);
     }
 
@@ -46,18 +46,20 @@ public class DetalleVentaViewModel {
                 throw new IllegalArgumentException("No hay " + cantidad.get() + " de " + producto.get().getNombre() + ". hay: " + producto.get().getCantidad());
         }
 
-        return new DetalleVentaItem(
+        DetalleVentaItem item = new DetalleVentaItem(
                 producto.get(),
                 cantidad.get(),
-                unidadMedida.get(),
-                descuento.get()
+                descuento.get(),
+                precio.get()
         );
+
+        return item;
     }
 
     public LongProperty idProperty() { return id; }
     public ObjectProperty<Producto> productoProperty() { return producto; }
     public ObjectProperty<BigDecimal> cantidadProperty() { return cantidad; }
-    public ObjectProperty<UnidadMedida> unidadMedidaProperty() { return unidadMedida; }
     public ObjectProperty<BigDecimal> descuentoProperty() { return descuento; }
+    public ObjectProperty<BigDecimal> precioProperty() { return precio; }
     public ObjectProperty<BigDecimal> subtotalProperty() { return subtotal; }
 }

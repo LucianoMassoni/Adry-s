@@ -44,17 +44,9 @@ public class DetalleVentaServiceImpl implements DetalleVentaService{
                     );
         }
 
-        return productoService.getPrecioPorGramosComprados(dto.getProducto(), dto.getUnidadMedida(), dto.getCantidad());
+        return dto.getCantidad().multiply(dto.getPrecio()).multiply(BigDecimal.ONE.subtract(dto.getDescuento().divide(BigDecimal.valueOf(100))));
     }
 
-//    @Override
-//    public BigDecimal calcularSubTotal(int cantidad, BigDecimal precio, BigDecimal descuento){
-//        // subtotal = cantidad * precio * (1 - descuento/100)
-//        return BigDecimal.valueOf(cantidad).
-//                multiply(precio).
-//                multiply(BigDecimal.ONE.subtract(descuento.divide(BigDecimal.valueOf(100)))
-//                );
-//    }
 
     public DetalleVenta convertirDtoADetalleVenta(DetalleVentaDto dto, long ventaId){
         BigDecimal subTotal = getSubTotal(dto);
@@ -69,10 +61,6 @@ public class DetalleVentaServiceImpl implements DetalleVentaService{
                 subTotal
         );
 
-//        if (dto.getProducto().esDivisible()){
-//
-//        }
-
         return detalleVenta;
     }
 
@@ -81,7 +69,7 @@ public class DetalleVentaServiceImpl implements DetalleVentaService{
         validarDetalleVentaDto(dto);
 
         DetalleVenta detalleVenta = convertirDtoADetalleVenta(dto, ventaId);
-        productoService.comprarProducto(dto.getProducto(), dto.getCantidad(), dto.getUnidadMedida());
+        if (!dto.getProducto().esDivisible()) productoService.comprarProducto(dto.getProducto(), dto.getCantidad());
 
         repo.save(detalleVenta);
     }

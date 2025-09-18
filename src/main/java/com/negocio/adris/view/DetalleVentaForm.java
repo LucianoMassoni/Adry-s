@@ -1,7 +1,6 @@
 package com.negocio.adris.view;
 
 import com.negocio.adris.model.entities.Producto;
-import com.negocio.adris.model.enums.UnidadMedida;
 import com.negocio.adris.utils.AdrysAlert;
 import com.negocio.adris.utils.Formatters;
 import com.negocio.adris.viewmodel.DetalleVentaItem;
@@ -9,10 +8,9 @@ import com.negocio.adris.viewmodel.DetalleVentaViewModel;
 import com.negocio.adris.viewmodel.ProductoViewModel;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import javafx.util.converter.LongStringConverter;
@@ -34,7 +32,7 @@ public class DetalleVentaForm extends VBox {
         TextField idField = new TextField();
         ComboBox<Producto> productoCardComboBox = new ComboBox<>();
         TextField cantidadField = new TextField();
-        ComboBox<UnidadMedida> unidadMedidaComboBox = new ComboBox<>();
+        TextField precioField = new TextField();
         TextField descuentoField = new TextField();
 
         HBox buttonHolder = new HBox();
@@ -54,35 +52,17 @@ public class DetalleVentaForm extends VBox {
         cantidadField.setTextFormatter(cantidadFormatter);
         detalleVentaViewModel.cantidadProperty().bindBidirectional(cantidadFormatter.valueProperty());
 
-        // unidadMedida
-        unidadMedidaComboBox.valueProperty().bindBidirectional(detalleVentaViewModel.unidadMedidaProperty());
-        final ObservableList<UnidadMedida> unidades = FXCollections.observableArrayList();
-        unidadMedidaComboBox.setItems(unidades);
-
-        detalleVentaViewModel.productoProperty().addListener((obs, oldProducto, newProducto) -> {
-            if (newProducto == null){
-                unidades.setAll();
-                unidadMedidaComboBox.setDisable(true);
-                detalleVentaViewModel.unidadMedidaProperty().set(null);
-                return;
-            }
-
-            unidades.setAll(newProducto.getTipo().getUnidadesValidas());
-            unidadMedidaComboBox.setDisable(!newProducto.esDivisible());
-
-            if (!newProducto.esDivisible()){
-                detalleVentaViewModel.unidadMedidaProperty().set(newProducto.getUnidadMedida());
-            } else {
-                detalleVentaViewModel.unidadMedidaProperty().set(null);
-            }
-
-        });
-
 
         // descuento
         TextFormatter<BigDecimal> descuentoFormatter = Formatters.bigDecimalFormatter();
         descuentoField.setTextFormatter(descuentoFormatter);
         detalleVentaViewModel.descuentoProperty().bindBidirectional(descuentoFormatter.valueProperty());
+
+
+        // precio
+        TextFormatter<BigDecimal> precioFormatter = Formatters.bigDecimalFormatter();
+        precioField.setTextFormatter(precioFormatter);
+        detalleVentaViewModel.precioProperty().bindBidirectional(precioFormatter.valueProperty());
 
 
         // productoComboBox
@@ -106,7 +86,7 @@ public class DetalleVentaForm extends VBox {
         productoCardComboBox.setConverter(new StringConverter<Producto>() {
             @Override
             public String toString(Producto producto) {
-                return producto != null ? producto.getNombre() + " " + producto.getMarca() + " - " + producto.getPeso()+producto.getUnidadMedida().getSimbolo() : "";
+                return producto != null ? producto.getNombre() + " " + producto.getMarca() + " - " + producto.getPeso()+(producto.getUnidadMedida() == null ? "" : producto.getUnidadMedida().getSimbolo()) : "";
             }
 
             @Override
@@ -162,11 +142,34 @@ public class DetalleVentaForm extends VBox {
             cambioProgramatico = false;
         });
 
+        VBox cantidadVBox = new VBox(
+                new Label("cantidad:"),
+                cantidadField
+        );
+
+        VBox precioVBox = new VBox(
+                new Label("precio:"),
+                precioField
+        );
+        precioVBox.setVisible(false);
+
+        StackPane stackPane = new StackPane(cantidadVBox, precioVBox);
+
+
+        productoCardComboBox.valueProperty().addListener((obs, oldv, newv) -> {
+            if (newv == null || !newv.esDivisible()){
+                precioVBox.setVisible(false);
+                cantidadVBox.setVisible(true);
+            } else {
+                precioVBox.setVisible(true);
+                cantidadVBox.setVisible(false);
+            }
+        });
+
         this.getChildren().addAll(
                 idField,
                 new Label("producto:"), productoCardComboBox,
-                new Label("cantidad:"), cantidadField,
-                new Label("unidad medida:"), unidadMedidaComboBox,
+                stackPane,
                 new Label("descuento: %"), descuentoField,
                 buttonHolder
         );

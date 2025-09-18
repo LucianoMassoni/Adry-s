@@ -14,19 +14,17 @@ public class DetalleVentaDto {
     private BigDecimal cantidad;
     @PositiveOrZero(message = "El descuento no puede ser negativo")
     private BigDecimal descuento;
-    private Optional<Double> peso;
-    private Optional<BigDecimal> precioPorPeso;
-    private UnidadMedida unidadMedida;
+    private BigDecimal precio;
 
 
     public DetalleVentaDto() {
     }
 
-    public DetalleVentaDto(Producto producto, BigDecimal cantidad, UnidadMedida unidadMedida, BigDecimal descuento) {
+    public DetalleVentaDto(Producto producto, BigDecimal cantidad, BigDecimal descuento, BigDecimal precio) {
         this.producto = producto;
         this.cantidad = cantidad;
-        this.unidadMedida = unidadMedida;
         this.descuento = descuento;
+        this.precio = precio;
     }
 
     public Producto getProducto(){
@@ -53,27 +51,11 @@ public class DetalleVentaDto {
         this.descuento = descuento;
     }
 
-    public Optional<Double> getPeso() {
-        return peso;
+    public BigDecimal getPrecio() {
+        return precio;
     }
 
-    public void setPeso(Optional<Double> peso) {
-        this.peso = peso;
-    }
-
-    public Optional<BigDecimal> getPrecioPorPeso() {
-        return precioPorPeso;
-    }
-
-    public void setPrecioPorPeso(Optional<BigDecimal> precioPorPeso) {
-        this.precioPorPeso = precioPorPeso;
-    }
-
-    public UnidadMedida getUnidadMedida() {
-        return unidadMedida;
-    }
-
-    public void setUnidadMedida(UnidadMedida unidadMedida) {
-        this.unidadMedida = unidadMedida;
+    public void setPrecio(BigDecimal precio) {
+        this.precio = precio;
     }
 }

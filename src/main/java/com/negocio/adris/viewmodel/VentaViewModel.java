@@ -56,8 +56,8 @@ public class VentaViewModel {
                 .map(item -> new DetalleVentaDto(
                         item.productoProperty().get(),
                         item.cantidadProperty().get(),
-                        item.unidadMedidaProperty().get(),
-                        item.descuentoProperty().get()
+                        item.descuentoProperty().get(),
+                        item.precioProperty().get()
                 )).toList();
 
         dto.setDetalleVentaDtos(detalleVentaDtos);

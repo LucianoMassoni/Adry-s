@@ -92,8 +92,8 @@ public class DetalleVentaCard extends HBox {
         Label marca = new Label();
         Label peso = new Label();
         Label cantidad = new Label();
-        Label unidadMedida = new Label();
         Label descuento = new Label();
+        Label precio = new Label();
         Label subtotal =  new Label();
 
         nombre.textProperty().bind(
@@ -109,20 +109,22 @@ public class DetalleVentaCard extends HBox {
                         () -> {
                             var producto = item.productoProperty().get();
                             if (producto == null) return "";
-                            return producto.getPeso() + " " + producto.getUnidadMedida().getSimbolo();
+                            return producto.getPeso() + " " + (producto.getUnidadMedida() == null ? "" : producto.getUnidadMedida().getSimbolo());
                         },
                         item.productoProperty()
                 )
         );
 
         cantidad.textProperty().bind(item.cantidadProperty().asString());
-        unidadMedida.textProperty().bind(
+
+        precio.textProperty().bind(
                 Bindings.createStringBinding(
                         () -> {
-                            UnidadMedida um = item.unidadMedidaProperty().get();
-                            return um != null ? um.getSimbolo() : "";
+                            var p = item.precioProperty().get();
+                            if (p == null) return "";
+                            return p.toString();
                         },
-                        item.unidadMedidaProperty()
+                        item.precioProperty()
                 )
         );
 
@@ -147,25 +149,20 @@ public class DetalleVentaCard extends HBox {
         );
 
         HBox cantidadHolder = new HBox();
-
-        if (item.productoProperty().get().esDivisible()){
-            Region regionD = new Region();
-            Region regionI = new Region();
-            HBox.setHgrow(regionI, Priority.ALWAYS);
-            HBox.setHgrow(regionD, Priority.ALWAYS);
-            cantidadHolder.getChildren().addAll(regionI, cantidad, unidadMedida, regionD);
-        } else {
-            cantidadHolder.getChildren().addAll(botonMenosCantidad, cantidad, botonMasCantidad);
-        }
+        cantidadHolder.getChildren().addAll(botonMenosCantidad, cantidad, botonMasCantidad);
 
         HBox.setHgrow(info, Priority.ALWAYS);
         info.setMaxWidth(Double.MAX_VALUE);
+
+        Region region = new Region();
+        region.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(region, Priority.ALWAYS);
 
         info.getChildren().addAll(
                 nombre,
                 marca,
                 peso,
-                cantidadHolder,
+                item.productoProperty().get().esDivisible() ? region : cantidadHolder,
                 descuento,
                 subtotal,
                 botonBorrar
