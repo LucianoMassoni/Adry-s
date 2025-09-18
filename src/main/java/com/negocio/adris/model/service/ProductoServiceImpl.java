@@ -149,17 +149,6 @@ public class ProductoServiceImpl implements ProductoService {
     }
 
     @Override
-    public List<Producto> obtenerProductosFiltrados(String busqueda) throws ProductoNotFoundException {
-        List<Producto> productos = repo.findAll();
-        if (busqueda == null || busqueda.isEmpty())
-            return productos;
-        return productos.stream().
-                filter(p -> (p.getNombre().toLowerCase() + " " + p.getMarca().toLowerCase()).contains(busqueda.toLowerCase()))
-                .collect(Collectors.toList());
-    }
-
-
-    @Override
     public void comprarProducto(Producto producto, BigDecimal cantidad) {
         if (producto.getCantidad() < 0) throw new IllegalArgumentException("No hay " + cantidad + " de " + producto.getNombre());
 

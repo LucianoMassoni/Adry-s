@@ -56,18 +56,15 @@ public class ProductoViewModel {
             return BigDecimal.ZERO;
         }, costo, ganancia));
 
-        filtroBusqueda.addListener((obs, oldVal, newVal) -> {
-            try {
-                productos.setAll(service.obtenerProductosFiltrados(newVal));
-            } catch (ProductoNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        });
         cargarProductos();
     }
 
     public void cargarProductos() throws ProductoNotFoundException {
        productos.setAll(productoService.obtenerTodosProductos());
+    }
+
+    public ObservableList<Producto> getProductos(){
+        return productos;
     }
 
     public void limpiarFormulario() {
