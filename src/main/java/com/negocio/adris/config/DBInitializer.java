@@ -30,7 +30,8 @@ public class DBInitializer {
                         costo DOUBLE(10, 2),
                         ganancia DOUBLE(10, 2),
                         precio DOUBLE(10, 2),
-                        es_divisible INTEGER
+                        es_divisible INTEGER,
+                        activo INTEGER NOT NULL DEFAULT 1
                     );
                 
                     CREATE TABLE IF NOT EXISTS Venta(
@@ -44,8 +45,8 @@ public class DBInitializer {
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         id_venta INTEGER NOT NULL,
                         id_producto INTEGER NOT NULL,
-                        cantidad DOUBLE(10, 2) NOT NULL,
-                        precio_unitario DOUBLE NOT NULL,
+                        cantidad DOUBLE(10, 2),
+                        precio_unitario DOUBLE ,
                         descuento DOUBLE(10, 2) DEFAULT 0.0,
                         subtotal DOUBLE(10, 2) NOT NULL,
                         FOREIGN KEY(id_producto) REFERENCES Producto(id),

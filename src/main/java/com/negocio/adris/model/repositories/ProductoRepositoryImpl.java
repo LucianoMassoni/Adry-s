@@ -23,10 +23,10 @@ public class ProductoRepositoryImpl implements ProductoRepository {
     public void save(Producto p) {
         String sql = """
                     INSERT INTO Producto(
-                        nombre, marca, peso, peso_actual, unidad_medida,cantidad, costo, ganancia, precio, tipo, es_divisible
+                        nombre, marca, peso, peso_actual, unidad_medida,cantidad, costo, ganancia, precio, tipo, es_divisible, activo
                     )
                     VALUES(
-                        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1
                     )
                 """;
 
@@ -117,7 +117,7 @@ public class ProductoRepositoryImpl implements ProductoRepository {
 
     @Override
     public void delete(long id) {
-        String sql = "DELETE FROM Producto WHERE id = ?";
+        String sql = "UPDATE Producto SET activo = 0 WHERE id = ?";
 
         try(Connection conn = connectionProvider.get();
             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
@@ -130,7 +130,7 @@ public class ProductoRepositoryImpl implements ProductoRepository {
 
     @Override
     public Producto findById(long id) throws ProductoNotFoundException {
-        String sql = "SELECT * FROM Producto WHERE id = ?";
+        String sql = "SELECT * FROM Producto WHERE id = ? AND activo = 1";
 
         try(Connection conn = connectionProvider.get();
             PreparedStatement preparedStatement = conn.prepareStatement(sql)){
@@ -169,7 +169,7 @@ public class ProductoRepositoryImpl implements ProductoRepository {
     @Override
     public List<Producto> findAll() throws ProductoNotFoundException {
         List<Producto> productos = new ArrayList<>();
-        String sql = "SELECT * FROM Producto";
+        String sql = "SELECT * FROM Producto WHERE activo = 1";
 
         try(Connection conn = connectionProvider.get();
             Statement statement = conn.createStatement();
