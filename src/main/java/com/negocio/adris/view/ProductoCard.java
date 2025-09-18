@@ -71,7 +71,7 @@ public class ProductoCard extends HBox {
 
         Label nombre = new Label(producto.getNombre());
         Label marca = new Label(producto.getMarca());
-        Label peso = new Label(producto.getPesoActual() + producto.getUnidadMedida().getSimbolo());
+        Label peso = new Label((producto.getPesoActual() == 0 ? "" : producto.getPesoActual()) + (producto.getUnidadMedida() == null ? "" : producto.getUnidadMedida().getSimbolo()));
         Label precio = new Label("$" + (producto.getPrecio() == null ? "" : producto.getPrecio().toString()));
         Label cantidad = new Label("cantidad: " + producto.getCantidad());
         Label costo = new Label("costo: " + (producto.getCosto() == null ? "" :  producto.getCosto().toString()));
