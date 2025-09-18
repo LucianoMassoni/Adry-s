@@ -8,6 +8,7 @@ import com.negocio.adris.viewmodel.DetalleVentaViewModel;
 import com.negocio.adris.viewmodel.ProductoViewModel;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.collections.transformation.FilteredList;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -61,22 +62,30 @@ public class DetalleVentaForm extends VBox {
 
         // precio
         TextFormatter<BigDecimal> precioFormatter = Formatters.bigDecimalFormatter();
+        precioFormatter.setValue(null);
         precioField.setTextFormatter(precioFormatter);
         detalleVentaViewModel.precioProperty().bindBidirectional(precioFormatter.valueProperty());
 
 
         // productoComboBox
+        FilteredList<Producto> productosFiltrados = new FilteredList<>(productoViewModel.getProductos(), p -> true);
+
         productoCardComboBox.setEditable(true);
-        productoCardComboBox.setItems(productoViewModel.getProductosFiltrados());
+        productoCardComboBox.setItems(productosFiltrados);
 
         productoCardComboBox.getEditor().textProperty().addListener((obs, oldText, newText) -> {
             if (cambioProgramatico) return ;
             // Solo ejecutar el filtro si no se está seleccionando un ítem del combo
             if (!productoCardComboBox.isFocused() || productoCardComboBox.getSelectionModel().getSelectedItem() == null) {
                 Platform.runLater(() -> {
-                    productoViewModel.filtroBusquedaProperty().set(newText);
+//                    productoViewModel.filtroBusquedaProperty().set(newText);
+                    productosFiltrados.setPredicate(p ->
+                                p.getNombre().toLowerCase().concat(" ").concat(p.getMarca()).contains(newText.toLowerCase()) ||
+                                p.getMarca().toLowerCase().concat(" ").concat(p.getNombre()).contains(newText.toLowerCase())
+                            );
                     productoCardComboBox.hide();
-                    if (!productoViewModel.getProductosFiltrados().isEmpty()) {
+//                    if (!productoViewModel.getProductosFiltrados().isEmpty()) {
+                    if (!productosFiltrados.isEmpty()) {
                         productoCardComboBox.show();
                     }
                 });

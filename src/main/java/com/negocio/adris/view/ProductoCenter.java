@@ -3,6 +3,7 @@ package com.negocio.adris.view;
 import com.negocio.adris.model.entities.Producto;
 import com.negocio.adris.model.exceptions.ProductoNotFoundException;
 import com.negocio.adris.viewmodel.ProductoViewModel;
+import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.ListCell;
@@ -15,10 +16,19 @@ import javafx.scene.layout.VBox;
 public class ProductoCenter extends VBox {
     public ProductoCenter(ProductoViewModel viewModel) {
         TextField busquedaField = new TextField();
-        busquedaField.textProperty().bindBidirectional(viewModel.filtroBusquedaProperty());
+
+        FilteredList<Producto> productosFiltrados = new FilteredList<>(viewModel.getProductos(), p -> true);
+
+        busquedaField.textProperty().addListener((obs, oldv, newv) ->{
+            String filtro = newv == null ? "" : newv.toLowerCase();
+            productosFiltrados.setPredicate(p ->
+                        p.getNombre().toLowerCase().contains(filtro) ||
+                        p.getMarca().toLowerCase().contains(filtro)
+                    );
+        });
 
         ListView<Producto> listView = new ListView<>();
-        listView.setItems(viewModel.getProductosFiltrados());
+        listView.setItems(productosFiltrados);
 
         // Custom CellFactory para que use ProductoCard
         listView.setCellFactory(param -> new ListCell<>() {
