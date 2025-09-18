@@ -26,6 +26,7 @@ public class DetalleVentaItem {
 
     private void recalcSubtotal(){
         if (producto.get().esDivisible()){
+            if (precio.get() == null) throw new IllegalArgumentException("Se necesita cargar un precio a un producto divisible");
             BigDecimal mult = BigDecimal.ONE.subtract(descuento.get().divide(BigDecimal.valueOf(100)));
             subtotal.set(precio.get().multiply(mult).setScale(2, RoundingMode.HALF_UP));
 

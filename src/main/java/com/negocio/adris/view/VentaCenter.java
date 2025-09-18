@@ -154,7 +154,7 @@ public class VentaCenter extends VBox {
         // botonCancelar
         Button botonCancelar = new Button("Cancelar");
         botonCancelar.setOnAction(actionEvent -> {
-            Alert a = new AdrysAlert(Alert.AlertType.CONFIRMATION);
+            Alert a = new AdrysAlert(Alert.AlertType.CONFIRMATION, "Desea cancelar la compra?");
             a.showAndWait().
                     filter(response -> response == ButtonType.OK)
                     .ifPresent(response -> {
