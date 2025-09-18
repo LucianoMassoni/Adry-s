@@ -18,6 +18,5 @@ public interface ProductoService {
     void eliminarProducto(long id) throws ProductoNotFoundException;
     Producto obtenerProductoPorId(long id) throws ProductoNotFoundException;
     List<Producto> obtenerProductosFiltrados(String busqueda) throws ProductoNotFoundException;
-    void comprarProducto(Producto producto, BigDecimal cantidad, UnidadMedida unidadMedida);
-    BigDecimal getPrecioPorGramosComprados(Producto p, UnidadMedida medida, BigDecimal cantidad);
+    void comprarProducto(Producto producto, BigDecimal cantidad);
 }

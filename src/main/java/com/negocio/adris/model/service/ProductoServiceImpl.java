@@ -158,42 +158,13 @@ public class ProductoServiceImpl implements ProductoService {
                 .collect(Collectors.toList());
     }
 
-    private Producto compraProductoDivisible(Producto producto, BigDecimal cantidad, UnidadMedida unidadMedida){
-        if (unidadMedida.equals(UnidadMedida.KILOS)){
-            if (producto.getUnidadMedida().equals(UnidadMedida.KILOS) && producto.getPesoActual() < cantidad.intValue()) throw new IllegalArgumentException("No hay suficiente " + producto.getNombre());
-            producto.setPesoActual(producto.getPesoActual() - cantidad.intValue());
-        } else {
-            if (producto.getUnidadMedida().equals(UnidadMedida.GRAMOS) && producto.getPesoActual() < cantidad.intValue()) throw new IllegalArgumentException("No hay suficiente " + producto.getNombre());
-
-            producto.setPesoActual(producto.getPesoActual() - (double) cantidad.intValue() /1000);
-        }
-        return producto;
-    }
 
     @Override
-    public void comprarProducto(Producto producto, BigDecimal cantidad, UnidadMedida unidadMedida) {
-        if (producto.esDivisible()){
-            producto = compraProductoDivisible(producto, cantidad, unidadMedida);
-        } else {
-            producto.setCantidad(producto.getCantidad() - cantidad.intValue());
-            if (producto.getCantidad() < 0) throw new IllegalArgumentException("No hay " + cantidad + " de " + producto.getNombre());
-        }
+    public void comprarProducto(Producto producto, BigDecimal cantidad) {
+        if (producto.getCantidad() < 0) throw new IllegalArgumentException("No hay " + cantidad + " de " + producto.getNombre());
+
+        producto.setCantidad(producto.getCantidad() - cantidad.intValue());
 
         repo.update(producto);
-    }
-
-    @Override
-    public BigDecimal getPrecioPorGramosComprados(Producto p, UnidadMedida medida, BigDecimal cantidad){
-        if (medida.equals(UnidadMedida.KILOS) && !medida.equals(p.getUnidadMedida())) throw new IllegalArgumentException("El producto no se mide en kilos");
-
-        double pesoActualProductoEnGramos = p.getUnidadMedida().equals(UnidadMedida.KILOS) ? p.getPesoActual() * 1000 : p.getPesoActual();
-        double pesoProductoEnGramos = p.getUnidadMedida().equals(UnidadMedida.KILOS) ? p.getPeso() * 1000 : p.getPeso();
-        BigDecimal pesoEnGramos = medida.equals(UnidadMedida.KILOS) ? cantidad.multiply(BigDecimal.valueOf(1000)) : cantidad;
-
-        if (pesoEnGramos.compareTo(BigDecimal.valueOf(pesoActualProductoEnGramos)) > 0) throw new IllegalArgumentException("no hay " + cantidad + "  "+ medida.getSimbolo() + " de " + p.getNombre() +" hay: " + p.getPesoActual() + " " + p.getUnidadMedida().getSimbolo());
-
-        BigDecimal precioProductoPorGramos = p.getPrecio().divide(BigDecimal.valueOf(pesoProductoEnGramos), 8, RoundingMode.HALF_UP);
-
-        return precioProductoPorGramos.multiply(pesoEnGramos).setScale(2, RoundingMode.HALF_UP);
     }
 }
