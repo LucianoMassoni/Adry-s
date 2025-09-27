@@ -11,6 +11,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -41,13 +42,17 @@ public class VentaViewModel {
         detalleVentas.add(item);
     }
 
-    private void recalcularTotal(){
+    public void recalcularTotal(){
         BigDecimal suma = detalleVentas.stream().
                 map(DetalleVentaItem::subtotalProperty)
                 .map(ReadOnlyObjectProperty::get)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        total.set(suma);
+        if (formaDePago.get().equals(FormaDePago.EFECTIVO) && suma.compareTo(BigDecimal.valueOf(20000)) > 0){
+            suma = suma.multiply(BigDecimal.valueOf(0.9));
+        }
+
+        total.set(suma.setScale(2, RoundingMode.HALF_UP));
     }
 
     public void guardarVenta(){

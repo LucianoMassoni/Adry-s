@@ -147,7 +147,7 @@ public class Producto {
                 ", marca='" + marca + '\'' +
                 ", peso=" + peso +
                 ", pesoActual=" + pesoActual +
-                ", medida=" + unidadMedida.getSimbolo() +
+                ", medida=" + (unidadMedida == null ? "" : unidadMedida.getSimbolo()) +
                 ", cantidad=" + cantidad +
                 ", costo=" + costo +
                 ", ganancia=" + ganancia +

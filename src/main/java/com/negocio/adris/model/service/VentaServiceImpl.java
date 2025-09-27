@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.negocio.adris.model.dtos.DetalleVentaDto;
 import com.negocio.adris.model.dtos.VentaDto;
 import com.negocio.adris.model.entities.Venta;
+import com.negocio.adris.model.enums.FormaDePago;
 import com.negocio.adris.model.exceptions.VentaNotFoundException;
 import com.negocio.adris.model.repositories.VentaRepository;
 import jakarta.validation.ConstraintViolation;
@@ -47,7 +48,9 @@ public class VentaServiceImpl implements VentaService{
                         0, // Id temporal (la DB le asigna un Id valido cuando lo guarda)
                 dto.getFormaDePago(),
                 dto.getFecha(),
-                calcularTotal(dto.getDetalleVentaDtos())
+                dto.getFormaDePago().equals(FormaDePago.EFECTIVO) ?
+                        calcularTotal(dto.getDetalleVentaDtos()).multiply(BigDecimal.valueOf(0.9)) :
+                        calcularTotal(dto.getDetalleVentaDtos())
                 );
     }
 
