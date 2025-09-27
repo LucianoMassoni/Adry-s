@@ -2,17 +2,17 @@ package com.negocio.adris.view;
 
 import com.negocio.adris.model.enums.FormaDePago;
 import com.negocio.adris.utils.AdrysAlert;
+import com.negocio.adris.utils.BotonAfirmar;
+import com.negocio.adris.utils.BotonCancelar;
 import com.negocio.adris.viewmodel.DetalleVentaItem;
 import com.negocio.adris.viewmodel.VentaViewModel;
 import javafx.beans.binding.Bindings;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.util.StringConverter;
 import javafx.util.converter.LongStringConverter;
 
@@ -35,28 +35,28 @@ public class VentaCenter extends VBox {
         Label cantidad = new Label("Cantidad");
         Label descuento = new Label("Descuento");
         Label subtotal = new Label("Subtotal");
-        Region columnaVacia = new Region();
+
 
         HBox categoriaContainer = new HBox(
-                producto, marca, peso, cantidad, descuento, subtotal, columnaVacia
+                new Region(), producto, new Region(), marca, new Region(), peso, new Region(), cantidad, new Region(), descuento, new Region(), subtotal, new Region()
         );
 
         categoriaContainer.getChildren().forEach(node -> {
             HBox.setHgrow(node, Priority.ALWAYS);
+            HBox.setMargin(node, Insets.EMPTY);
             if (node instanceof Region region) {
                 region.setMaxWidth(Double.MAX_VALUE);
-            } else if (node instanceof Label label) {
-                label.setMaxWidth(Double.MAX_VALUE);
             }
         });
 
         categoriaContainer.getStyleClass().add("VC-categoriaContainer");
 
+
         // id
         StringConverter<? extends Number> longConverter = new LongStringConverter();
         Bindings.bindBidirectional(idField.textProperty(), ventaViewModel.idProperty(), (StringConverter<Number>) longConverter);
         idField.setVisible(false);
-
+        idField.setMaxSize(0, 0);
 
         // detalleVentaListView
         detalleVentaListView.setItems(ventaViewModel.getDetalleVentas());
@@ -89,14 +89,15 @@ public class VentaCenter extends VBox {
             }
         });
 
-        detalleVentaListView.setPrefHeight(600);
+//        detalleVentaListView.setPrefHeight(600);
+        detalleVentaListView.getStyleClass().add("VC-ListView");
 
 
         // totalHolder
         totalField.textProperty().bind(Bindings.createStringBinding(
                 () -> {
                     BigDecimal total = ventaViewModel.totalProperty().get();
-                    return total != null ? total.toString() : "";
+                    return total != null ? "$".concat(total.toString()) : "$ --";
                 },
                 ventaViewModel.totalProperty()
         ));
@@ -108,14 +109,9 @@ public class VentaCenter extends VBox {
                 totalField
         );
 
-        totalHolder.getChildren().forEach(node -> {
-            HBox.setHgrow(node, Priority.ALWAYS);
-            if (node instanceof Label label){
-                label.setMaxWidth(Double.MAX_VALUE);
-            } else if (node instanceof Region region) {
-                region.setMaxWidth(Double.MAX_VALUE);
-            }
-        });
+        separadorTotal.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(separadorTotal, Priority.ALWAYS);
+
         totalHolder.getStyleClass().add("VC-totalHolder");
 
         // formaDePago
@@ -139,6 +135,7 @@ public class VentaCenter extends VBox {
             if (newv != null){
                 FormaDePago forma = (FormaDePago) newv.getUserData();
                 ventaViewModel.formaDePagoProperty().set(forma);
+                ventaViewModel.recalcularTotal();
             }
         });
 
@@ -152,7 +149,7 @@ public class VentaCenter extends VBox {
         });
 
         // botonCancelar
-        Button botonCancelar = new Button("Cancelar");
+        Button botonCancelar = new BotonCancelar();
         botonCancelar.setOnAction(actionEvent -> {
             Alert a = new AdrysAlert(Alert.AlertType.CONFIRMATION, "Desea cancelar la compra?");
             a.showAndWait().
@@ -165,7 +162,7 @@ public class VentaCenter extends VBox {
         });
 
         // botonAceptar
-        Button botonAceptar = new Button("Aceptar");
+        Button botonAceptar = new BotonAfirmar();
         botonAceptar.setOnAction(actionEvent -> {
             ventaViewModel.guardarVenta();
             formaDePagoToggleGroup.selectToggle(efectivoRadioButton);
@@ -179,10 +176,17 @@ public class VentaCenter extends VBox {
         radioButtonsHolder.getChildren().forEach( node -> HBox.setHgrow(node, Priority.ALWAYS));
         radioButtonsHolder.getStyleClass().add("VC-radioButtonsHolder");
 
+        VBox formaDePagoHolder = new VBox(
+                new Label("Forma de pago:"),
+                radioButtonsHolder
+        );
+
+        formaDePagoHolder.getStyleClass().add("VC-formaDePagoHolder");
+
         HBox botonHolder = new HBox(
-                botonCancelar,
-                radioButtonsHolder,
-                botonAceptar
+                botonAceptar,
+                new Region(),
+                botonCancelar
         );
 
         botonHolder.getChildren().forEach(node -> {
@@ -197,11 +201,12 @@ public class VentaCenter extends VBox {
         botonHolder.getStyleClass().add("VC-botonHolder");
 
         this.getChildren().addAll(
-                idField,
                 bigTotalField,
                 categoriaContainer,
                 detalleVentaListView,
+                formaDePagoHolder,
                 totalHolder,
+                idField,
                 botonHolder
         );
 

@@ -5,6 +5,8 @@ import com.negocio.adris.model.enums.TipoProducto;
 import com.negocio.adris.model.enums.UnidadMedida;
 import com.negocio.adris.model.exceptions.ProductoNotFoundException;
 import com.negocio.adris.utils.AdrysAlert;
+import com.negocio.adris.utils.BotonAfirmar;
+import com.negocio.adris.utils.BotonCancelar;
 import com.negocio.adris.utils.Formatters;
 import com.negocio.adris.viewmodel.ProductoViewModel;
 import javafx.beans.binding.Bindings;
@@ -108,9 +110,9 @@ public class ProductoForm extends VBox {
         });
 
 
-        Button botonCrear = new Button("crear producto");
-        Button botonModificar = new Button("Modificar");
-        Button botonCancelar = new Button("cancelar");
+        Button botonCrear = new BotonAfirmar("crear producto");
+        Button botonModificar = new BotonAfirmar("Modificar");
+        Button botonCancelar = new BotonCancelar();
 
         Region region = new Region();
 

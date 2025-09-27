@@ -11,6 +11,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -23,7 +25,7 @@ public class DetalleVentaCard extends HBox {
     private Consumer<DetalleVentaItem> onAgregar;
     private Consumer<DetalleVentaItem> onSacar;
     private boolean seleccionado = false;
-    private final Button botonBorrar = new Button("Borrar");
+    private final Button botonBorrar = new Button();
     private final Button botonMenosCantidad = new Button("-");
     private final Button botonMasCantidad = new Button("+");
 
@@ -183,6 +185,17 @@ public class DetalleVentaCard extends HBox {
         descuento.setMaxWidth(Double.MAX_VALUE);
         subtotal.setMaxWidth(Double.MAX_VALUE);
 
+        Image borrarIcon = new Image(getClass().getResource("/basura.png").toExternalForm());
+        ImageView borrarIconIV = new ImageView(borrarIcon);
+
+        borrarIconIV.setFitWidth(24);
+        borrarIconIV.setFitHeight(24);
+
+        // Mantener proporción
+        borrarIconIV.setPreserveRatio(true);
+
+        botonBorrar.setGraphic(borrarIconIV);
+        botonBorrar.getStyleClass().add("DVC-botonBorrar");
         botonBorrar.setOnAction(actionEvent -> {
             if (onBorrar != null){
                 Alert a = new AdrysAlert(Alert.AlertType.CONFIRMATION, "quiere borrar el producto?");

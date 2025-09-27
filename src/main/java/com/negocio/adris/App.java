@@ -11,6 +11,9 @@ import com.negocio.adris.viewmodel.VentaViewModel;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -33,35 +36,43 @@ public class App extends Application {
 
         BorderPane borderPane = new BorderPane();
         NavSideBar navSideBar = new NavSideBar();
+        HBox navContainer = new HBox(navSideBar);
+        navContainer.getStyleClass().add("nav-container");
 
-        VentaCenter ventaCenter = new VentaCenter(ventaViewModel);
-        DetalleVentaForm detalleVentaForm = new DetalleVentaForm(detalleVentaViewModel, productoViewModel, ventaViewModel::agregarItem);
+        borderPane.setLeft(navContainer);
 
-        borderPane.setLeft(navSideBar);
+
+        VentaView ventaView = new VentaView(ventaViewModel, detalleVentaViewModel, productoViewModel, ventaViewModel::agregarItem);
 
         navSideBar.setOnSectionSelected(nombre -> {
             switch (nombre){
                 case "ventas" -> {
-                    borderPane.setCenter(ventaCenter);
-                    borderPane.setRight(detalleVentaForm);
+                    borderPane.setRight(null);
+                    borderPane.setCenter(ventaView);
                 }
                 case "productos" -> {
                     borderPane.setCenter(new ProductoCenter(productoViewModel));
                     borderPane.setRight(new ProductoForm(productoViewModel));
                 }
-                case "cuentas" -> borderPane.setCenter(new Text("cuentas"));
-                case "dashboard" -> borderPane.setCenter(new Text("dashboard"));
+                case "cuentas" -> {
+                    borderPane.setCenter(new Text("cuentas"));
+                    borderPane.setRight(null);
+                }
+                case "dashboard" -> {
+                    borderPane.setCenter(new Text("dashboard"));
+                    borderPane.setRight(null);
+                }
             }
         });
 
         Scene scene = new Scene(borderPane, 1360, 768);
+        borderPane.getStyleClass().add("app");
 
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/stylesheet.css")).toExternalForm());
 
         stage.setTitle("Adry's");
         stage.setScene(scene);
         stage.show();
-
     }
 
     public static void main(String[] args) {

@@ -2,6 +2,8 @@ package com.negocio.adris.view;
 
 import com.negocio.adris.model.entities.Producto;
 import com.negocio.adris.utils.AdrysAlert;
+import com.negocio.adris.utils.BotonAfirmar;
+import com.negocio.adris.utils.BotonCancelar;
 import com.negocio.adris.utils.Formatters;
 import com.negocio.adris.viewmodel.DetalleVentaItem;
 import com.negocio.adris.viewmodel.DetalleVentaViewModel;
@@ -10,9 +12,7 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.util.StringConverter;
 import javafx.util.converter.LongStringConverter;
 
@@ -30,6 +30,8 @@ public class DetalleVentaForm extends VBox {
         this.productoViewModel = productoViewModel;
         this.onDetalleAgregado = item;
 
+        getStyleClass().add("DetalleVentaForm");
+
         TextField idField = new TextField();
         ComboBox<Producto> productoCardComboBox = new ComboBox<>();
         TextField cantidadField = new TextField();
@@ -37,9 +39,12 @@ public class DetalleVentaForm extends VBox {
         TextField descuentoField = new TextField();
 
         HBox buttonHolder = new HBox();
-        Button botonAgregar = new Button("Agregar");
-        Button botonCancelar = new Button("cancelar");
-        buttonHolder.getChildren().addAll(botonAgregar, botonCancelar);
+        Region botonRegion = new Region();
+        botonRegion.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(botonRegion, Priority.ALWAYS);
+        Button botonAgregar = new BotonAfirmar("Agregar");
+        Button botonCancelar = new BotonCancelar();
+        buttonHolder.getChildren().addAll(botonAgregar, botonRegion, botonCancelar);
 
         // id
         StringConverter<? extends Number> longConverter = new LongStringConverter();
@@ -65,13 +70,21 @@ public class DetalleVentaForm extends VBox {
         precioFormatter.setValue(null);
         precioField.setTextFormatter(precioFormatter);
         detalleVentaViewModel.precioProperty().bindBidirectional(precioFormatter.valueProperty());
+        precioField.setPromptText("$");
 
 
         // productoComboBox
         FilteredList<Producto> productosFiltrados = new FilteredList<>(productoViewModel.getProductos(), p -> true);
 
+        productoCardComboBox.getEditor().setPromptText("Buscar");
         productoCardComboBox.setEditable(true);
         productoCardComboBox.setItems(productosFiltrados);
+
+        productoCardComboBox.getEditor().setOnMouseClicked(event -> {
+            if (!productoCardComboBox.isShowing()){
+                productoCardComboBox.show();
+            }
+        });
 
         productoCardComboBox.getEditor().textProperty().addListener((obs, oldText, newText) -> {
             if (cambioProgramatico) return ;
@@ -131,6 +144,7 @@ public class DetalleVentaForm extends VBox {
         productoCardComboBox.valueProperty().bindBidirectional(detalleVentaViewModel.productoProperty());
 
         // botonAgregar
+        botonAgregar.getStyleClass().add("DVF-botonAgregar");
         botonAgregar.setOnAction(actionEvent -> {
             cambioProgramatico = true;
             try {
@@ -164,7 +178,6 @@ public class DetalleVentaForm extends VBox {
 
         StackPane stackPane = new StackPane(cantidadVBox, precioVBox);
 
-
         productoCardComboBox.valueProperty().addListener((obs, oldv, newv) -> {
             if (newv == null || !newv.esDivisible()){
                 precioVBox.setVisible(false);
@@ -176,10 +189,10 @@ public class DetalleVentaForm extends VBox {
         });
 
         this.getChildren().addAll(
-                idField,
                 new Label("producto:"), productoCardComboBox,
                 stackPane,
                 new Label("descuento: %"), descuentoField,
+                idField,
                 buttonHolder
         );
     }
