@@ -30,7 +30,6 @@ public class ProductoForm extends VBox {
         TextField nombreField = new TextField();
         TextField marcaField = new TextField();
         TextField pesoField = new TextField();
-        TextField pesoActualField = new TextField();
         ComboBox<UnidadMedida> unidadMedidaComboBox = new ComboBox<>();
         TextField cantidadField = new TextField();
         TextField costoField = new TextField();
@@ -47,19 +46,19 @@ public class ProductoForm extends VBox {
 
         // nombre
         nombreField.textProperty().bindBidirectional(viewModel.nombreProperty());
+        nombreField.setPromptText("nombre");
 
         // marca
         marcaField.textProperty().bindBidirectional(viewModel.marcaProperty());
+        marcaField.setPromptText("marca");
 
         // peso
         StringConverter<? extends Number> doubleConverter = new DoubleStringConverter();
         Bindings.bindBidirectional(pesoField.textProperty(), viewModel.pesoProperty(), (StringConverter<Number>) doubleConverter);
-        pesoField.setMaxWidth(50);
+//        pesoField.setMaxWidth(50);
+        pesoField.setText(null);
+        pesoField.setPromptText("0,0");
 
-        // peso actual
-        StringConverter<? extends Number> doubleConverter1 = new DoubleStringConverter();
-        Bindings.bindBidirectional(pesoActualField.textProperty(), viewModel.pesoACtualProperty(), (StringConverter<Number>) doubleConverter1);
-        pesoActualField.setMaxWidth(50);
 
         // unidad medida
         unidadMedidaComboBox.setItems(FXCollections.observableArrayList(UnidadMedida.values()));
@@ -68,21 +67,25 @@ public class ProductoForm extends VBox {
         // cantidad
         StringConverter<? extends Number> integerConverter = new IntegerStringConverter();
         Bindings.bindBidirectional(cantidadField.textProperty(), viewModel.cantidadProperty(), (StringConverter<Number>) integerConverter);
+        cantidadField.setText(null);
 
         // costo
         TextFormatter<BigDecimal> costoFormatter = Formatters.bigDecimalFormatter();
         costoField.setTextFormatter(costoFormatter);
         viewModel.costoProperty().bindBidirectional(costoFormatter.valueProperty());
+        costoField.setPromptText("0");
 
         // ganancia
         TextFormatter<BigDecimal> gananciaFormatter = Formatters.bigDecimalFormatter();
         gananciaField.setTextFormatter(gananciaFormatter);
         viewModel.gananciaProperty().bindBidirectional(gananciaFormatter.valueProperty());
+        gananciaField.setPromptText("0");
 
         // precio
         TextFormatter<BigDecimal> precioFormatter = Formatters.bigDecimalFormatter();
         precioField.setTextFormatter(precioFormatter);
         viewModel.precioProperty().bindBidirectional(precioFormatter.valueProperty());
+        precioField.setPromptText("0");
 
         // es divisible
         esDivisibleBox.selectedProperty().bindBidirectional(viewModel.esDivisibleProperty());
@@ -99,7 +102,6 @@ public class ProductoForm extends VBox {
         tipoProductoComboBox.valueProperty().bindBidirectional(viewModel.tipoProperty());
 
         esDivisibleBox.selectedProperty().addListener(var -> {
-                pesoActualField.setDisable(esDivisibleBox.isSelected());
                 pesoField.setDisable(esDivisibleBox.isSelected());
                 unidadMedidaComboBox.setDisable(esDivisibleBox.isSelected());
                 cantidadField.setDisable(esDivisibleBox.isSelected());
@@ -110,7 +112,7 @@ public class ProductoForm extends VBox {
         });
 
 
-        Button botonCrear = new BotonAfirmar("crear producto");
+        Button botonCrear = new BotonAfirmar("Crear");
         Button botonModificar = new BotonAfirmar("Modificar");
         Button botonCancelar = new BotonCancelar();
 
@@ -147,9 +149,7 @@ public class ProductoForm extends VBox {
             }
         });
 
-        pesoField.textProperty().addListener( (obs, oldValue, newValue) -> {
-            if (newValue != null) pesoActualField.textProperty().set(pesoField.textProperty().get());
-        });
+
 
         precioSugeridoField.textProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null){
@@ -167,14 +167,7 @@ public class ProductoForm extends VBox {
 
         botonCancelar.setOnAction(e -> {
             viewModel.limpiarFormulario();
-            pesoActualField.setDisable(true);
         });
-
-        Region separador = new Region();
-        HBox pesoContainer = new HBox(new Label("Peso:"), pesoField, separador, new Label("Peso actual:"), pesoActualField);
-        pesoContainer.getStyleClass().add("PF-pesoContainer");
-        HBox.setHgrow(separador, Priority.ALWAYS);
-        separador.setMaxWidth(Double.MAX_VALUE);
 
         this.getStyleClass().add("productoForm");
 
@@ -183,7 +176,7 @@ public class ProductoForm extends VBox {
                 new Label("Nombre:"), nombreField,
                 new Label("Marca:"), marcaField,
                 esDivisibleBox,
-                pesoContainer,
+                new Label("Peso:"), pesoField,
                 new Label("Tipo de producto:"), tipoProductoComboBox,
                 new Label("Unidad de medida:"), unidadMedidaComboBox,
                 new Label("Cantidad:"), cantidadField,

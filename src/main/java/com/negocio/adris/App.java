@@ -9,11 +9,9 @@ import com.negocio.adris.viewmodel.DetalleVentaViewModel;
 import com.negocio.adris.viewmodel.ProductoViewModel;
 import com.negocio.adris.viewmodel.VentaViewModel;
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
+import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -39,8 +37,10 @@ public class App extends Application {
         HBox navContainer = new HBox(navSideBar);
         navContainer.getStyleClass().add("nav-container");
 
-        borderPane.setLeft(navContainer);
+        ProductoCenter productoCenter = new ProductoCenter(productoViewModel);
+        BorderPane.setMargin(productoCenter, new Insets(0, 40, 0, 40));
 
+        borderPane.setLeft(navContainer);
 
         VentaView ventaView = new VentaView(ventaViewModel, detalleVentaViewModel, productoViewModel, ventaViewModel::agregarItem);
 
@@ -51,7 +51,7 @@ public class App extends Application {
                     borderPane.setCenter(ventaView);
                 }
                 case "productos" -> {
-                    borderPane.setCenter(new ProductoCenter(productoViewModel));
+                    borderPane.setCenter(productoCenter);
                     borderPane.setRight(new ProductoForm(productoViewModel));
                 }
                 case "cuentas" -> {

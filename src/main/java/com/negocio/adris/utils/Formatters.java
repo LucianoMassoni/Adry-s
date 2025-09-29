@@ -12,7 +12,15 @@ public class Formatters {
     public static TextFormatter<BigDecimal> bigDecimalFormatter() {
         return new TextFormatter<>(
                 new BigDecimalStringConverter(),
-                BigDecimal.ZERO,
+                null,
+                c -> c.getControlNewText().matches("\\d*(\\.\\d*)?") ? c : null
+        );
+    }
+
+    public static TextFormatter<BigDecimal> bigDecimalFormatter(BigDecimal n) {
+        return new TextFormatter<>(
+                new BigDecimalStringConverter(),
+                n,
                 c -> c.getControlNewText().matches("\\d*(\\.\\d*)?") ? c : null
         );
     }

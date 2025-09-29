@@ -60,7 +60,7 @@ public class DetalleVentaForm extends VBox {
 
 
         // descuento
-        TextFormatter<BigDecimal> descuentoFormatter = Formatters.bigDecimalFormatter();
+        TextFormatter<BigDecimal> descuentoFormatter = Formatters.bigDecimalFormatter(BigDecimal.ZERO);
         descuentoField.setTextFormatter(descuentoFormatter);
         detalleVentaViewModel.descuentoProperty().bindBidirectional(descuentoFormatter.valueProperty());
 

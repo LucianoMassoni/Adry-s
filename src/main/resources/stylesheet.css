@@ -2,23 +2,30 @@
 .root {
     -fx-focus-color: #008080;   /* color principal del foco */
     -fx-faint-focus-color: #00808044; /* versión transparente del foco */
+    -primary-color: #008080;
+    -secondary-color: #d2e3e6;
+    -border-color: #d3d3d3;
+    -background-primary-color: #2f4f4f;
+    -background-secondary-color: #E0E0E0; /* #F2F2F2; #E3E3E3; */
+    -fx-text-fill: #1a1a1a;
+
 }
 
 /* App */
 .app{
-    -fx-background-color: #d2e3e6;
-    -fx-padding: 20;
+    -fx-background-color: -background-primary-color;
+    -fx-padding: 40;
 }
 
 /*  NavSideBar */
 .nav-side-bar{
-/*    -fx-padding: 20; */
+    -fx-padding: 20;
     -fx-spacing: 20;
 }
 
 .nav-container{
-    -fx-padding: 10;
-    -fx-background-color: #2f4f4f;
+    -fx-padding: 20;
+    -fx-background-color: -background-secondary-color;
     -fx-background-radius: 15;
     -fx-alignment: center;
 }
@@ -46,7 +53,7 @@
 
 /* boton cancelar */
 .boton-cancelar{
-    -fx-base: azure;
+    -fx-base: #BDBDBD;
     -fx-border-radius: 15;
 }
 
@@ -65,7 +72,23 @@
 }
 
 .productoCenter{
+    -fx-background-color: -background-secondary-color;
     -fx-padding: 50, 0, 0, 0;
+    -fx-border-radius:15;
+    -fx-background-radius: 15;
+}
+
+.productoCenter .list-view {
+    -fx-padding: 10;
+    -fx-border-radius: 15;
+    -fx-background-radius: 15;
+}
+
+.productoCenter .text-field{
+    -fx-padding: 10;
+    -fx-border-radius: 15;
+    -fx-background-radius: 15;
+    -fx-height: 30;
 }
 
 /*  ProductoCard*/
@@ -127,6 +150,11 @@
 .productoForm{
     -fx-spacing: 10;
     -fx-padding: 10 30 10 0;
+    -fx-border-radius: 15;
+    -fx-border-color: -border-color;
+    -fx-background-color: -background-secondary-color;
+    -fx-background-radius:15;
+
 }
 
 .PF-pesoContainer{
@@ -163,24 +191,27 @@
 
 /* VentaView */
 .VentaView{
-    -fx-padding: 10 20 20 10;
-    /*
-    -fx-background-color: white;
-    -fx-background-radius: 15;
-    -fx-border-color: #d3d3d3;
-    -fx-border-radius: 15;
-    */
+    -fx-padding: 0 0 0 40;
 }
 
 
 /* DetalleVentaForm */
 .DetalleVentaForm{
     -fx-background-color: white;
+    -fx-background-color: -background-secondary-color;
     -fx-background-radius: 15;
     -fx-padding: 20;
     -fx-border-color: #d3d3d3;
     -fx-border-radius: 15;
 }
+
+/*
+.DetalleVentaForm .text-field{
+    -fx-min-width: 50;
+    -fx-pref-width: 250;
+    -fx-max-width: 250;
+}
+*/
 
 .DVF-botonAgregar{
 
@@ -196,10 +227,16 @@
 .venta-center{
     -fx-fill-height: false;
     -fx-background-color: white;
+    -fx-background-color: -background-secondary-color;
+
     -fx-background-radius: 15;
     -fx-padding: 20;
     -fx-border-color: #d3d3d3;
     -fx-border-radius: 15;
+}
+
+.radio-button:selected .dot {
+    -fx-background-color: -primary-color;
 }
 
 .VC-categoriaContainer{

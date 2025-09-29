@@ -17,6 +17,8 @@ public class ProductoCenter extends VBox {
     public ProductoCenter(ProductoViewModel viewModel) {
         TextField busquedaField = new TextField();
 
+        busquedaField.setPromptText("Busque un producto...");
+
         FilteredList<Producto> productosFiltrados = new FilteredList<>(viewModel.getProductos(), p -> true);
 
         busquedaField.textProperty().addListener((obs, oldv, newv) ->{
@@ -72,7 +74,7 @@ public class ProductoCenter extends VBox {
             }
         });
 
-        listView.setPrefHeight(600);
+//        listView.setPrefHeight(600);
         listView.getItems().reversed();
 
         this.getStyleClass().add("productoCenter");
