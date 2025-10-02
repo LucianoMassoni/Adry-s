@@ -168,12 +168,13 @@ public class ProductoRepositoryImpl implements ProductoRepository {
 
     @Override
     public List<Producto> findAll() throws ProductoNotFoundException {
-        List<Producto> productos = new ArrayList<>();
         String sql = "SELECT * FROM Producto WHERE activo = 1";
 
         try(Connection conn = connectionProvider.get();
             Statement statement = conn.createStatement();
             ResultSet resultSet = statement.executeQuery(sql)){
+
+            List<Producto> productos = new ArrayList<>();
 
             while (resultSet.next()){
                 String unidadMedidaStr = resultSet.getString("unidad_medida");
@@ -197,11 +198,11 @@ public class ProductoRepositoryImpl implements ProductoRepository {
                 );
                 productos.add(p);
             }
-            if (productos.isEmpty()) throw new ProductoNotFoundException("No hay productos cargados");
+            return productos;
+
+            //if (productos.isEmpty()) throw new ProductoNotFoundException("No hay productos cargados");
         } catch (SQLException e) {
             throw new RuntimeException("Error al obtener todos los productos " + e.getMessage(), e);
         }
-
-        return productos;
     }
 }

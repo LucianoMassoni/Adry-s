@@ -16,13 +16,15 @@ public class AppModule extends AbstractModule {
         bind(ProductoRepository.class).to(ProductoRepositoryImpl.class).in(Singleton.class);
         bind(DetalleVentaRepository.class).to(DetalleVentaRepositoryImpl.class).in(Singleton.class);
         bind(VentaRepository.class).to(VentaRepositoryImpl.class).in(Singleton.class);
-        //bind(CuentaRepository.class).to(CuentaRepositoryImpl.class).in(Singleton.class);
+        bind(ProveedorRepository.class).to(ProveedorRepositoryImpl.class).in(Singleton.class);
+        bind(GastoRepository.class).to(GastoRepositoryImpl.class).in(Singleton.class);
+        bind(PagoRepository.class).to(PagoRepositoryImpl.class).in(Singleton.class);
 
         // Configuración de servicios
         bind(ProductoService.class).to(ProductoServiceImpl.class);
         bind(DetalleVentaService.class).to(DetalleVentaServiceImpl.class);
         bind(VentaService.class).to(VentaServiceImpl.class);
-        //bind(CuentaService.class).to(CuentaServiceImpl.class);
+        bind(ProveedorService.class).to(ProveedorServiceImpl.class);
 
         // Configuración de Validator
         bind(Validator.class).toProvider(() -> Validation.buildDefaultValidatorFactory().getValidator());

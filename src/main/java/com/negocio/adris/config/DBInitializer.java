@@ -53,13 +53,32 @@ public class DBInitializer {
                         FOREIGN KEY(id_venta) REFERENCES Venta(id)
                     );
                 
-                    CREATE TABLE IF NOT EXISTS Cuenta(
+                    CREATE TABLE IF NOT EXISTS Proveedor(
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        tipo_cuenta TEXT NOT NULL,
-                        detalle TEXT NOT NULL,
-                        debe DOUBLE(10, 2) NOT NULL,
-                        haber DOUBLE(10, 2) NOT NULL,
-                        fecha TEXT NOT NULL
+                        nombre TEXT NOT NULL,
+                        telefono TEXT,
+                        activo INTEGER DEFAULT 1
+                    );
+                
+                    CREATE TABLE IF NOT EXISTS Gasto(
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        id_proveedor INTEGER NOT NULL,
+                        fecha_deuda_contraida TEXT,
+                        fecha_vencimiento TEXT,
+                        monto DOUBLE(10, 2),
+                        nota TEXT,
+                        saldado INTEGER,
+                        activo INTEGER DEFAULT 1,
+                        FOREIGN KEY(id_proveedor) REFERENCES Proveedor(id)
+                    );
+                
+                    CREATE TABLE IF NOT EXISTS Pago(
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        id_gasto INTEGER,
+                        fecha_pago TEXT,
+                        monto_pagado DOUBLE(10, 2),
+                        activo INTEGER DEFAULT 1,
+                        FOREIGN KEY(id_gasto) REFERENCES Gasto(id)
                     );
                 """;
 
