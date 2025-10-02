@@ -21,10 +21,10 @@ public class DetalleVentaRepositoryImpl implements DetalleVentaRepository{
     public void save(DetalleVenta detalleVenta) {
         String sql = """
                 INSERT INTO DetalleVenta(
-                 id_venta, id_producto, cantidad, precio_unitario, descuento, subtotal
+                 id_venta, id_producto, cantidad, precio_unitario, descuento, subtotal, activo
                 )
                 VALUES(
-                ?, ?, ?, ?, ?, ?
+                ?, ?, ?, ?, ?, ?, 1
                 )
                 """;
 
@@ -83,7 +83,7 @@ public class DetalleVentaRepositoryImpl implements DetalleVentaRepository{
 
     @Override
     public void delete(long id) {
-        String sql = "DELETE FROM DetalleVenta WHERE id = ?";
+        String sql = "UPDATE DetalleVenta SET activo = 0 WHERE id = ?";
 
         try(Connection conn = connectionProvider.get();
             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
@@ -96,7 +96,7 @@ public class DetalleVentaRepositoryImpl implements DetalleVentaRepository{
 
     @Override
     public DetalleVenta findById(long id) throws DetalleVentaNotFoundException {
-        String sql = "SELECT * FROM DetalleVenta WHERE id = ?";
+        String sql = "SELECT * FROM DetalleVenta WHERE id = ? AND activo = 1";
 
         try(Connection conn = connectionProvider.get();
             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
@@ -124,7 +124,7 @@ public class DetalleVentaRepositoryImpl implements DetalleVentaRepository{
 
     @Override
     public List<DetalleVenta> findAll() throws DetalleVentaNotFoundException {
-        String sql = "SELECT * FROM DetalleVenta";
+        String sql = "SELECT * FROM DetalleVenta WHERE activo = 1";
 
         try (Connection conn = connectionProvider.get();
             PreparedStatement preparedStatement = conn.prepareStatement(sql)){
@@ -156,7 +156,7 @@ public class DetalleVentaRepositoryImpl implements DetalleVentaRepository{
 
     @Override
     public List<DetalleVenta> findAllByVentaId(long ventaId) throws DetalleVentaNotFoundException {
-        String sql = "SELECT * FROM DetalleVenta WHERE id_venta = ?";
+        String sql = "SELECT * FROM DetalleVenta WHERE id_venta = ? and activo = 1";
 
         try (Connection conn = connectionProvider.get();
              PreparedStatement preparedStatement = conn.prepareStatement(sql)){

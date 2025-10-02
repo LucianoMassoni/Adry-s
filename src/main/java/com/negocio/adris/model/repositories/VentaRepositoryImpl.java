@@ -23,8 +23,12 @@ public class VentaRepositoryImpl implements VentaRepository{
     @Override
     public void save(Venta v) {
         String sql = """
-                INSERT INTO Venta(forma_de_pago, fecha, total)
-                VALUES (?,?,?)
+                INSERT INTO Venta(
+                    forma_de_pago, fecha, total, activo
+                )
+                VALUES (
+                    ?,?,?, 1
+                )
                 """;
 
         try (Connection conn = connectionProvider.get();
@@ -77,7 +81,7 @@ public class VentaRepositoryImpl implements VentaRepository{
 
     @Override
     public void delete(long id) {
-        String sql = "DELETE FROM Venta WHERE id = ?";
+        String sql = "UPDATE Venta SET activo = 0 WHERE id = ?";
 
         try(Connection conn = connectionProvider.get();
             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
@@ -90,7 +94,7 @@ public class VentaRepositoryImpl implements VentaRepository{
 
     @Override
     public Venta findById(long id) throws VentaNotFoundException {
-        String sql = "SELECT * FROM Venta WHERE id = ?";
+        String sql = "SELECT * FROM Venta WHERE id = ? AND activo = 1";
 
         try (Connection conn = connectionProvider.get();
             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
@@ -115,7 +119,7 @@ public class VentaRepositoryImpl implements VentaRepository{
 
     @Override
     public List<Venta> findAll() throws VentaNotFoundException {
-        String sql = "SELECT * FROM Venta";
+        String sql = "SELECT * FROM Venta WHERE activo = 1";
         List<Venta> list = new ArrayList<>();
 
         try (Connection conn = connectionProvider.get();

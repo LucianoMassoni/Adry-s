@@ -38,7 +38,8 @@ public class DBInitializer {
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         forma_de_pago TEXT NOT NULL,
                         total DOUBLE(10, 2) NOT NULL,
-                        fecha TEXT NOT NULL
+                        fecha TEXT NOT NULL,
+                        activo INTEGER DEFAULT 1
                     );
                 
                     CREATE TABLE IF NOT EXISTS DetalleVenta(
@@ -49,6 +50,7 @@ public class DBInitializer {
                         precio_unitario DOUBLE ,
                         descuento DOUBLE(10, 2) DEFAULT 0.0,
                         subtotal DOUBLE(10, 2) NOT NULL,
+                        activo INTEGER DEFAULT 1,
                         FOREIGN KEY(id_producto) REFERENCES Producto(id),
                         FOREIGN KEY(id_venta) REFERENCES Venta(id)
                     );
