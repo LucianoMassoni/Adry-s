@@ -119,7 +119,7 @@ public class ProveedorRepositoryImpl implements ProveedorRepository {
             List<Proveedor> lista = new ArrayList<>();
             while (rs.next()){
                 int activo = rs.getInt("activo");
-                if (activo != 0)
+                if (activo == 0)
                     continue;
 
                 Proveedor p = new Proveedor(

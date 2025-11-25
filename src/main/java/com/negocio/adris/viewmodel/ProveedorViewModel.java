@@ -17,9 +17,12 @@ public class ProveedorViewModel {
     private final StringProperty telefono = new SimpleStringProperty();
 
     private final ObservableList<Proveedor> proveedores = FXCollections.observableArrayList();
+
     @Inject
     public ProveedorViewModel(ProveedorService proveedorService){
         this.proveedorService = proveedorService;
+
+        cargarProveedores();
     }
 
     public void limpiarFormulario(){
@@ -32,6 +35,7 @@ public class ProveedorViewModel {
     }
 
     public ObservableList<Proveedor> getProveedores(){
+        cargarProveedores();
         return proveedores;
     }
 
@@ -48,6 +52,8 @@ public class ProveedorViewModel {
         );
 
         proveedorService.guardar(dto);
+
+        cargarProveedores();
     }
 
     public void modificarProveedor() throws ProveedorNotFoundException {
@@ -67,5 +73,5 @@ public class ProveedorViewModel {
     public LongProperty idProperty() {return id; }
     public StringProperty nombreProperty() { return nombre; }
     public StringProperty telefonoProperty() { return telefono; }
-    public ObservableList<Proveedor> proveedorsProperty() { return proveedores; }
+    public ObservableList<Proveedor> proveedoresProperty() { return proveedores; }
 }
