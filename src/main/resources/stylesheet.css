@@ -2,19 +2,19 @@
 .root {
     -fx-focus-color: #008080;   /* color principal del foco */
     -fx-faint-focus-color: #00808044; /* versión transparente del foco */
-    -primary-color: #008080;
-    -secondary-color: #white;
+    -primary-color: white;
+    -secondary-color: #d2e3e6;
     -border-color: #d3d3d3;
-    -background-primary-color: #2f4f4f;
-    -background-secondary-color: #E0E0E0; /* #F2F2F2; #E3E3E3; */
+    -background-primary-color: white;
+    -background-secondary-color: white; /* #F2F2F2; #E3E3E3; */
     -fx-text-fill: #1a1a1a;
 
 }
 
 /* App */
 .app{
-    /* -fx-background-color: -background-primary-color; */
-    -fx-background-color: #d2e3e6;
+    -fx-background-color: -background-primary-color;
+    /* -fx-background-color: #d2e3e6; */
     -fx-padding: 40;
 }
 
@@ -319,8 +319,8 @@ VC-botonHolder{
 /* GastoForm */
 .gastoForm {
     -fx-background-color: white;
+    -fx-background-radius: 15;
     -fx-fill-width: false;
-    -fx-background-size: stretch;
     -fx-alignment: center;
 }
 
@@ -341,9 +341,6 @@ VC-botonHolder{
     -fx-padding: 0, 0, 0, 10;
 }
 
-
-
-
 .GCenter-botonAgregar {
     -fx-background-color: teal;
     -fx-background-radius: 50%;
@@ -356,4 +353,12 @@ VC-botonHolder{
 
 .GCenter-botonHolder {
     -fx-padding: 10;
+}
+
+/* PagoForm */
+.pagoForm {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-fill-width: false;
+    -fx-alignment: center;
 }
