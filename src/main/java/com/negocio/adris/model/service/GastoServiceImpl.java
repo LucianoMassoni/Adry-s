@@ -3,10 +3,13 @@ package com.negocio.adris.model.service;
 import com.google.inject.Inject;
 import com.negocio.adris.model.dtos.GastoDto;
 import com.negocio.adris.model.entities.Gasto;
+import com.negocio.adris.model.entities.Pago;
 import com.negocio.adris.model.entities.Proveedor;
 import com.negocio.adris.model.exceptions.GastoNotFoundException;
 import com.negocio.adris.model.exceptions.ProveedorNotFoundException;
 import com.negocio.adris.model.repositories.GastoRepository;
+import com.negocio.adris.utils.onCreate;
+import com.negocio.adris.utils.onUpdate;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
@@ -27,8 +30,8 @@ public class GastoServiceImpl implements GastoService {
         this.proveedorService = proveedorService;
     }
 
-    private void validar(GastoDto dto){
-        Set<ConstraintViolation<GastoDto>> violations = validator.validate(dto);
+    private void validar(GastoDto dto, Class clase){
+        Set<ConstraintViolation<GastoDto>> violations = validator.validate(dto, clase);
         if (!violations.isEmpty()){
             String errores = violations.stream()
                     .map(ConstraintViolation::getMessage)
@@ -39,7 +42,7 @@ public class GastoServiceImpl implements GastoService {
 
     @Override
     public void crear(GastoDto dto) throws ProveedorNotFoundException {
-        validar(dto);
+        validar(dto, onCreate.class);
 
         LocalDateTime now = LocalDateTime.now();
 
@@ -60,7 +63,7 @@ public class GastoServiceImpl implements GastoService {
 
     @Override
     public void modificar(long id, GastoDto dto) throws GastoNotFoundException, ProveedorNotFoundException {
-        validar(dto);
+        validar(dto, onUpdate.class);
         Gasto g = repo.findById(id);
         g.setProveedor(proveedorService.getProveedor(dto.getProveedorId()));
         g.setFechaVencimiento(dto.getFechaVencimiento());
@@ -85,5 +88,11 @@ public class GastoServiceImpl implements GastoService {
     @Override
     public List<Gasto> getGastos() {
         return repo.findAll();
+    }
+
+    @Override
+    public void agregarPago(Gasto g, Pago p){
+        g.getPagos().add(p);
+        repo.update(g);
     }
 }
