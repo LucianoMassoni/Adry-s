@@ -1,5 +1,6 @@
 package com.negocio.adris.viewmodel;
 
+import com.google.inject.Inject;
 import com.negocio.adris.model.dtos.GastoDto;
 import com.negocio.adris.model.entities.Gasto;
 import com.negocio.adris.model.entities.Proveedor;
@@ -12,6 +13,7 @@ import javafx.collections.ObservableList;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class GastoViewModel {
     private final GastoService gastoService;
@@ -25,16 +27,24 @@ public class GastoViewModel {
 
     private final ObservableList<Gasto> gastos = FXCollections.observableArrayList();
 
+   @Inject
     public GastoViewModel(GastoService gastoService){
         this.gastoService = gastoService;
+        gastos.clear();
+        cargarGastos();
     }
 
     public void cargarGastos(){
-        gastos.setAll(gastoService.getGastos());
+       gastos.setAll(gastoService.getGastos());
     }
 
     public ObservableList<Gasto> getGastos(){
+//        cargarGastos();
         return gastos;
+    }
+
+    public Gasto getGastoById(Gasto gasto) throws GastoNotFoundException, ProveedorNotFoundException {
+       return gastoService.getGastoById(gasto.getId());
     }
 
     public void limpiarFormulario(){
@@ -64,6 +74,7 @@ public class GastoViewModel {
         );
 
         gastoService.crear(dto);
+        cargarGastos();
     }
 
     public void modificarGasto() throws GastoNotFoundException, ProveedorNotFoundException {
@@ -75,6 +86,7 @@ public class GastoViewModel {
         );
 
         gastoService.modificar(id.get(), dto);
+        cargarGastos();
     }
 
     public void eliminarGasto() throws GastoNotFoundException {

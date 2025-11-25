@@ -1,0 +1,168 @@
+package com.negocio.adris.view;
+
+import com.negocio.adris.model.entities.Gasto;
+import com.negocio.adris.model.exceptions.GastoNotFoundException;
+import com.negocio.adris.model.exceptions.ProveedorNotFoundException;
+import com.negocio.adris.utils.BotonAfirmar;
+import com.negocio.adris.viewmodel.GastoViewModel;
+import com.negocio.adris.viewmodel.PagoViewModel;
+import com.negocio.adris.viewmodel.ProveedorViewModel;
+import javafx.collections.transformation.FilteredList;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.*;
+
+public class GastoCenter extends StackPane {
+    private final StackPane overlay = new StackPane();
+
+    private GastoViewModel gastoViewModel;
+    private PagoViewModel pagoViewModel;
+
+    public GastoCenter(GastoViewModel gastoViewModel, ProveedorViewModel proveedorViewModel, PagoViewModel pagoViewModel){
+        this.getStyleClass().add("gastoCenter");
+        this.gastoViewModel = gastoViewModel;
+        this.pagoViewModel = pagoViewModel;
+
+        overlay.getStyleClass().add("overlay");
+        overlay.setAlignment(Pos.CENTER);
+        overlay.setVisible(false);
+
+
+        ListView<Gasto> listView = new ListView<>();
+        listView.setItems(gastoViewModel.getGastos());
+
+        listView.setCellFactory(param -> new ListCell<>() {
+            private GastoCard card;
+            @Override
+            protected void updateItem(Gasto gasto, boolean empty) {
+                super.updateItem(gasto, empty);
+
+                if (empty || gasto == null) {
+                    setGraphic(null);
+                    return;
+                }
+
+                if (card == null) {
+                    card = new GastoCard(gasto);
+                    card.setOnEditar(g -> {
+                        Gasto gas = null;
+                        try {
+                            gas = gastoViewModel.getGastoById(g);
+                        } catch (GastoNotFoundException | ProveedorNotFoundException e) {
+                            throw new RuntimeException(e);
+                        }
+                        abrirFormularioEdicion(gas, gastoViewModel, proveedorViewModel);
+                    });
+                    card.setOnPagar(g -> {
+                        Gasto gas = null;
+                        try {
+                            gas = gastoViewModel.getGastoById(g);
+                            abrirFormularioPago(gas, pagoViewModel);
+                        } catch (GastoNotFoundException | ProveedorNotFoundException e) {
+                            throw new RuntimeException(e);
+                        }
+
+                    });
+
+
+                    // Escucha una sola vez los cambios de selección
+                    selectedProperty().addListener((obs, oldSel, newSel) -> card.setSeleccionado(newSel));
+                } else {
+                    card.actualizarDatos(gasto);
+                }
+
+                setGraphic(card);
+                // actualiza visualmente el estado por si se recicló la celda
+                card.setSeleccionado(isSelected());
+            }
+        });
+
+
+        Button botonAgregar = new BotonAfirmar("+");
+        botonAgregar.getStyleClass().add("GCenter-botonAgregar");
+
+
+        botonAgregar.setOnAction(actionEvent -> {
+            abrirFormularioNuevo(gastoViewModel, proveedorViewModel);
+        });
+
+
+        Region r = new Region();
+        HBox botonHolder = new HBox(r, botonAgregar);
+        r.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(r, Priority.ALWAYS);
+        botonHolder.getStyleClass().add("GCenter-botonHolder");
+
+        Label titulo = new Label("Cuentas");
+        titulo.getStyleClass().add("GCenter-titulo");
+
+        listView.setMaxHeight(Double.MAX_VALUE);
+        VBox.setVgrow(listView, Priority.ALWAYS);
+
+        VBox vbox = new VBox(titulo, listView, botonHolder);
+
+        getChildren().addAll(
+                vbox,
+                overlay
+        );
+
+        // para des-seleccionar el card cuando se toca fuera.
+        this.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) {
+                newScene.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+                    Node target = event.getPickResult().getIntersectedNode();
+
+                    // Sube en la jerarquía hasta ver si el clic fue dentro del ListView
+                    while (target != null) {
+                        if (target instanceof ProductoCard) {
+                            return;
+                        }
+                        target = target.getParent();
+                    }
+
+                    listView.getSelectionModel().clearSelection();
+                });
+            }
+        });
+
+        listView.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+            Node target = event.getPickResult().getIntersectedNode();
+            while (target != null && !(target instanceof ListCell)) {
+                target = target.getParent();
+            }
+
+            if (target instanceof ListCell<?> cell) {
+                if (cell.isEmpty()) return;
+                if (cell.isSelected()) {
+                    event.consume(); // ← esto evita el “toggle off” en clic repetido
+                }
+            }
+        });
+    }
+
+    private void abrirFormularioNuevo(GastoViewModel gastoVM, ProveedorViewModel proveedorVM) {
+        gastoVM.limpiarFormulario();
+        mostrarFormulario(new GastoForm(gastoVM, proveedorVM, this::cerrarOverlay));
+    }
+
+    private void abrirFormularioEdicion(Gasto gasto, GastoViewModel gastoVM, ProveedorViewModel proveedorVM) {
+        mostrarFormulario(new GastoForm(gastoVM, proveedorVM, this::cerrarOverlay));
+        gastoVM.cargarGasto(gasto);
+    }
+
+    private void mostrarFormulario(Node form) {
+        overlay.getChildren().setAll(form);
+        overlay.setVisible(true);
+    }
+
+    private void cerrarOverlay() {
+        overlay.setVisible(false);
+        overlay.getChildren().clear();
+    }
+
+    private void abrirFormularioPago(Gasto gasto, PagoViewModel pagoViewModel){
+        mostrarFormulario(new PagoForm(pagoViewModel, gasto, this::cerrarOverlay));
+    }
+}
