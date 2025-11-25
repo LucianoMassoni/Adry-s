@@ -91,6 +91,14 @@ public class Gasto {
         this.pagos = pagos;
     }
 
+    public BigDecimal getMontoRestante() {
+        BigDecimal montoPagado = pagos.stream()
+                .map(Pago::getMontoPagado)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return monto.subtract(montoPagado);
+    }
+
     @Override
     public String toString() {
         return "Gasto{" +
@@ -102,5 +110,18 @@ public class Gasto {
                 ", saldado=" + saldado +
                 ", pagos=" + pagos +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Gasto gasto = (Gasto) o;
+        return id == gasto.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(id);
     }
 }

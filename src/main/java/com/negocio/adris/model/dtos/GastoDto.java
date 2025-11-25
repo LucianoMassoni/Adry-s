@@ -1,5 +1,6 @@
 package com.negocio.adris.model.dtos;
 
+import com.negocio.adris.utils.onCreate;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
 public class GastoDto {
     @NotNull
     long proveedorId;
-    @Future(message = "La deuda debe caducar en el futuro")
+    @Future(message = "La deuda debe caducar en el futuro", groups = onCreate.class)
     private LocalDateTime fechaVencimiento;
     @PositiveOrZero
     private BigDecimal monto;
