@@ -3,6 +3,7 @@ package com.negocio.adris.model.repositories;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.negocio.adris.model.entities.Gasto;
+import com.negocio.adris.model.entities.Pago;
 import com.negocio.adris.model.entities.Proveedor;
 import com.negocio.adris.model.exceptions.GastoNotFoundException;
 
@@ -24,9 +25,9 @@ public class GastoRepositoryImpl implements GastoRepository {
     public void save(Gasto g) {
         String sql = """
                 INSERT INTO Gasto(
-                    id_proveedor, fecha_deuda_contraida, fecha_vencimiento, monto, saldado, nota, activo
+                    id_proveedor, fecha_deuda_contraida, fecha_vencimiento, monto, nota, saldado, activo
                 )
-                VALUE(
+                VALUES(
                     ?, ?, ?, ?, ?, ?, 1
                 )
                 """;
@@ -36,7 +37,7 @@ public class GastoRepositoryImpl implements GastoRepository {
         {
             preparedStatement.setLong(1, g.getProveedor().getId());
             preparedStatement.setString(2, g.getFechaDeudaContraida().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-            preparedStatement.setString(3, g.getFechaDeudaContraida().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            preparedStatement.setString(3, g.getFechaVencimiento().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
             preparedStatement.setBigDecimal(4, g.getMonto());
             preparedStatement.setString(5, g.getNota());
             preparedStatement.setBoolean( 6, g.isSaldado());
@@ -104,7 +105,9 @@ public class GastoRepositoryImpl implements GastoRepository {
         String sql = """
                     SELECT g.id, g.fecha_deuda_contraida, g.fecha_vencimiento, g.monto ,g.nota, g.saldado,
                     p.id as id_proveedor, p.nombre as proveedor_nombre, p.telefono as proveedor_telefono
-                    FROM Gastos g JOIN Proveedor p ON g.id_proveedor = p.id
+                    FROM Gasto g
+                    JOIN Proveedor p ON g.id_proveedor = p.id
+                    JOIN Pago pago ON pago.id_gasto = g.id
                     WHERE g.id = ? AND g.activo = 1;
                 """;
 
@@ -122,7 +125,7 @@ public class GastoRepositoryImpl implements GastoRepository {
                     rs.getString("proveedor_telefono")
             );
 
-            return new Gasto(
+            Gasto g = new Gasto(
                     rs.getLong("id"),
                     p,
                     LocalDateTime.parse(rs.getString("fecha_deuda_contraida")),
@@ -131,6 +134,11 @@ public class GastoRepositoryImpl implements GastoRepository {
                     rs.getString("nota"),
                     rs.getBoolean("saldado")
             );
+
+            g.setPagos(getPagosByGastoId(g));
+
+            return g;
+
         } catch (SQLException e) {
             throw new RuntimeException("Error al encontrar un Gasto por id" + e.getMessage(), e);
         }
@@ -141,7 +149,7 @@ public class GastoRepositoryImpl implements GastoRepository {
         String sql = """
                     SELECT g.id, g.fecha_deuda_contraida, g.fecha_vencimiento, g.monto ,g.nota, g.saldado,
                     p.id as id_proveedor, p.nombre as proveedor_nombre, p.telefono as proveedor_telefono
-                    FROM Gastos g JOIN Proveedor p ON g.id_proveedor = p.id
+                    FROM Gasto g JOIN Proveedor p ON g.id_proveedor = p.id
                     WHERE g.activo = 1;
                 """;
 
@@ -168,12 +176,46 @@ public class GastoRepositoryImpl implements GastoRepository {
                         rs.getString("nota"),
                         rs.getBoolean("saldado")
                 );
+
+                g.setPagos(getPagosByGastoId(g));
+
                 lista.add(g);
             }
 
             return lista;
         } catch (SQLException e) {
             throw new RuntimeException("Error al encontrar Gastos " + e.getMessage(), e);
+        }
+    }
+
+    private List<Pago> getPagosByGastoId(Gasto gasto){
+        List<Pago> list = new ArrayList<>();
+        String sql = """
+                    SELECT *
+                    FROM  Pago
+                    JOIN Gasto ON Pago.id_gasto = Gasto.id
+                    WHERE Gasto.id = ? AND Pago.activo = 1;
+                """;
+
+        try (Connection conn = connectionProvider.get();
+            PreparedStatement statement = conn.prepareStatement(sql))
+        {
+            statement.setLong(1, gasto.getId());
+
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()){
+                Pago p = new Pago(
+                        rs.getLong("id"),
+                        gasto,
+                        LocalDateTime.parse((rs.getString("fecha_pago"))),
+                        rs.getBigDecimal("monto_pagado")
+                );
+
+                list.add(p);
+            }
+            return list;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 }
