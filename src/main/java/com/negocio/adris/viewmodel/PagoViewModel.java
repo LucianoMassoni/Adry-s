@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 public class PagoViewModel {
     private final PagoService pagoService;
 
+
     private final LongProperty id = new SimpleLongProperty();
     private final ObjectProperty<Gasto> gasto = new SimpleObjectProperty<>();
     private final ObjectProperty<LocalDateTime> fechaPago = new SimpleObjectProperty<>();
@@ -41,7 +42,7 @@ public class PagoViewModel {
         return pagos;
     }
 
-    public void borrarFormulario(){
+    public void limpiarFormulario(){
         id.set(0);
         gasto.set(null);
         fechaPago.set(null);
@@ -55,7 +56,7 @@ public class PagoViewModel {
         montoPagado.set(p.getMontoPagado());
     }
 
-    public void crearGasto() throws GastoNotFoundException, ProveedorNotFoundException {
+    public void crearPago() throws GastoNotFoundException, ProveedorNotFoundException {
         PagoDto dto = new PagoDto(
                 gasto.get().getId(),
                 montoPagado.get()
@@ -64,7 +65,7 @@ public class PagoViewModel {
         pagoService.guardar(dto);
     }
 
-    public void modificarGasto() throws PagoNotFoundException, GastoNotFoundException, ProveedorNotFoundException {
+    public void modificarPago() throws PagoNotFoundException, GastoNotFoundException, ProveedorNotFoundException {
         PagoDto dto = new PagoDto(
                 gasto.get().getId(),
                 montoPagado.get()
@@ -73,7 +74,7 @@ public class PagoViewModel {
         pagoService.modificar(id.get(), dto);
     }
 
-    public void eliminarGasto() throws PagoNotFoundException {
+    public void eliminarPago() throws PagoNotFoundException {
         pagoService.eliminar(id.get());
     }
 
