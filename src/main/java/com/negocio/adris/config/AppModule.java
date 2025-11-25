@@ -25,6 +25,8 @@ public class AppModule extends AbstractModule {
         bind(DetalleVentaService.class).to(DetalleVentaServiceImpl.class);
         bind(VentaService.class).to(VentaServiceImpl.class);
         bind(ProveedorService.class).to(ProveedorServiceImpl.class);
+        bind(GastoService.class).to(GastoServiceImpl.class);
+        bind(PagoService.class).to(PagoServiceImpl.class);
 
         // Configuración de Validator
         bind(Validator.class).toProvider(() -> Validation.buildDefaultValidatorFactory().getValidator());

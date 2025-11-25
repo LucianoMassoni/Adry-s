@@ -9,6 +9,9 @@ module com.negocio.adris {
     requires com.google.guice;
     requires org.hibernate.validator;
     requires java.desktop;
+    requires javafx.base;
+    requires javafx.graphics;
+    requires org.slf4j;
     opens com.negocio.adris.model.dtos to org.hibernate.validator;
 
     exports com.negocio.adris;

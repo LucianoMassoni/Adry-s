@@ -5,9 +5,7 @@ import com.google.inject.Injector;
 import com.negocio.adris.config.AppModule;
 import com.negocio.adris.config.DBInitializer;
 import com.negocio.adris.view.*;
-import com.negocio.adris.viewmodel.DetalleVentaViewModel;
-import com.negocio.adris.viewmodel.ProductoViewModel;
-import com.negocio.adris.viewmodel.VentaViewModel;
+import com.negocio.adris.viewmodel.*;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -15,6 +13,7 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.util.Locale;
 import java.util.Objects;
 
 
@@ -24,6 +23,8 @@ public class App extends Application {
     public void init(){
         injector = Guice.createInjector(new AppModule());
         injector.getInstance(DBInitializer.class);
+
+        Locale.setDefault(new Locale("es", "AR"));
     }
 
     @Override
@@ -31,6 +32,9 @@ public class App extends Application {
         ProductoViewModel productoViewModel = injector.getInstance(ProductoViewModel.class);
         VentaViewModel ventaViewModel = injector.getInstance(VentaViewModel.class);
         DetalleVentaViewModel detalleVentaViewModel = injector.getInstance(DetalleVentaViewModel.class);
+        ProveedorViewModel proveedorViewModel = injector.getInstance(ProveedorViewModel.class);
+        GastoViewModel gastoViewModel =  injector.getInstance(GastoViewModel.class);
+        PagoViewModel pagoViewModel = injector.getInstance(PagoViewModel.class);
 
         BorderPane borderPane = new BorderPane();
         NavSideBar navSideBar = new NavSideBar();
@@ -55,7 +59,8 @@ public class App extends Application {
                     borderPane.setRight(new ProductoForm(productoViewModel));
                 }
                 case "cuentas" -> {
-                    borderPane.setCenter(new Text("cuentas"));
+                    borderPane.setCenter(new GastoCenter(gastoViewModel, proveedorViewModel, pagoViewModel));
+//                    borderPane.setRight(new ProveedorForm(proveedorViewModel));
                     borderPane.setRight(null);
                 }
                 case "dashboard" -> {

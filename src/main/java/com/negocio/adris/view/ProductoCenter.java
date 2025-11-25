@@ -74,7 +74,7 @@ public class ProductoCenter extends VBox {
             }
         });
 
-//        listView.setPrefHeight(600);
+        listView.setPrefHeight(800);
         listView.getItems().reversed();
 
         this.getStyleClass().add("productoCenter");
