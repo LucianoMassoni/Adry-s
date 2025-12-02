@@ -52,7 +52,6 @@ public class PagoServiceImpl implements PagoService {
         );
 
         repo.save(p);
-        gastoService.agregarPago(gasto, p);
     }
 
     @Override
@@ -64,7 +63,6 @@ public class PagoServiceImpl implements PagoService {
         p.setMontoPagado(dto.getMontoPagado());
 
         repo.update(p);
-        gastoService.agregarPago(gasto, p);
     }
 
     @Override

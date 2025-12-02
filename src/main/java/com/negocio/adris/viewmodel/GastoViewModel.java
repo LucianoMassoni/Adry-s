@@ -13,7 +13,6 @@ import javafx.collections.ObservableList;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 public class GastoViewModel {
     private final GastoService gastoService;
@@ -39,12 +38,11 @@ public class GastoViewModel {
     }
 
     public ObservableList<Gasto> getGastos(){
-//        cargarGastos();
         return gastos;
     }
 
-    public Gasto getGastoById(Gasto gasto) throws GastoNotFoundException, ProveedorNotFoundException {
-       return gastoService.getGastoById(gasto.getId());
+    public Gasto getGasto(long id) throws GastoNotFoundException, ProveedorNotFoundException {
+       return gastoService.getGastoById(id);
     }
 
     public void limpiarFormulario(){

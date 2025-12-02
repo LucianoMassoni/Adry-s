@@ -7,7 +7,7 @@ import com.negocio.adris.utils.BotonAfirmar;
 import com.negocio.adris.viewmodel.GastoViewModel;
 import com.negocio.adris.viewmodel.PagoViewModel;
 import com.negocio.adris.viewmodel.ProveedorViewModel;
-import javafx.collections.transformation.FilteredList;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -16,6 +16,8 @@ import javafx.scene.layout.*;
 
 public class GastoCenter extends StackPane {
     private final StackPane overlay = new StackPane();
+    private final ListView<Gasto> listView = new ListView<>();
+
 
     private GastoViewModel gastoViewModel;
     private PagoViewModel pagoViewModel;
@@ -29,8 +31,6 @@ public class GastoCenter extends StackPane {
         overlay.setAlignment(Pos.CENTER);
         overlay.setVisible(false);
 
-
-        ListView<Gasto> listView = new ListView<>();
         listView.setItems(gastoViewModel.getGastos());
 
         listView.setCellFactory(param -> new ListCell<>() {
@@ -46,32 +46,14 @@ public class GastoCenter extends StackPane {
 
                 if (card == null) {
                     card = new GastoCard(gasto);
-                    card.setOnEditar(g -> {
-                        Gasto gas = null;
-                        try {
-                            gas = gastoViewModel.getGastoById(g);
-                        } catch (GastoNotFoundException | ProveedorNotFoundException e) {
-                            throw new RuntimeException(e);
-                        }
-                        abrirFormularioEdicion(gas, gastoViewModel, proveedorViewModel);
-                    });
-                    card.setOnPagar(g -> {
-                        Gasto gas = null;
-                        try {
-                            gas = gastoViewModel.getGastoById(g);
-                            abrirFormularioPago(gas, pagoViewModel);
-                        } catch (GastoNotFoundException | ProveedorNotFoundException e) {
-                            throw new RuntimeException(e);
-                        }
-
-                    });
-
+                    card.setOnEditar(g -> abrirFormularioEdicion(gasto, gastoViewModel, proveedorViewModel));
+                    card.setOnPagar(g -> abrirFormularioPago(gasto, pagoViewModel));
 
                     // Escucha una sola vez los cambios de selección
                     selectedProperty().addListener((obs, oldSel, newSel) -> card.setSeleccionado(newSel));
-                } else {
-                    card.actualizarDatos(gasto);
                 }
+
+                card.actualizarDatos(gasto);
 
                 setGraphic(card);
                 // actualiza visualmente el estado por si se recicló la celda
@@ -163,6 +145,27 @@ public class GastoCenter extends StackPane {
     }
 
     private void abrirFormularioPago(Gasto gasto, PagoViewModel pagoViewModel){
-        mostrarFormulario(new PagoForm(pagoViewModel, gasto, this::cerrarOverlay));
+        mostrarFormulario(new PagoForm(pagoViewModel, gasto, () -> {
+            cerrarOverlay();
+            actualizarGasto(gasto.getId());
+        }));
+    }
+
+    private void actualizarGasto(long id){
+        try {
+            Gasto nuevo = gastoViewModel.getGasto(id);
+
+            ObservableList<Gasto> lista = gastoViewModel.getGastos();
+
+            for (int i = 0; i < lista.size(); i++){
+                if (lista.get(i).getId() == id){
+                    lista.set(i, nuevo);
+                    break;
+                }
+            }
+
+        } catch (GastoNotFoundException | ProveedorNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

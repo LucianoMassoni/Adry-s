@@ -107,7 +107,6 @@ public class GastoRepositoryImpl implements GastoRepository {
                     p.id as id_proveedor, p.nombre as proveedor_nombre, p.telefono as proveedor_telefono
                     FROM Gasto g
                     JOIN Proveedor p ON g.id_proveedor = p.id
-                    JOIN Pago pago ON pago.id_gasto = g.id
                     WHERE g.id = ? AND g.activo = 1;
                 """;
 
