@@ -11,4 +11,5 @@ public interface VentaRepository {
     void delete(long id);
     Venta findById(long id) throws VentaNotFoundException;
     List<Venta> findAll() throws VentaNotFoundException;
+    List<Venta> getAllVentasByFecha(String fecha) throws VentaNotFoundException;
 }

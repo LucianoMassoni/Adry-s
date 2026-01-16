@@ -34,7 +34,7 @@ public class VentaRepositoryImpl implements VentaRepository{
         try (Connection conn = connectionProvider.get();
              PreparedStatement preparedStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
 
-            preparedStatement.setString(1, v.getFormaDePago().toString());
+                preparedStatement.setString(1, v.getFormaDePago().name());
             preparedStatement.setString(2, v.getFecha().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
             preparedStatement.setBigDecimal(3, v.getTotal());
 
@@ -67,7 +67,7 @@ public class VentaRepositoryImpl implements VentaRepository{
         try (Connection conn = connectionProvider.get();
             PreparedStatement preparedStatement = conn.prepareStatement(sql)){
 
-            preparedStatement.setString(1, v.getFormaDePago().toString());
+            preparedStatement.setString(1, v.getFormaDePago().name());
             preparedStatement.setString(2, v.getFecha().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
             preparedStatement.setBigDecimal(3, v.getTotal());
             preparedStatement.setLong(4, v.getId());
@@ -143,6 +143,31 @@ public class VentaRepositoryImpl implements VentaRepository{
 
         } catch (SQLException e) {
             throw new RuntimeException("Error al encontrar ar Ventas" + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public List<Venta> getAllVentasByFecha(String fecha) {
+        String sql = String.format("SELECT * FROM Venta WHERE instr(fecha, '%s') > 0 AND activo = 1;", fecha);
+
+        List<Venta> list = new ArrayList<>();
+
+        try (Connection conn = connectionProvider.get();
+             Statement statement = conn.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql))
+        {
+            while (resultSet.next()){
+                Venta v = new Venta(
+                        resultSet.getLong("id"),
+                        FormaDePago.valueOf(resultSet.getString("forma_de_pago")),
+                        LocalDateTime.parse(resultSet.getString("fecha"), DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                        resultSet.getBigDecimal("total")
+                );
+                list.add(v);
+            }
+            return list;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al encontar las ventas del " + fecha + "\n" + e.getMessage(), e);
         }
     }
 }
