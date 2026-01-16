@@ -190,4 +190,54 @@ public class PagoRepositoryImpl implements PagoRepository {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public List<Pago> getAllPagosPorFecha(String fecha) {
+        String sql = String.format("SELECT prov.id AS proveedor_id, prov.nombre AS proveedor_nombre, prov.telefono as proveedor_telefono,\n" +
+                                  "g.id AS gasto_id, g.fecha_deuda_contraida AS gasto_fecha_cont, g.fecha_vencimiento AS gasto_fecha_ven, g.monto AS gasto_monto, g.nota AS gasto_nota, g.saldado AS gasto_saldado,\n" +
+                                  "       pago.id, pago.fecha_pago, pago.monto_pagado\n" +
+                                  "FROM Pago pago\n" +
+                                  "JOIN Gasto g ON pago.id_gasto = g.id\n" +
+                                  "JOIN Proveedor prov ON g.id_proveedor = prov.id\n" +
+                                  "WHERE instr(pago.fecha_pago, '%s') > 0 AND pago.activo = 1;", fecha);
+
+        List<Pago> lista = new ArrayList<>();
+        try (Connection conn = connectionProvider.get();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet resultSet = ps.executeQuery()){
+
+//            ps.setString(1, fecha);
+
+            while (resultSet.next()){
+                Proveedor proveedor = new Proveedor(
+                        resultSet.getLong("proveedor_id"),
+                        resultSet.getString("proveedor_nombre"),
+                        resultSet.getString("proveedor_telefono")
+                );
+
+                Gasto gasto = new Gasto(
+                        resultSet.getLong("gasto_id"),
+                        proveedor,
+                        LocalDateTime.parse(resultSet.getString("gasto_fecha_cont")),
+                        LocalDateTime.parse(resultSet.getString("gasto_fecha_ven")),
+                        resultSet.getBigDecimal("gasto_monto"),
+                        resultSet.getString("gasto_nota"),
+                        resultSet.getBoolean("gasto_saldado")
+                );
+
+                Pago p = new Pago(
+                        resultSet.getLong("id"),
+                        gasto,
+                        LocalDateTime.parse(resultSet.getString("fecha_pago")),
+                        resultSet.getBigDecimal("monto_pagado")
+                );
+
+                lista.add(p);
+            }
+
+            return lista;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
