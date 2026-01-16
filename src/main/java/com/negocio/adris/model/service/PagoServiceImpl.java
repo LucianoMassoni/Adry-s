@@ -11,7 +11,10 @@ import com.negocio.adris.model.repositories.PagoRepository;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -79,5 +82,44 @@ public class PagoServiceImpl implements PagoService {
     @Override
     public List<Pago> getPagos() {
         return repo.findAll();
+    }
+
+    @Override
+    public List<Pago> getAllPagosPorDia(LocalDateTime fecha) {
+        return repo.getAllPagosPorFecha(fecha.format(DateTimeFormatter.ISO_LOCAL_DATE));
+    }
+
+    @Override
+    public BigDecimal getTotalPagoPorDia(LocalDateTime fecha) {
+        List<Pago> lista = repo.getAllPagosPorFecha(fecha.format(DateTimeFormatter.ISO_LOCAL_DATE));
+        BigDecimal ganancia = lista.stream()
+                .map(Pago::getMontoPagado)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2, RoundingMode.HALF_UP);
+
+        return ganancia;
+    }
+
+    @Override
+    public List<Pago> getAllPagosPorMes(LocalDateTime fecha) {
+        String f = fecha.format(DateTimeFormatter.ISO_LOCAL_DATE);
+        f = f.split("\\d*-")[0];
+
+        return repo.getAllPagosPorFecha(f);
+    }
+
+    @Override
+    public BigDecimal getTotalPagoPorMes(LocalDateTime fecha) {
+        String f = fecha.format(DateTimeFormatter.ISO_LOCAL_DATE);
+        f = f.split("\\d*-")[0];
+
+        List<Pago> lista = repo.getAllPagosPorFecha(f);
+
+        BigDecimal ganancia = lista.stream()
+                .map(Pago::getMontoPagado)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2, RoundingMode.HALF_UP);
+
+        return ganancia;
     }
 }
