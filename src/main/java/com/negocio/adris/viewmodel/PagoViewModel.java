@@ -21,17 +21,21 @@ import java.time.LocalDateTime;
 public class PagoViewModel {
     private final PagoService pagoService;
 
-
     private final LongProperty id = new SimpleLongProperty();
     private final ObjectProperty<Gasto> gasto = new SimpleObjectProperty<>();
     private final ObjectProperty<LocalDateTime> fechaPago = new SimpleObjectProperty<>();
     private final ObjectProperty<BigDecimal> montoPagado = new SimpleObjectProperty<>();
+    private final ObjectProperty<BigDecimal> montoPagadoDiario = new SimpleObjectProperty<>();
+    private final ObjectProperty<BigDecimal> montoPagadoMensual = new SimpleObjectProperty<>();
 
     private final ObservableList<Pago> pagos = FXCollections.observableArrayList();
 
     @Inject
     public PagoViewModel(PagoService pagoService){
         this.pagoService = pagoService;
+
+        actualizarMontoPagadoPorDia();
+        actualizarMontoPagadoMensual();
     }
 
     public void cargarPagos(){
@@ -63,6 +67,7 @@ public class PagoViewModel {
         );
 
         pagoService.guardar(dto);
+        actualizarMontoPagadoPorDia();
     }
 
     public void modificarPago() throws PagoNotFoundException, GastoNotFoundException, ProveedorNotFoundException {
@@ -72,14 +77,26 @@ public class PagoViewModel {
         );
 
         pagoService.modificar(id.get(), dto);
+        actualizarMontoPagadoPorDia();
     }
 
     public void eliminarPago() throws PagoNotFoundException {
         pagoService.eliminar(id.get());
+        actualizarMontoPagadoPorDia();
+    }
+
+    private void actualizarMontoPagadoPorDia(){
+        montoPagadoDiario.set(pagoService.getTotalPagoPorDia(LocalDateTime.now()));
+    }
+
+    private void actualizarMontoPagadoMensual(){
+        montoPagadoMensual.set(pagoService.getTotalPagoPorMes(LocalDateTime.now()));
     }
 
     public LongProperty idProperty() { return id; }
     public ObjectProperty<Gasto> gastoProperty() { return gasto; }
     public ObjectProperty<LocalDateTime> fechaPagoProperty() { return fechaPago; }
     public ObjectProperty<BigDecimal> montoPagadoProperty() { return montoPagado; }
+    public ObjectProperty<BigDecimal> montoPagadoDiarioProperty() { return montoPagadoDiario; }
+    public ObjectProperty<BigDecimal> montoPagadoMensualProperty() { return montoPagadoMensual; }
 }
