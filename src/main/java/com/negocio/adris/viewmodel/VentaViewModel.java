@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.negocio.adris.model.dtos.DetalleVentaDto;
 import com.negocio.adris.model.dtos.VentaDto;
 import com.negocio.adris.model.enums.FormaDePago;
+import com.negocio.adris.model.exceptions.VentaNotFoundException;
 import com.negocio.adris.model.service.VentaService;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -20,10 +21,12 @@ public class VentaViewModel {
     private final ObjectProperty<FormaDePago> formaDePago = new SimpleObjectProperty<>();
     private final ObservableList<DetalleVentaItem> detalleVentas = FXCollections.observableArrayList();
     private final ReadOnlyObjectWrapper<BigDecimal> total = new ReadOnlyObjectWrapper<>();
+    private final ObjectProperty<BigDecimal> gananciaDiaria = new SimpleObjectProperty<>();
+    private final ObjectProperty<BigDecimal> gananciaMensual = new SimpleObjectProperty<>();
 
     private final VentaService ventaService;
     @Inject
-    public VentaViewModel(VentaService ventaService){
+    public VentaViewModel(VentaService ventaService) throws VentaNotFoundException {
         this.ventaService = ventaService;
 
         detalleVentas.addListener((ListChangeListener<DetalleVentaItem>) c -> {
@@ -36,6 +39,7 @@ public class VentaViewModel {
             }
             recalcularTotal();
         });
+        actualizarGanancias();
     }
 
     public void agregarItem(DetalleVentaItem item) {
@@ -72,6 +76,7 @@ public class VentaViewModel {
         ventaService.crearVenta(dto);
         id.set(0);
         detalleVentas.clear();
+        actualizarGanancias();
     }
 
     public void borrarItem(DetalleVentaItem item) {
@@ -95,8 +100,31 @@ public class VentaViewModel {
         detalleVentas.clear();
     }
 
+    private void actualizarGananciaDiaria() {
+        try {
+            gananciaDiaria.set(ventaService.obtenerGananciaPorDia(LocalDateTime.now()));
+        } catch (VentaNotFoundException e) {
+            gananciaDiaria.set(BigDecimal.ZERO);
+        }
+    }
+
+    private void actualizarGananciaMensual() {
+        try {
+            gananciaMensual.set(ventaService.obtenerGananciaPorMes(LocalDateTime.now()));
+        } catch (VentaNotFoundException e) {
+            gananciaMensual.set(BigDecimal.ZERO);
+        }
+    }
+
+    private void actualizarGanancias(){
+        actualizarGananciaDiaria();
+        actualizarGananciaMensual();
+    }
+
     public LongProperty idProperty() { return id; }
     public ObjectProperty<FormaDePago> formaDePagoProperty() { return formaDePago; }
     public ObservableList<DetalleVentaItem> getDetalleVentas() { return detalleVentas; }
     public ReadOnlyObjectProperty<BigDecimal> totalProperty() { return total.getReadOnlyProperty(); }
+    public ObjectProperty<BigDecimal> gananciaDiariaProperty() { return gananciaDiaria; }
+    public ObjectProperty<BigDecimal> gananciaMensualProperty() { return gananciaMensual; }
 }
