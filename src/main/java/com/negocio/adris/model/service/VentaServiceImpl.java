@@ -11,6 +11,8 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,14 +46,18 @@ public class VentaServiceImpl implements VentaService{
     }
 
     private Venta convertirDtoAVenta(VentaDto dto){
+        BigDecimal total = calcularTotal(dto.getDetalleVentaDtos());
+
+        if (dto.getFormaDePago().equals(FormaDePago.EFECTIVO) && total.compareTo(BigDecimal.valueOf(20000)) > 0){
+            total.multiply(BigDecimal.valueOf(0.9));
+        }
+
         return new Venta(
                         0, // Id temporal (la DB le asigna un Id valido cuando lo guarda)
                 dto.getFormaDePago(),
                 dto.getFecha(),
-                dto.getFormaDePago().equals(FormaDePago.EFECTIVO) ?
-                        calcularTotal(dto.getDetalleVentaDtos()).multiply(BigDecimal.valueOf(0.9)) :
-                        calcularTotal(dto.getDetalleVentaDtos())
-                );
+                total
+        );
     }
 
     @Override
@@ -94,5 +100,43 @@ public class VentaServiceImpl implements VentaService{
     @Override
     public List<Venta> obtenerTodasLasVentas() throws VentaNotFoundException {
         return repo.findAll();
+    }
+
+    @Override
+    public List<Venta> obtenerVentasPorDia(LocalDateTime fecha) throws VentaNotFoundException {
+        return repo.getAllVentasByFecha(fecha.format(DateTimeFormatter.ISO_LOCAL_DATE));
+    }
+
+    @Override
+    public BigDecimal obtenerGananciaPorDia(LocalDateTime fecha) throws VentaNotFoundException {
+        List<Venta> lista = repo.getAllVentasByFecha(fecha.format(DateTimeFormatter.ISO_LOCAL_DATE));
+        BigDecimal ganancia = lista.stream()
+                .map(Venta::getTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2);
+
+        return ganancia;
+    }
+
+    @Override
+    public List<Venta> obtenerVentasPorMes(LocalDateTime fecha) throws VentaNotFoundException {
+        String f = fecha.format(DateTimeFormatter.ISO_LOCAL_DATE);
+        f = f.split("\\d*-")[0];
+
+        return repo.getAllVentasByFecha(f);
+    }
+
+    @Override
+    public BigDecimal obtenerGananciaPorMes(LocalDateTime fecha) throws VentaNotFoundException {
+        String f = fecha.format(DateTimeFormatter.ISO_LOCAL_DATE);
+        f = f.split("\\d*-")[0];
+
+        List<Venta> lista = repo.getAllVentasByFecha(f);
+        BigDecimal ganancia = lista.stream()
+                .map(Venta::getTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2);
+
+        return ganancia;
     }
 }
