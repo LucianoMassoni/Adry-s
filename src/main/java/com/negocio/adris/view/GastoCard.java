@@ -17,6 +17,7 @@ public class GastoCard extends HBox {
     private Consumer<Gasto> onPagar;
     private boolean seleccionado = false;
     private final HBox buttonHolder;
+    private boolean modoLectura;
 
     public void setOnEditar(Consumer<Gasto> onEditar) { this.onEditar = onEditar; }
 
@@ -70,8 +71,9 @@ public class GastoCard extends HBox {
     private  Label nota = new Label();
     private  Label monto = new Label();
 
-    public GastoCard(Gasto gasto){
+    public GastoCard(Gasto gasto, boolean modoLectura){
         this.gasto = gasto;
+        this.modoLectura = modoLectura;
         this.getStyleClass().add("gasto-card");
 
 
@@ -169,7 +171,6 @@ public class GastoCard extends HBox {
 
 
         this.getChildren().addAll(
-                new Label("ID: " + gasto.getId()),
                 fechaBox,
                 r1,
                 proveedorBox,
@@ -178,7 +179,7 @@ public class GastoCard extends HBox {
                 r3,
                 montoBox,
                 r4,
-                buttonHolder
+                modoLectura ? new Region() : buttonHolder
         );
 
         this.getChildren().forEach(chil ->{
