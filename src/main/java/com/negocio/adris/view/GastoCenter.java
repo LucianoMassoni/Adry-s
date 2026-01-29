@@ -12,6 +12,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -21,35 +22,41 @@ import javafx.scene.layout.*;
 public class GastoCenter extends StackPane {
     private final StackPane overlay = new StackPane();
     private final ListView<Gasto> listView = new ListView<>();
-
+    private ObjectProperty<VistaGastos> vistaActual = new SimpleObjectProperty<>();
 
     private GastoViewModel gastoViewModel;
     private PagoViewModel pagoViewModel;
+    private ProveedorViewModel proveedorViewModel;
 
     public GastoCenter(GastoViewModel gastoViewModel, ProveedorViewModel proveedorViewModel, PagoViewModel pagoViewModel){
         this.getStyleClass().add("gastoCenter");
         this.gastoViewModel = gastoViewModel;
         this.pagoViewModel = pagoViewModel;
+        this.proveedorViewModel = proveedorViewModel;
 
         overlay.getStyleClass().add("overlay");
         overlay.setAlignment(Pos.CENTER);
         overlay.setVisible(false);
 
-        ObjectProperty<VistaGastos> vistaActual = new SimpleObjectProperty<>();
         vistaActual.set(VistaGastos.GASTOS_ACTIVOS);
 
-        Button botonGastosActivos = new Button("Gastos activos");
-        Button botonHistoriaGastos = new Button("Historial de gastos");
-        Button botonHistorialPagos = new Button("Historial de pagos");
+        Button botonGastosActivos = new BotonAfirmar("Gastos activos");
+        botonGastosActivos.setMaxWidth(Double.MAX_VALUE);
+        Button botonHistoriaGastos = new BotonAfirmar("Historial de gastos");
+        botonHistoriaGastos.setMaxWidth(Double.MAX_VALUE);
 
         HBox selectHolder = new HBox(
                 botonGastosActivos,
-                botonHistoriaGastos,
-                botonHistorialPagos
+                botonHistoriaGastos
         );
+        HBox.setHgrow(selectHolder, Priority.ALWAYS);
+        HBox.setHgrow(botonGastosActivos, Priority.ALWAYS);
+        HBox.setHgrow(botonHistoriaGastos, Priority.ALWAYS);
+        selectHolder.setMaxWidth(Double.MAX_VALUE);
 
         FilteredList<Gasto> gastosFiltrados = new FilteredList<>(gastoViewModel.getGastos());
 
+        gastosFiltrados.setPredicate(gasto -> !gasto.isSaldado());
         listView.setItems(gastosFiltrados);
 
         botonGastosActivos.setOnAction(e -> {
@@ -62,10 +69,6 @@ public class GastoCenter extends StackPane {
                 vistaActual.set(VistaGastos.GASTOS_SALDADOS);
         });
 
-        botonHistorialPagos.setOnAction(actionEvent -> {
-            gastosFiltrados.setPredicate(gasto -> !gasto.getPagos().isEmpty());
-            vistaActual.set(VistaGastos.HISTORIAL_PAGOS);
-        });
 
         listView.setCellFactory(param -> new ListCell<>() {
             @Override
@@ -77,59 +80,18 @@ public class GastoCenter extends StackPane {
                     return;
                 }
 
-                switch (vistaActual.get()){
-                    case GASTOS_ACTIVOS -> {
-                        GastoCard card = new GastoCard(gasto, false);
-                        card.setOnEditar(g -> abrirFormularioEdicion(gasto, gastoViewModel, proveedorViewModel));
-                        card.setOnPagar(g -> abrirFormularioPago(gasto, pagoViewModel));
-
-                        // Escucha una sola vez los cambios de selección
-                        selectedProperty().addListener((obs, oldSel, newSel) -> card.setSeleccionado(newSel));
-
-                        card.actualizarDatos(gasto);
-
-                        setGraphic(card);
-                        // actualiza visualmente el estado por si se recicló la celda
-                        card.setSeleccionado(isSelected());
-                    }
-
-                    case GASTOS_SALDADOS -> {
-                        GastoCard card = new GastoCard(gasto, true);
-                        // Escucha una sola vez los cambios de selección
-                        selectedProperty().addListener((obs, oldSel, newSel) -> card.setSeleccionado(newSel));
-
-                        card.actualizarDatos(gasto);
-
-                        setGraphic(card);
-                        // actualiza visualmente el estado por si se recicló la celda
-                        card.setSeleccionado(isSelected());
-                    }
-
-                    case HISTORIAL_PAGOS -> {
-                        GastoPagoCard card = new GastoPagoCard(gasto);
-                        // Escucha una sola vez los cambios de selección
-                        selectedProperty().addListener((obs, oldSel, newSel) -> card.setSeleccionado(newSel));
-
-                        card.actualizarDatos(gasto);
-
-                        setGraphic(card);
-                        // actualiza visualmente el estado por si se recicló la celda
-                        card.setSeleccionado(isSelected());
-                    }
-                }
+                GastoCard card = creaCard(gasto);
+                configurarCelda(this, card, gasto);
 
             }
         });
 
-
         Button botonAgregar = new BotonAfirmar("+");
         botonAgregar.getStyleClass().add("GCenter-botonAgregar");
-
 
         botonAgregar.setOnAction(actionEvent -> {
             abrirFormularioNuevo(gastoViewModel, proveedorViewModel);
         });
-
 
         Region r = new Region();
         HBox botonHolder = new HBox(r, botonAgregar);
@@ -144,6 +106,7 @@ public class GastoCenter extends StackPane {
         VBox.setVgrow(listView, Priority.ALWAYS);
 
         VBox vbox = new VBox(titulo, selectHolder, listView, botonHolder);
+        VBox.setMargin(vbox, new Insets(20,20,20,20));
 
 
         // para des-seleccionar el card cuando se toca fuera.
@@ -154,7 +117,7 @@ public class GastoCenter extends StackPane {
 
                     // Sube en la jerarquía hasta ver si el clic fue dentro del ListView
                     while (target != null) {
-                        if (target instanceof ProductoCard) {
+                        if (target instanceof GastoCard) {
                             return;
                         }
                         target = target.getParent();
@@ -174,12 +137,20 @@ public class GastoCenter extends StackPane {
             if (target instanceof ListCell<?> cell) {
                 if (cell.isEmpty()) return;
                 if (cell.isSelected()) {
+                    Node n = (Node) event.getTarget();
+                    while (n != null) {
+                        if (n instanceof Button) {
+                            return; // dejar pasar el evento
+                        }
+                        n = n.getParent();
+                    }
                     event.consume(); // ← esto evita el “toggle off” en clic repetido
                 }
             }
         });
 
-        getChildren().addAll(
+
+        this.getChildren().addAll(
                 vbox,
                 overlay
         );
@@ -228,5 +199,32 @@ public class GastoCenter extends StackPane {
         } catch (GastoNotFoundException | ProveedorNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void configurarCelda(ListCell<Gasto> cell, GastoCard card, Gasto gasto){
+        cell.selectedProperty().addListener((obs, oldSel, newSel) ->
+                card.setSeleccionado(newSel)
+        );
+
+        card.actualizarDatos(gasto);
+        cell.setGraphic(card);
+        card.setSeleccionado(cell.isSelected());
+    }
+
+    private GastoCard creaCard(Gasto gasto){
+        return switch (vistaActual.get()){
+            case GASTOS_ACTIVOS -> {
+                GastoCard card = new GastoCard(gasto, false);
+                card.setOnEditar(g -> abrirFormularioEdicion(gasto, gastoViewModel, proveedorViewModel));
+                card.setOnPagar(g -> abrirFormularioPago(gasto, pagoViewModel));
+                card.actualizarDatos(gasto);
+                yield card;
+            }
+            case GASTOS_SALDADOS -> {
+                GastoCard card = new GastoCard(gasto, true);
+                card.actualizarDatos(gasto);
+                yield card;
+            }
+        };
     }
 }

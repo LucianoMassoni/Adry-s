@@ -10,7 +10,6 @@ import com.negocio.adris.utils.Formatters;
 import com.negocio.adris.viewmodel.GastoViewModel;
 import com.negocio.adris.viewmodel.ProveedorViewModel;
 import javafx.beans.binding.Bindings;
-import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.util.StringConverter;
@@ -38,7 +37,6 @@ public class GastoForm extends VBox {
         Button botonAgregar = new BotonAfirmar("Agregar");
         Button botonModificar = new BotonAfirmar("modificar");
         Button botonCancelar = new BotonCancelar();
-        Button botonAgregarProveedor = new BotonAfirmar("+");
 
 
         // id
@@ -47,7 +45,7 @@ public class GastoForm extends VBox {
         idField.setVisible(false);
 
         // proveedor
-        HBox proveedorBox = new HBox(proveedorComboBox, botonAgregarProveedor);
+        HBox proveedorBox = new HBox(proveedorComboBox);
         proveedorComboBox.setItems(proveedorViewModel.getProveedores());
         proveedorComboBox.valueProperty().bindBidirectional(gastoViewModel.proveedorProperty());
 
@@ -100,16 +98,6 @@ public class GastoForm extends VBox {
             onClose.run();
         });
 
-        botonAgregarProveedor.setOnAction(actionEvent -> {
-                StackPane overlay = new StackPane();
-                overlay.getStyleClass().add("overlay");
-                overlay.setAlignment(Pos.CENTER);
-
-                ProveedorForm proveedorForm = new ProveedorForm(proveedorViewModel, ()-> this.getChildren().remove(overlay));
-
-                overlay.getChildren().add(proveedorForm);
-                this.getChildren().add(overlay);
-        });
 
         Region r = new Region();
         r.setMaxWidth(Double.MAX_VALUE);
