@@ -8,6 +8,7 @@ import com.negocio.adris.model.exceptions.GastoNotFoundException;
 import com.negocio.adris.model.exceptions.PagoNotFoundException;
 import com.negocio.adris.model.exceptions.ProveedorNotFoundException;
 import com.negocio.adris.model.repositories.PagoRepository;
+import com.negocio.adris.utils.Utils;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
@@ -42,23 +43,32 @@ public class PagoServiceImpl implements PagoService {
     }
 
     @Override
-    public void guardar(PagoDto dto) throws GastoNotFoundException, ProveedorNotFoundException {
+    public Pago guardar(PagoDto dto) throws GastoNotFoundException, ProveedorNotFoundException {
         validarDto(dto);
 
         Gasto gasto = gastoService.getGastoById(dto.getGastoId());
 
+        if (dto.getMontoPagado().compareTo(gasto.getMontoRestante()) > 0)
+            throw new IllegalArgumentException("Error al pagar.\n\n Se trató de pagar $" + Utils.bigDecimalFormatter(dto.getMontoPagado()) +
+                    " cuando se necesitaba solo $" + Utils.bigDecimalFormatter(gasto.getMontoRestante()) + " para saldar la deuda.");
+
         Pago p = new Pago(
                 0L, // id temporal
                 gasto,
-                LocalDateTime.now(),
+                dto.getFechaDePago().atStartOfDay(),
                 dto.getMontoPagado()
         );
 
+        if (p.getMontoPagado().compareTo(gasto.getMontoRestante()) == 0){
+            gastoService.saldarDeuda(gasto);
+        }
+
         repo.save(p);
+        return p;
     }
 
     @Override
-    public void modificar(long id, PagoDto dto) throws PagoNotFoundException, GastoNotFoundException, ProveedorNotFoundException {
+    public Pago modificar(long id, PagoDto dto) throws PagoNotFoundException, GastoNotFoundException, ProveedorNotFoundException {
         Pago p = repo.findById(id);
         Gasto gasto = gastoService.getGastoById(dto.getGastoId());
 
@@ -66,6 +76,7 @@ public class PagoServiceImpl implements PagoService {
         p.setMontoPagado(dto.getMontoPagado());
 
         repo.update(p);
+        return p;
     }
 
     @Override

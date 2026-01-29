@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface PagoService {
-    void guardar(PagoDto dto) throws GastoNotFoundException, ProveedorNotFoundException;
-    void modificar(long id, PagoDto dto) throws PagoNotFoundException, GastoNotFoundException, ProveedorNotFoundException;
+    Pago guardar(PagoDto dto) throws GastoNotFoundException, ProveedorNotFoundException;
+    Pago modificar(long id, PagoDto dto) throws PagoNotFoundException, GastoNotFoundException, ProveedorNotFoundException;
     void eliminar(long id) throws PagoNotFoundException;
     Pago getPago(long id) throws PagoNotFoundException;
     List<Pago> getPagos();
