@@ -63,7 +63,8 @@ public class PagoViewModel {
     public void crearPago() throws GastoNotFoundException, ProveedorNotFoundException {
         PagoDto dto = new PagoDto(
                 gasto.get().getId(),
-                montoPagado.get()
+                montoPagado.get(),
+                fechaPago.get().toLocalDate()
         );
 
         pagoService.guardar(dto);
@@ -73,7 +74,8 @@ public class PagoViewModel {
     public void modificarPago() throws PagoNotFoundException, GastoNotFoundException, ProveedorNotFoundException {
         PagoDto dto = new PagoDto(
                 gasto.get().getId(),
-                montoPagado.get()
+                montoPagado.get(),
+                fechaPago.get().toLocalDate()
         );
 
         pagoService.modificar(id.get(), dto);
