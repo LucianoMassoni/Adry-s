@@ -81,7 +81,7 @@ public class GastoServiceImpl implements GastoService {
     }
 
     @Override
-    public Gasto getGastoById(long id) throws GastoNotFoundException, ProveedorNotFoundException {
+    public Gasto getGastoById(long id) throws GastoNotFoundException{
         return repo.findById(id);
     }
 
@@ -93,6 +93,12 @@ public class GastoServiceImpl implements GastoService {
     @Override
     public void agregarPago(Gasto g, Pago p){
         g.getPagos().add(p);
+        repo.update(g);
+    }
+
+    @Override
+    public void saldarDeuda(Gasto g){
+        g.setSaldado(true);
         repo.update(g);
     }
 }

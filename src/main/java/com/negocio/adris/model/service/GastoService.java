@@ -16,4 +16,5 @@ public interface GastoService {
     List<Gasto> getGastos();
 
     void agregarPago(Gasto g, Pago p);
+    void saldarDeuda(Gasto g);
 }
