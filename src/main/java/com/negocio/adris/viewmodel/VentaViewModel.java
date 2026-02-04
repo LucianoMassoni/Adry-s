@@ -3,6 +3,7 @@ package com.negocio.adris.viewmodel;
 import com.google.inject.Inject;
 import com.negocio.adris.model.dtos.DetalleVentaDto;
 import com.negocio.adris.model.dtos.VentaDto;
+import com.negocio.adris.model.entities.Venta;
 import com.negocio.adris.model.enums.FormaDePago;
 import com.negocio.adris.model.exceptions.VentaNotFoundException;
 import com.negocio.adris.model.service.VentaService;
@@ -23,6 +24,8 @@ public class VentaViewModel {
     private final ReadOnlyObjectWrapper<BigDecimal> total = new ReadOnlyObjectWrapper<>();
     private final ObjectProperty<BigDecimal> gananciaDiaria = new SimpleObjectProperty<>();
     private final ObjectProperty<BigDecimal> gananciaMensual = new SimpleObjectProperty<>();
+
+    private final ObservableList<Venta> ventas = FXCollections.observableArrayList();
 
     private final VentaService ventaService;
     @Inject
@@ -119,6 +122,11 @@ public class VentaViewModel {
     private void actualizarGanancias(){
         actualizarGananciaDiaria();
         actualizarGananciaMensual();
+    }
+
+    public ObservableList<Venta> getVentas() throws VentaNotFoundException {
+        ventas.setAll(ventaService.obtenerTodasLasVentas());
+        return ventas;
     }
 
     public LongProperty idProperty() { return id; }

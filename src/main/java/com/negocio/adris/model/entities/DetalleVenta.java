@@ -4,8 +4,7 @@ import java.math.BigDecimal;
 
 public class DetalleVenta {
     private long id;
-    private long ventaId;
-    private long productoId;
+    private Producto producto;
     private BigDecimal cantidad;
     private BigDecimal precioUnitario;
     private BigDecimal descuento;
@@ -13,10 +12,9 @@ public class DetalleVenta {
 
     public DetalleVenta(){}
 
-    public DetalleVenta(long id, long ventaId, long productoId, BigDecimal cantidad, BigDecimal precioUnitario, BigDecimal descuento, BigDecimal subtotal) {
+    public DetalleVenta(long id, Producto producto, BigDecimal cantidad, BigDecimal precioUnitario, BigDecimal descuento, BigDecimal subtotal) {
         this.id = id;
-        this.ventaId = ventaId;
-        this.productoId = productoId;
+        this.producto = producto;
         this.cantidad = cantidad;
         this.precioUnitario = precioUnitario;
         this.descuento = descuento;
@@ -31,20 +29,12 @@ public class DetalleVenta {
         this.id = id;
     }
 
-    public long getVentaId() {
-        return ventaId;
+    public Producto getProducto() {
+        return producto;
     }
 
-    public void setVentaId(long ventaId) {
-        this.ventaId = ventaId;
-    }
-
-    public long getProductoId() {
-        return productoId;
-    }
-
-    public void setProductoId(long productoId) {
-        this.productoId = productoId;
+    public void setProductoId(Producto producto) {
+        this.producto = producto;
     }
 
     public BigDecimal getCantidad() {

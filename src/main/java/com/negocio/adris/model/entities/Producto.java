@@ -43,6 +43,15 @@ public class Producto {
         this.esDivisible = esDivisible;
     }
 
+    public Producto(long id, String nombre, String marca, TipoProducto tipo, double peso, UnidadMedida unidadMedida) {
+        this.id = id;
+        this.nombre = nombre;
+        ;this.marca = marca;
+        this.tipo = tipo;
+        this.peso = peso;
+        this.unidadMedida = unidadMedida;
+    }
+
     public long getId() {
         return id;
     }

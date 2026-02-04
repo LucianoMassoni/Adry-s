@@ -6,7 +6,6 @@ import com.negocio.adris.utils.BotonAfirmar;
 import com.negocio.adris.utils.BotonCancelar;
 import com.negocio.adris.utils.Formatters;
 import com.negocio.adris.viewmodel.DetalleVentaItem;
-import com.negocio.adris.viewmodel.DetalleVentaViewModel;
 import com.negocio.adris.viewmodel.ProductoViewModel;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -20,15 +19,17 @@ import java.math.BigDecimal;
 import java.util.function.Consumer;
 
 public class DetalleVentaForm extends VBox {
-    private final DetalleVentaViewModel detalleVentaViewModel;
     private final ProductoViewModel productoViewModel;
     private final Consumer<DetalleVentaItem> onDetalleAgregado;
     private boolean cambioProgramatico = false;
 
-    public DetalleVentaForm(DetalleVentaViewModel detalleVentaViewModel, ProductoViewModel productoViewModel, Consumer<DetalleVentaItem> item){
-        this.detalleVentaViewModel = detalleVentaViewModel;
+    private final DetalleVentaItem detalleVentaItem = new DetalleVentaItem();
+
+    public DetalleVentaForm(ProductoViewModel productoViewModel, Consumer<DetalleVentaItem> ConsumerItem){
         this.productoViewModel = productoViewModel;
-        this.onDetalleAgregado = item;
+        this.onDetalleAgregado = ConsumerItem;
+
+
 
         getStyleClass().add("DetalleVentaForm");
 
@@ -46,30 +47,30 @@ public class DetalleVentaForm extends VBox {
         Button botonCancelar = new BotonCancelar();
         buttonHolder.getChildren().addAll(botonAgregar, botonRegion, botonCancelar);
 
-        // id
-        StringConverter<? extends Number> longConverter = new LongStringConverter();
-        Bindings.bindBidirectional(idField.textProperty(), detalleVentaViewModel.idProperty(), (StringConverter<Number>) longConverter);
-        idField.setVisible(false);
+//        // id
+//        StringConverter<? extends Number> longConverter = new LongStringConverter();
+//        Bindings.bindBidirectional(idField.textProperty(), detalleVentaItem.idProperty(), (StringConverter<Number>) longConverter);
+//        idField.setVisible(false);
 
 
         // cantidad
         TextFormatter<BigDecimal> cantidadFormatter = Formatters.bigDecimalFormatter();
-        cantidadFormatter.setValue(detalleVentaViewModel.cantidadProperty().getValue());
+        cantidadFormatter.setValue(detalleVentaItem.cantidadProperty().getValue());
         cantidadField.setTextFormatter(cantidadFormatter);
-        detalleVentaViewModel.cantidadProperty().bindBidirectional(cantidadFormatter.valueProperty());
+        detalleVentaItem.cantidadProperty().bindBidirectional(cantidadFormatter.valueProperty());
 
 
         // descuento
         TextFormatter<BigDecimal> descuentoFormatter = Formatters.bigDecimalFormatter(BigDecimal.ZERO);
         descuentoField.setTextFormatter(descuentoFormatter);
-        detalleVentaViewModel.descuentoProperty().bindBidirectional(descuentoFormatter.valueProperty());
+        detalleVentaItem.descuentoProperty().bindBidirectional(descuentoFormatter.valueProperty());
 
 
         // precio
         TextFormatter<BigDecimal> precioFormatter = Formatters.bigDecimalFormatter();
         precioFormatter.setValue(null);
         precioField.setTextFormatter(precioFormatter);
-        detalleVentaViewModel.precioProperty().bindBidirectional(precioFormatter.valueProperty());
+        detalleVentaItem.precioProperty().bindBidirectional(precioFormatter.valueProperty());
         precioField.setPromptText("$");
 
 
@@ -79,6 +80,7 @@ public class DetalleVentaForm extends VBox {
         productoCardComboBox.getEditor().setPromptText("Buscar");
         productoCardComboBox.setEditable(true);
         productoCardComboBox.setItems(productosFiltrados);
+        productoCardComboBox.setMaxWidth(Double.MAX_VALUE);
 
         productoCardComboBox.getEditor().setOnMouseClicked(event -> {
             if (!productoCardComboBox.isShowing()){
@@ -141,27 +143,27 @@ public class DetalleVentaForm extends VBox {
             }
         });
 
-        productoCardComboBox.valueProperty().bindBidirectional(detalleVentaViewModel.productoProperty());
+        productoCardComboBox.valueProperty().bindBidirectional(detalleVentaItem.productoProperty());
 
         // botonAgregar
         botonAgregar.getStyleClass().add("DVF-botonAgregar");
         botonAgregar.setOnAction(actionEvent -> {
             cambioProgramatico = true;
             try {
-                DetalleVentaItem detalleVentaItem = detalleVentaViewModel.crearDtoActual();
-                onDetalleAgregado.accept(detalleVentaItem);
+                DetalleVentaItem dvItem = detalleVentaItem.getItemActual();
+                onDetalleAgregado.accept(dvItem);
             } catch (IllegalArgumentException ex) {
                 Alert a = new AdrysAlert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK);
                 a.show();
             }
-            detalleVentaViewModel.limpiarFormulario();
+            detalleVentaItem.limpiarFormulario();
             cambioProgramatico = false;
         });
 
         // botonCancelar
         botonCancelar.setOnAction(actionEvent -> {
             cambioProgramatico = true;
-            detalleVentaViewModel.limpiarFormulario();
+            detalleVentaItem.limpiarFormulario();
             cambioProgramatico = false;
         });
 

@@ -10,7 +10,6 @@ import java.util.List;
 
 public interface VentaService {
     void crearVenta(VentaDto dto);
-    void modificarVenta(VentaDto dto, long id) throws VentaNotFoundException;
     void eliminarVenta(long id) throws VentaNotFoundException;
     Venta obtenerVenta(long id) throws VentaNotFoundException;
     List<Venta> obtenerTodasLasVentas() throws VentaNotFoundException;

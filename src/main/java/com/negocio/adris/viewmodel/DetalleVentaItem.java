@@ -9,33 +9,86 @@ import java.math.RoundingMode;
 
 public class DetalleVentaItem {
     private final ObjectProperty<Producto> producto = new SimpleObjectProperty<>();
-    private final ObjectProperty<BigDecimal> cantidad = new SimpleObjectProperty<>();
-    private final ObjectProperty<BigDecimal> descuento = new SimpleObjectProperty<>();
+    private final ObjectProperty<BigDecimal> cantidad = new SimpleObjectProperty<>(BigDecimal.ONE);
+    private final ObjectProperty<BigDecimal> descuento = new SimpleObjectProperty<>(BigDecimal.ZERO);
     private final ObjectProperty<BigDecimal> precio = new SimpleObjectProperty<>();
     private final ObjectProperty<BigDecimal> subtotal = new SimpleObjectProperty<>();
 
-    public DetalleVentaItem(Producto producto, BigDecimal cantidad, BigDecimal descuento, BigDecimal precio){
-        this.producto.set(producto);
-        this.cantidad.set(cantidad);
-        this.descuento.set(descuento);
-        this.precio.set(precio);
-        recalcSubtotal();
+    public DetalleVentaItem() {
+        producto.addListener((obs, o, n) -> recalcSubtotal());
+        cantidad.addListener((obs, o, n) -> recalcSubtotal());
+        descuento.addListener((obs, o, n) -> recalcSubtotal());
+        precio.addListener((obs, o, n) -> recalcSubtotal());
+    }
 
-        this.cantidad.addListener((obs, oldv, newv) -> recalcSubtotal());
-        this.descuento.addListener((obs, oldv, newv) -> recalcSubtotal());}
+    private void recalcSubtotal() {
 
-    private void recalcSubtotal(){
-        if (producto.get().esDivisible()){
-            if (precio.get() == null) throw new IllegalArgumentException("Se necesita cargar un precio a un producto divisible");
-            BigDecimal mult = BigDecimal.ONE.subtract(descuento.get().divide(BigDecimal.valueOf(100)));
-            subtotal.set(precio.get().multiply(mult).setScale(2, RoundingMode.HALF_UP));
+        if (producto.get() == null) {
+            subtotal.set(BigDecimal.ZERO);
+            return;
+        }
+
+        if (descuento.get() == null) {
+            descuento.set(BigDecimal.ZERO);
+        }
+
+        if (producto.get().esDivisible()) {
+            if (precio.get() == null) {
+                subtotal.set(BigDecimal.ZERO);
+                return;
+            }
+
+            BigDecimal mult = BigDecimal.ONE.subtract(
+                    descuento.get().divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP)
+            );
+
+            subtotal.set(
+                    precio.get().multiply(mult).setScale(2, RoundingMode.HALF_UP)
+            );
 
         } else {
-            BigDecimal precio = producto.get().getPrecio();
-            BigDecimal mult = BigDecimal.ONE.subtract(descuento.get().divide(BigDecimal.valueOf(100)));
-            subtotal.set(precio.multiply(cantidad.get()).multiply(mult)
-                    .setScale(2, RoundingMode.HALF_UP));
+            if (cantidad.get() == null) {
+                subtotal.set(BigDecimal.ZERO);
+                return;
+            }
+
+            BigDecimal mult = BigDecimal.ONE.subtract(
+                    descuento.get().divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP)
+            );
+
+            subtotal.set(
+                    producto.get().getPrecio()
+                            .multiply(cantidad.get())
+                            .multiply(mult)
+                            .setScale(2, RoundingMode.HALF_UP)
+            );
         }
+    }
+
+    public DetalleVentaItem getItemActual(){
+        if (producto.get() == null)
+            throw new IllegalArgumentException("se necesita un producto para cargar");
+
+        if (!producto.getValue().esDivisible()){
+            if (cantidad.get().intValue() > producto.get().getCantidad())
+                throw new IllegalArgumentException("No hay " + cantidad.get() + " de " + producto.get().getNombre() + ". hay: " + producto.get().getCantidad());
+        }
+
+        DetalleVentaItem item = new DetalleVentaItem();
+        item.producto.set(producto.get());
+        item.cantidad.set(cantidad.get());
+        item.descuento.set(descuento.get());
+        item.precio.set(precio.get());
+
+        return item;
+    }
+
+    public void limpiarFormulario(){
+        producto.set(null);
+        cantidad.set(BigDecimal.ONE);
+        descuento.set(BigDecimal.ZERO);
+        precio.set(null);
+        subtotal.set(BigDecimal.ZERO);
     }
 
     public ObjectProperty<Producto> productoProperty(){ return producto; }

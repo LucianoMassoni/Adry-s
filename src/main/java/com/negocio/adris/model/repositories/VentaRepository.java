@@ -7,7 +7,6 @@ import java.util.List;
 
 public interface VentaRepository {
     void save(Venta v);
-    void update(Venta v);
     void delete(long id);
     Venta findById(long id) throws VentaNotFoundException;
     List<Venta> findAll() throws VentaNotFoundException;

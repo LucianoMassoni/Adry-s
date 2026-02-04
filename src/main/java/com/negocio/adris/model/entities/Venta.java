@@ -1,10 +1,8 @@
 package com.negocio.adris.model.entities;
 
-import com.negocio.adris.model.dtos.DetalleVentaDto;
 import com.negocio.adris.model.enums.FormaDePago;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -13,14 +11,16 @@ public class Venta {
     private FormaDePago formaDePago;
     private LocalDateTime fecha;
     private BigDecimal total;
+    private List<DetalleVenta> detalleVentas;
 
     public Venta(){}
 
-    public Venta(long id, FormaDePago formaDePago, LocalDateTime fecha, BigDecimal total){
+    public Venta(long id, FormaDePago formaDePago, LocalDateTime fecha, BigDecimal total, List<DetalleVenta> detalleVentas){
         this.id = id;
         this.formaDePago = formaDePago;
         this.fecha = fecha;
         this.total = total;
+        this.detalleVentas = detalleVentas;
     }
 
     public long getId() {
@@ -53,5 +53,24 @@ public class Venta {
 
     public void setTotal(BigDecimal total) {
         this.total = total;
+    }
+
+    public List<DetalleVenta> getDetalleVentas() {
+        return detalleVentas;
+    }
+
+    public void setDetalleVentas(List<DetalleVenta> detalleVentas) {
+        this.detalleVentas = detalleVentas;
+    }
+
+    @Override
+    public String toString() {
+        return "Venta{" +
+                "id=" + id +
+                ", formaDePago=" + formaDePago +
+                ", fecha=" + fecha +
+                ", total=" + total +
+                ", detalleVentas=" + detalleVentas +
+                '}';
     }
 }

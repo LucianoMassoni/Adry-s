@@ -2,6 +2,7 @@ package com.negocio.adris.model.service;
 
 import com.negocio.adris.model.dtos.DetalleVentaDto;
 import com.negocio.adris.model.dtos.VentaDto;
+import com.negocio.adris.model.entities.DetalleVenta;
 import com.negocio.adris.model.entities.Producto;
 import com.negocio.adris.model.entities.Venta;
 import com.negocio.adris.model.enums.FormaDePago;
@@ -20,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,16 +33,16 @@ public class VentaServiceImplTest {
     @Mock
     private VentaRepository ventaRepo;
 
-    @Mock
-    private DetalleVentaService detalleVentaService;
 
     @InjectMocks
     private VentaServiceImpl ventaService;
+    @InjectMocks
+    private ProductoService productoService;
 
     @BeforeEach
     void setUp() {
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        ventaService = new VentaServiceImpl(validator, ventaRepo, detalleVentaService);
+        ventaService = new VentaServiceImpl(validator, ventaRepo, productoService);
     }
 
     @Test
@@ -77,9 +79,6 @@ public class VentaServiceImplTest {
         DetalleVentaDto detalle1 = new DetalleVentaDto(producto, BigDecimal.valueOf(2), BigDecimal.valueOf(10), null); // 1000 * 2 - 10% = 1800
         DetalleVentaDto detalle2 = new DetalleVentaDto(producto, BigDecimal.valueOf(1), BigDecimal.valueOf(5), null);  // 1000 * 1 - 5% = 950
 
-        when(detalleVentaService.getSubTotal(any()))
-                .thenReturn(BigDecimal.valueOf(1800))
-                .thenReturn(BigDecimal.valueOf(950));
 
         BigDecimal total = ventaService.calcularTotal(List.of(detalle1, detalle2));
 
@@ -94,8 +93,7 @@ public class VentaServiceImplTest {
                 FormaDePago.EFECTIVO
         );
 
-        doThrow(new IllegalArgumentException("Producto requerido"))
-                .when(detalleVentaService).validarDetalleVentaDto(any());
+
 
         assertThrows(IllegalArgumentException.class,
                 () -> ventaService.crearVenta(dto));
@@ -103,43 +101,6 @@ public class VentaServiceImplTest {
         verify(ventaRepo, never()).save(any());
     }
 
-    @Test
-    void modificarVenta_ConIdExistente_ActualizaCorrectamente() throws VentaNotFoundException {
-        VentaDto dto = new VentaDto(
-                List.of(new DetalleVentaDto(new Producto(1L, "a", "b", 12, 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS, false),
-                        BigDecimal.valueOf(1),
-                        BigDecimal.valueOf(0),
-                        null)),
-                LocalDateTime.now(),
-                FormaDePago.TARJETA
-        );
-        Venta ventaExistente = new Venta(1L, FormaDePago.EFECTIVO, LocalDateTime.now(), BigDecimal.ZERO);
-
-        when(ventaRepo.findById(1L)).thenReturn(ventaExistente);
-
-        when(detalleVentaService.getSubTotal(any())).thenReturn(BigDecimal.valueOf(1000));
-
-        ventaService.modificarVenta(dto, 1L);
-
-        verify(ventaRepo).update(ventaExistente);
-        assertEquals(dto.getFecha(), ventaExistente.getFecha());
-        assertEquals(BigDecimal.valueOf(1000), ventaExistente.getTotal());
-    }
-
-    @Test
-    void modificarVenta_ConIdInexistente_LanzaExcepcion() throws VentaNotFoundException {
-        when(ventaRepo.findById(anyLong())).thenThrow(new VentaNotFoundException("No encontrado"));
-
-        assertThrows(VentaNotFoundException.class,
-                () -> ventaService.modificarVenta(new VentaDto(
-                        List.of(new DetalleVentaDto(new Producto(1, "a", "b", 12, 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS, false),
-                                BigDecimal.valueOf(1),
-                                BigDecimal.valueOf(0),
-                                null)),
-                        LocalDateTime.now(),
-                        FormaDePago.TARJETA
-                ), 999L));
-    }
 
     @Test
     void eliminarVenta_ConIdExistente_EliminaCorrectamente() throws VentaNotFoundException {
@@ -160,7 +121,7 @@ public class VentaServiceImplTest {
 
     @Test
     void obtenerVenta_ConIdExistente_RetornaVenta() throws VentaNotFoundException {
-        Venta ventaMock = new Venta(1L, FormaDePago.TARJETA, LocalDateTime.now(), BigDecimal.TEN);
+        Venta ventaMock = new Venta(1L, FormaDePago.TARJETA, LocalDateTime.now(), BigDecimal.TEN,  new ArrayList<>());
         when(ventaRepo.findById(1L)).thenReturn(ventaMock);
 
         Venta resultado = ventaService.obtenerVenta(1L);
@@ -171,8 +132,8 @@ public class VentaServiceImplTest {
     @Test
     void obtenerTodasLasVentas_ConDatos_RetornaLista() throws VentaNotFoundException {
         List<Venta> ventasMock = List.of(
-                new Venta(1L, FormaDePago.EFECTIVO,LocalDateTime.now(), BigDecimal.TEN),
-                new Venta(2L, FormaDePago.EFECTIVO, LocalDateTime.now(), BigDecimal.valueOf(20))
+                new Venta(1L, FormaDePago.EFECTIVO,LocalDateTime.now(), BigDecimal.TEN, new ArrayList<>()),
+                new Venta(2L, FormaDePago.EFECTIVO, LocalDateTime.now(), BigDecimal.valueOf(20), new ArrayList<>())
         );
         when(ventaRepo.findAll()).thenReturn(ventasMock);
 
