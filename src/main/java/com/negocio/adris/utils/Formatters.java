@@ -1,6 +1,7 @@
 package com.negocio.adris.utils;
 
 import javafx.scene.control.TextFormatter;
+import javafx.util.StringConverter;
 import javafx.util.converter.BigDecimalStringConverter;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
@@ -37,6 +38,24 @@ public class Formatters {
         return new TextFormatter<>(
                 new IntegerStringConverter(),
                 0,
+                c -> c.getControlNewText().matches("\\d*") ? c : null
+        );
+    }
+
+    public static TextFormatter<String> telefonoFormatter(){
+        return new TextFormatter<>(
+                new StringConverter<String>() {
+                    @Override
+                    public String toString(String s) {
+                        return s;
+                    }
+
+                    @Override
+                    public String fromString(String s) {
+                        return s;
+                    }
+                },
+                "",
                 c -> c.getControlNewText().matches("\\d*") ? c : null
         );
     }

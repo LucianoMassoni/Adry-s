@@ -4,13 +4,13 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.negocio.adris.config.AppModule;
 import com.negocio.adris.config.DBInitializer;
+import com.negocio.adris.model.exceptions.VentaNotFoundException;
 import com.negocio.adris.view.*;
 import com.negocio.adris.viewmodel.*;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.layout.*;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.util.Locale;
@@ -31,7 +31,6 @@ public class App extends Application {
     public void start(Stage stage) {
         ProductoViewModel productoViewModel = injector.getInstance(ProductoViewModel.class);
         VentaViewModel ventaViewModel = injector.getInstance(VentaViewModel.class);
-        DetalleVentaViewModel detalleVentaViewModel = injector.getInstance(DetalleVentaViewModel.class);
         ProveedorViewModel proveedorViewModel = injector.getInstance(ProveedorViewModel.class);
         GastoViewModel gastoViewModel =  injector.getInstance(GastoViewModel.class);
         PagoViewModel pagoViewModel = injector.getInstance(PagoViewModel.class);
@@ -46,7 +45,7 @@ public class App extends Application {
 
         borderPane.setLeft(navContainer);
 
-        VentaView ventaView = new VentaView(ventaViewModel, detalleVentaViewModel, productoViewModel, ventaViewModel::agregarItem);
+        VentaView ventaView = new VentaView(ventaViewModel, productoViewModel, ventaViewModel::agregarItem);
 
         navSideBar.setOnSectionSelected(nombre -> {
             switch (nombre){
@@ -60,11 +59,14 @@ public class App extends Application {
                 }
                 case "cuentas" -> {
                     borderPane.setCenter(new GastoCenter(gastoViewModel, proveedorViewModel, pagoViewModel));
-//                    borderPane.setRight(new ProveedorForm(proveedorViewModel));
                     borderPane.setRight(null);
                 }
                 case "dashboard" -> {
-                    borderPane.setCenter(new Text("dashboard"));
+                    try {
+                        borderPane.setCenter(new DashboardCenter(pagoViewModel, proveedorViewModel, ventaViewModel));
+                    } catch (VentaNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
                     borderPane.setRight(null);
                 }
             }

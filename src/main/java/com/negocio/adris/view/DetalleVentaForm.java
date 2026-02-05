@@ -8,12 +8,10 @@ import com.negocio.adris.utils.Formatters;
 import com.negocio.adris.viewmodel.DetalleVentaItem;
 import com.negocio.adris.viewmodel.ProductoViewModel;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.util.StringConverter;
-import javafx.util.converter.LongStringConverter;
 
 import java.math.BigDecimal;
 import java.util.function.Consumer;
@@ -33,24 +31,18 @@ public class DetalleVentaForm extends VBox {
 
         getStyleClass().add("DetalleVentaForm");
 
-        TextField idField = new TextField();
         ComboBox<Producto> productoCardComboBox = new ComboBox<>();
         TextField cantidadField = new TextField();
         TextField precioField = new TextField();
         TextField descuentoField = new TextField();
 
-        HBox buttonHolder = new HBox();
+        HBox buttonHolder = new HBox(15);
         Region botonRegion = new Region();
         botonRegion.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(botonRegion, Priority.ALWAYS);
         Button botonAgregar = new BotonAfirmar("Agregar");
         Button botonCancelar = new BotonCancelar();
         buttonHolder.getChildren().addAll(botonAgregar, botonRegion, botonCancelar);
-
-//        // id
-//        StringConverter<? extends Number> longConverter = new LongStringConverter();
-//        Bindings.bindBidirectional(idField.textProperty(), detalleVentaItem.idProperty(), (StringConverter<Number>) longConverter);
-//        idField.setVisible(false);
 
 
         // cantidad
@@ -194,7 +186,6 @@ public class DetalleVentaForm extends VBox {
                 new Label("producto:"), productoCardComboBox,
                 stackPane,
                 new Label("descuento: %"), descuentoField,
-                idField,
                 buttonHolder
         );
     }

@@ -26,12 +26,17 @@ public class ProveedorViewModel {
     }
 
     public void limpiarFormulario(){
+        id.set(0);
         nombre.set(null);
         telefono.set(null);
     }
 
     public void cargarProveedores() {
         proveedores.setAll(proveedorService.getProveedores());
+    }
+
+    public Proveedor getProveedor(long id) throws ProveedorNotFoundException {
+        return proveedorService.getProveedor(id);
     }
 
     public ObservableList<Proveedor> getProveedores(){

@@ -8,7 +8,7 @@
     -background-primary-color: white;
     -background-secondary-color: white; /* #F2F2F2; #E3E3E3; */
     -fx-text-fill: #1a1a1a;
-
+    -fx-font-size: 18;
 }
 
 /* App */
@@ -28,7 +28,7 @@
     -fx-padding: 20;
     -fx-background-color: -background-secondary-color;
     -fx-background-radius: 15;
-    -fx-alignment: center;
+    /*-fx-alignment: center;*/
 }
 
 .button-pane{
@@ -198,24 +198,12 @@
 
 /* DetalleVentaForm */
 .DetalleVentaForm{
-    /*
-    -fx-background-color: white;
-    -fx-background-color: -background-secondary-color;
-    -fx-border-color: #d3d3d3;
-    */
     -fx-background-radius: 15;
     -fx-padding: 20;
     -fx-border-color: grey;
     -fx-border-radius: 15;
 }
 
-/*
-.DetalleVentaForm .text-field{
-    -fx-min-width: 50;
-    -fx-pref-width: 250;
-    -fx-max-width: 250;
-}
-*/
 
 .DVF-botonAgregar{
 
@@ -225,7 +213,14 @@
 
 }
 
-
+/* VentaView */
+.VentaView{
+    -fx-border-width: 1;
+    -fx-border-color: grey;
+    -fx-background-radius: 15;
+    -fx-padding: 20;
+    -fx-border-radius: 15;
+}
 
 /* Venta center */
 .venta-center{
@@ -237,6 +232,7 @@
 
     */
 
+    -fx-border-width: 1;
     -fx-border-color: grey;
     -fx-background-radius: 15;
     -fx-padding: 20;
@@ -244,7 +240,7 @@
 }
 
 .radio-button:selected .dot {
-    -fx-background-color: -primary-color;
+    -fx-background-color: teal;
 }
 
 .VC-categoriaContainer{
@@ -309,7 +305,6 @@ VC-botonHolder{
     -fx-alignment: center;
     -fx-text-alignment: center;
     -fx-content-display: center;
-
 }
 
 .GC-contentHolder{
@@ -329,6 +324,10 @@ VC-botonHolder{
     -fx-background-color: rgba(0, 0, 0, 0.5); /* fondo oscuro semi-transparente */
     -fx-alignment: center;
     -fx-padding: 40; /* opcional: deja aire alrededor del form */
+    -fx-border-width: 1;
+    -fx-border-color: gray;
+    -fx-border-radius: 15;
+    -fx-background-radius: 15;
 }
 
 
@@ -339,6 +338,9 @@ VC-botonHolder{
 /* Gasto Center */
 .gastoCenter {
     -fx-padding: 0, 0, 0, 10;
+    -fx-border-radius: 15;
+    -fx-border-color: gray;
+    -fx-border-width: 1;
 }
 
 .GCenter-botonAgregar {
@@ -361,4 +363,121 @@ VC-botonHolder{
     -fx-background-radius: 15;
     -fx-fill-width: false;
     -fx-alignment: center;
+    -fx-border-width: 1;
+    -fx-border-color: gray;
+    -fx-border-radius: 15;
+}
+
+.PF-tituloHolder{
+    -fx-alignment: center;
+}
+
+.PF-titulo{
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+    -fx-content-display: center;
+}
+
+.label-titulo{
+    -fx-font-size: 30;
+    -fx-font-weight: bold;
+}
+
+.pagoForm-tituloHolder{
+
+}
+
+.PF-gastoInfo{
+    -fx-background-color: #8fbbbd;
+    -fx-border-radius: 15;
+    -fx-border-color: grey;
+    -fx-border-width: 1;
+    -fx-background-radius: 15;
+    -fx-padding: 25;
+}
+
+/* card */
+
+.card{
+    -fx-background-color: ghostwhite;
+    -fx-padding: 10;
+    -fx-border-color: black;
+    -fx-border-width: 1;
+    /*
+    -fx-alignment-content: center;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+    */
+    -fx-border-radius:15;
+    -fx-background-radius: 15;
+}
+
+.card:hover{
+    -fx-background-color: cadetblue;
+}
+
+.card.card-seleccionado {
+    -fx-background-color: #8fbbbd;
+}
+
+.card-titulo{
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+    -fx-content-display: center;
+}
+
+.card-content{
+    -fx-alignment: center;
+}
+
+/* DASHBOARD */
+.dashboardCenter{
+    -fx-border-radius: 15;
+    -fx-border-color: grey;
+    -fx-border-width: 1;
+    -fx-background-radius: 15;
+    -fx-padding: 25;
+}
+
+.dashboardCenter-titulo{
+    -fx-font-weight: bold;
+    -fx-font-size: 25;
+}
+.dashboardCenter-tituloHolder{
+    -fx-padding: 0 0 25 25;
+}
+
+.dashboardCenter-balanceHolder{
+    -fx-border-radius: 15;
+    -fx-border-color: grey;
+    -fx-border-width: 1;
+    -fx-background-radius: 15;
+    -fx-padding: 25;
+}
+
+.dashboardCenter-cuentasGrid{
+    -fx-border-radius: 15;
+    -fx-border-color: grey;
+    -fx-border-width: 1;
+    -fx-background-radius: 15;
+    -fx-padding: 25;
+}
+
+.balanceCard{
+    /*-fx-background-color: #8fbbbd;*/
+    -fx-border-radius: 15;
+    -fx-border-color: grey;
+    -fx-border-width: 1;
+    -fx-background-radius: 15;
+    -fx-padding: 25;
+}
+
+.dashboardCenter-listViewBox{
+    -fx-border-color: grey;
+    -fx-border-width: 1;
+    -fx-border-radius: 15;
+    -fx-background-radius: 15;
+    -fx-background-color: #fafafa;
 }
