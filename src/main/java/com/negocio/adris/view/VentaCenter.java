@@ -36,9 +36,11 @@ public class VentaCenter extends VBox {
         Label descuento = new Label("Descuento");
         Label subtotal = new Label("Subtotal");
 
+        Region spacer = new Region();
+
 
         HBox categoriaContainer = new HBox(
-                new Region(), producto, new Region(), marca, new Region(), peso, new Region(), cantidad, new Region(), descuento, new Region(), subtotal, new Region()
+                new Region(), producto, new Region(), marca, new Region(), peso, new Region(), cantidad, new Region(), descuento, new Region(), subtotal, new Region(), spacer
         );
 
         categoriaContainer.getChildren().forEach(node -> {
@@ -49,8 +51,8 @@ public class VentaCenter extends VBox {
             }
         });
 
+        spacer.setPrefWidth(40);
         categoriaContainer.getStyleClass().add("VC-categoriaContainer");
-
 
         // id
         StringConverter<? extends Number> longConverter = new LongStringConverter();
@@ -178,6 +180,7 @@ public class VentaCenter extends VBox {
 
         VBox formaDePagoHolder = new VBox(
                 new Label("Forma de pago:"),
+                new Label(),
                 radioButtonsHolder
         );
 

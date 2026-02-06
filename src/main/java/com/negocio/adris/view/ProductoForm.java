@@ -1,6 +1,7 @@
 package com.negocio.adris.view;
 
 
+import com.negocio.adris.model.entities.Producto;
 import com.negocio.adris.model.enums.TipoProducto;
 import com.negocio.adris.model.enums.UnidadMedida;
 import com.negocio.adris.model.exceptions.ProductoNotFoundException;
@@ -11,6 +12,7 @@ import com.negocio.adris.utils.Formatters;
 import com.negocio.adris.viewmodel.ProductoViewModel;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.util.StringConverter;
@@ -19,12 +21,17 @@ import javafx.util.converter.IntegerStringConverter;
 import javafx.util.converter.LongStringConverter;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class ProductoForm extends VBox {
     private final ProductoViewModel viewModel;
+    private final Runnable onClose;
 
-    public ProductoForm(ProductoViewModel viewModel){
+    public ProductoForm(Producto producto, ProductoViewModel viewModel, Runnable onClose){
         this.viewModel = viewModel;
+        this.onClose = onClose;
 
         TextField idField = new TextField();
         TextField nombreField = new TextField();
@@ -37,7 +44,7 @@ public class ProductoForm extends VBox {
         TextField precioSugeridoField = new TextField();
         TextField precioField = new TextField();
         ComboBox<TipoProducto> tipoProductoComboBox = new ComboBox<>();
-        CheckBox esDivisibleBox = new CheckBox("es divisible");
+        CheckBox esDivisibleBox = new CheckBox();
 
         // id
         StringConverter<? extends Number> longConverter = new LongStringConverter();
@@ -55,7 +62,6 @@ public class ProductoForm extends VBox {
         // peso
         StringConverter<? extends Number> doubleConverter = new DoubleStringConverter();
         Bindings.bindBidirectional(pesoField.textProperty(), viewModel.pesoProperty(), (StringConverter<Number>) doubleConverter);
-//        pesoField.setMaxWidth(50);
         pesoField.setText(null);
         pesoField.setPromptText("0,0");
 
@@ -111,7 +117,7 @@ public class ProductoForm extends VBox {
                 tipoProductoComboBox.setDisable(esDivisibleBox.isSelected());
         });
 
-
+        // botones
         Button botonCrear = new BotonAfirmar("Crear");
         Button botonModificar = new BotonAfirmar("Modificar");
         Button botonCancelar = new BotonCancelar();
@@ -129,11 +135,11 @@ public class ProductoForm extends VBox {
         HBox buttonContainer = new HBox(guardarStack, region, botonCancelar);
 
         HBox.setHgrow(region, Priority.ALWAYS);
-        region.setMaxWidth(Double.MAX_VALUE);
 
         botonCrear.setOnAction(e -> {
             try {
                 viewModel.guardarProducto();
+                onClose.run();
             } catch (ProductoNotFoundException | IllegalArgumentException ex) {
                 Alert a = new AdrysAlert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK);
                 a.show();
@@ -143,13 +149,12 @@ public class ProductoForm extends VBox {
         botonModificar.setOnAction(e -> {
             try {
                 viewModel.modificarProducto();
+                onClose.run();
             } catch (ProductoNotFoundException | IllegalArgumentException ex) {
                 Alert a = new AdrysAlert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK);
                 a.show();
             }
         });
-
-
 
         precioSugeridoField.textProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null){
@@ -167,24 +172,58 @@ public class ProductoForm extends VBox {
 
         botonCancelar.setOnAction(e -> {
             viewModel.limpiarFormulario();
+            onClose.run();
         });
 
         this.getStyleClass().add("productoForm");
 
+        Label titulo = new Label();
+        titulo.getStyleClass().add("productoForm-titulo");
+        titulo.textProperty().bind(
+                Bindings.when(idField.textProperty().isEqualTo("0"))
+                        .then("Crear producto")
+                        .otherwise("Modificar producto")
+        );
+
+
+        HBox tituloHolder = new HBox(titulo);
+        tituloHolder.getStyleClass().add("productoForm-tituloHolder");
+
+
+        GridPane contenedorGrid = new GridPane();
+        contenedorGrid.setHgap(10);
+        contenedorGrid.setVgap(10);
+
+        Map<Label, Node> fields = new LinkedHashMap<>();
+
+        fields.put(new Label("Nombre:"), nombreField);
+        fields.put(new Label("Marca:"), marcaField);
+        fields.put(new Label("Es divisible:"), esDivisibleBox);
+        fields.put(new Label("Peso:"), pesoField);
+        fields.put(new Label("Tipo de producto:"), tipoProductoComboBox);
+        fields.put(new Label("Unidad de medida:"), unidadMedidaComboBox);
+        fields.put(new Label("Cantidad:"), cantidadField);
+        fields.put(new Label("Costo:"), costoField);
+        fields.put(new Label("Ganancia:"), gananciaField);
+        fields.put(new Label("Precio:"), precioField);
+
+        int row = 0;
+        for (var entry : fields.entrySet()) {
+            contenedorGrid.add(entry.getKey(), 0, row);
+            contenedorGrid.add(entry.getValue(), 1, row);
+            row++;
+        }
+
         getChildren().addAll(
-                idField,
-                new Label("Nombre:"), nombreField,
-                new Label("Marca:"), marcaField,
-                esDivisibleBox,
-                new Label("Peso:"), pesoField,
-                new Label("Tipo de producto:"), tipoProductoComboBox,
-                new Label("Unidad de medida:"), unidadMedidaComboBox,
-                new Label("Cantidad:"), cantidadField,
-                new Label("Costo:"), costoField,
-                new Label("Ganancia:"), gananciaField,
-                new Label("Precio:"), precioField,
+                tituloHolder,
+                contenedorGrid,
                 precioSugeridoField,
                 buttonContainer
         );
+
+        setMaxWidth(Region.USE_PREF_SIZE);
+        setPrefWidth(Region.USE_COMPUTED_SIZE);
+        setMaxHeight(Region.USE_PREF_SIZE);
+        setPrefHeight(Region.USE_COMPUTED_SIZE);
     }
 }

@@ -1,20 +1,39 @@
 package com.negocio.adris.view;
 
 import com.negocio.adris.model.entities.Producto;
+import com.negocio.adris.model.entities.Proveedor;
 import com.negocio.adris.model.exceptions.ProductoNotFoundException;
+import com.negocio.adris.utils.BotonAfirmar;
+import com.negocio.adris.utils.LabelTitulo;
 import com.negocio.adris.viewmodel.ProductoViewModel;
+import com.negocio.adris.viewmodel.ProveedorViewModel;
 import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 
-public class ProductoCenter extends VBox {
+public class ProductoCenter extends StackPane {
+    private final ProductoViewModel viewModel;
+    private final StackPane overlay = new StackPane();
+
     public ProductoCenter(ProductoViewModel viewModel) {
+        this.viewModel = viewModel;
+
+        overlay.getStyleClass().add("overlay");
+        overlay.setAlignment(Pos.CENTER);
+        overlay.setVisible(false);
+
+        Label titulo = new LabelTitulo("Productos", true);
+        HBox tituloHolder = new HBox(titulo);
+        tituloHolder.getStyleClass().add("tituloHolder");
+
         TextField busquedaField = new TextField();
 
         busquedaField.setPromptText("Busque un producto...");
@@ -41,46 +60,51 @@ public class ProductoCenter extends VBox {
                 if (empty || producto == null) {
                     setGraphic(null);
                 } else {
-                    try {
-                        ProductoCard card = new ProductoCard(producto);
+                    ProductoCard card = new ProductoCard(producto);
 
-                        card.setSeleccionado(isSelected());
+                    card.setSeleccionado(isSelected());
 
-                        card.setOnEditar(p -> {
-                            try {
-                                viewModel.cargarProducto(p);
-                            } catch (ProductoNotFoundException e) {
-                                throw new RuntimeException(e);
-                            }
-                        });
+                    card.setOnEditar(p -> {
+                        //                                viewModel.cargarProducto(p);
+                        try {
+                            abrirFormularioEdicion(p, viewModel);
+                        } catch (ProductoNotFoundException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
 
-                        card.setOnBorrar(p -> {
-                            try {
-                                viewModel.eliminarProducto(p.getId());
-                            } catch (ProductoNotFoundException e) {
-                                throw new RuntimeException(e);
-                            }
-                        });
+                    card.setOnBorrar(p -> {
+                        try {
+                            viewModel.eliminarProducto(p.getId());
+                        } catch (ProductoNotFoundException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
 
-                        // Escucha los cambios de selección para actualizar el estilo
-                        selectedProperty().addListener((obs, wasSelected, isNowSelected) -> card.setSeleccionado(isNowSelected));
+                    // Escucha los cambios de selección para actualizar el estilo
+                    selectedProperty().addListener((obs, wasSelected, isNowSelected) -> card.setSeleccionado(isNowSelected));
 
-                        setGraphic(card);
+                    setGraphic(card);
 
-                    } catch (InstantiationException | IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
                 }
             }
         });
 
-        listView.setPrefHeight(800);
+        listView.setMaxHeight(Double.MAX_VALUE);
+        listView.setMaxWidth(Double.MAX_VALUE);
+        VBox.setVgrow(listView, Priority.ALWAYS);
         listView.getItems().reversed();
 
-        this.getStyleClass().add("productoCenter");
-        this.setSpacing(10);
-        this.setPadding(new Insets(10));
-        this.getChildren().addAll(busquedaField, listView);
+        Button botonAgregar = new BotonAfirmar("+");
+        botonAgregar.setOnAction(e ->{
+            abrirFormularioCreacion(viewModel);
+        });
+
+        VBox contenedor = new VBox(15, tituloHolder, busquedaField, listView, botonAgregar);
+        contenedor.getStyleClass().add("productoCenter-contenedor");
+
+        getStyleClass().add("productoCenter");
+        getChildren().addAll(contenedor, overlay);
 
         // para des-seleccionar el card cuando se toca fuera.
         this.sceneProperty().addListener((obs, oldScene, newScene) -> {
@@ -100,5 +124,28 @@ public class ProductoCenter extends VBox {
                 });
             }
         });
+    }
+
+    private void abrirFormularioEdicion(Producto p, ProductoViewModel viewModel) throws ProductoNotFoundException {
+        mostrarFormulario(new ProductoForm(p, viewModel, () -> {
+//            actualizarDatosProveedorCard(p.getId());
+
+            cerrarOverlay();
+        }));
+        viewModel.cargarProducto(p);
+    }
+
+    private void abrirFormularioCreacion(ProductoViewModel viewModel){
+        mostrarFormulario(new ProductoForm(new Producto(), viewModel, this::cerrarOverlay));
+    }
+
+    private void mostrarFormulario(Node form) {
+        overlay.getChildren().setAll(form);
+        overlay.setVisible(true);
+    }
+
+    private void cerrarOverlay() {
+        overlay.setVisible(false);
+        overlay.getChildren().clear();
     }
 }

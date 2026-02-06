@@ -95,5 +95,10 @@ public class ProveedorForm extends VBox {
                 idField,
                 buttonHolder
         );
+
+        setMaxWidth(Region.USE_PREF_SIZE);
+        setPrefWidth(Region.USE_COMPUTED_SIZE);
+        setMaxHeight(Region.USE_PREF_SIZE);
+        setPrefHeight(Region.USE_COMPUTED_SIZE);
     }
 }

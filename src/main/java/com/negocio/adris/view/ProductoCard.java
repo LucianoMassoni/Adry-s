@@ -3,6 +3,7 @@ package com.negocio.adris.view;
 
 import com.negocio.adris.model.entities.Producto;
 import com.negocio.adris.utils.AdrysAlert;
+import com.negocio.adris.utils.LabelNegrita;
 import javafx.animation.FadeTransition;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -61,83 +62,79 @@ public class ProductoCard extends HBox {
         fade.play();
     }
 
-    public ProductoCard(Producto producto) throws InstantiationException, IllegalAccessException {
-        this.getStyleClass().add("producto-card");
+    public ProductoCard(Producto producto) {
+        getStyleClass().add("producto-card");
 
-        VBox infoHolder = new VBox();
-        HBox infoPrincipal = new HBox();
-        HBox infoSecundaria = new HBox();
-        infoHolder.getChildren().addAll(infoPrincipal, infoSecundaria);
+        // GRID DE INFO
+        GridPane infoGrid = new GridPane();
+        infoGrid.setHgap(10);
+        infoGrid.setVgap(5);
 
-        Label nombre = new Label(producto.getNombre());
-        Label marca = new Label(producto.getMarca());
-        Label peso = new Label((producto.getPesoActual() == 0 ? "" : producto.getPesoActual()) + (producto.getUnidadMedida() == null ? "" : producto.getUnidadMedida().getSimbolo()));
-        Label precio = new Label("$" + (producto.getPrecio() == null ? "" : producto.getPrecio().toString()));
-        Label cantidad = new Label("cantidad: " + producto.getCantidad());
-        Label costo = new Label("costo: " + (producto.getCosto() == null ? "" :  producto.getCosto().toString()));
-        Label ganancia = new Label("% ganacia: " + (producto.getGanancia() == null ? "" : producto.getGanancia().toString()));
-        Label tipoProducto = new Label("tipo: " + (producto.getTipo() == null ? "" : producto.getTipo().toString()));
+        for (int i = 0; i < 4; i++) {
+            ColumnConstraints col = new ColumnConstraints();
+            col.setHgrow(Priority.ALWAYS);
+            col.setFillWidth(true);
+            infoGrid.getColumnConstraints().add(col);
+        }
 
-        HBox.setHgrow(infoHolder, Priority.ALWAYS);
-        VBox.setVgrow(infoPrincipal, Priority.ALWAYS);
-        VBox.setVgrow(infoSecundaria, Priority.ALWAYS);
+        Label nombre = new LabelNegrita(producto.getNombre());
+        Label marca = new LabelNegrita(producto.getMarca());
+        Label peso = new LabelNegrita(
+                (producto.getPesoActual() == 0 ? "" : producto.getPesoActual()) +
+                        (producto.getUnidadMedida() == null ? "" : producto.getUnidadMedida().getSimbolo())
+        );
+        Label precio = new LabelNegrita("$" + (producto.getPrecio() == null ? "" : producto.getPrecio()));
 
-        infoPrincipal.setMaxWidth(Double.MAX_VALUE);
-        infoSecundaria.setMaxWidth(Double.MAX_VALUE);
+        Label cantidad = new Label("cant: " + producto.getCantidad());
+        Label costo = new Label("costo: " + (producto.getCosto() == null ? "" : producto.getCosto()));
+        Label ganancia = new Label("% gan: " + (producto.getGanancia() == null ? "" : producto.getGanancia()));
+        Label tipoProducto = new Label("tipo: " + (producto.getTipo() == null ? "" : producto.getTipo()));
 
-        infoPrincipal.getChildren().addAll( nombre,  marca,  peso,  precio);
+        // Fila 0
+        infoGrid.add(nombre, 0, 0);
+        infoGrid.add(marca, 1, 0);
+        infoGrid.add(peso, 2, 0);
+        infoGrid.add(precio, 3, 0);
 
-        HBox.setHgrow(nombre, Priority.ALWAYS);
-        HBox.setHgrow(marca, Priority.ALWAYS);
-        HBox.setHgrow(peso, Priority.ALWAYS);
-        HBox.setHgrow(precio, Priority.ALWAYS);
+        // Fila 1
+        infoGrid.add(cantidad, 0, 1);
+        infoGrid.add(costo, 1, 1);
+        infoGrid.add(ganancia, 2, 1);
+        infoGrid.add(tipoProducto, 3, 1);
 
-        nombre.setMaxWidth(Double.MAX_VALUE);
-        marca.setMaxWidth(Double.MAX_VALUE);
-        peso.setMaxWidth(Double.MAX_VALUE);
-        precio.setMaxWidth(Double.MAX_VALUE);
+        infoGrid.getStyleClass().add("PC-info-grid");
 
-        infoSecundaria.getChildren().addAll(cantidad, costo, ganancia, tipoProducto);
-        HBox.setHgrow(cantidad, Priority.ALWAYS);
-        HBox.setHgrow(costo, Priority.ALWAYS);
-        HBox.setHgrow(ganancia, Priority.ALWAYS);
-        HBox.setHgrow(tipoProducto, Priority.ALWAYS);
+        HBox.setHgrow(infoGrid, Priority.ALWAYS);
 
-        cantidad.setMaxWidth(Double.MAX_VALUE);
-        costo.setMaxWidth(Double.MAX_VALUE);
-        ganancia.setMaxWidth(Double.MAX_VALUE);
-        tipoProducto.setMaxWidth(Double.MAX_VALUE);
-
-        infoPrincipal.getStyleClass().add("PC-info-principal");
-        infoSecundaria.getStyleClass().add("PC-info-secundaria");
-
-
+        // BOTONES
         Button botonEditar = new Button("Editar");
         Button botonBorrar = new Button("Borrar");
 
-        botonEditar.setOnAction(actionEvent -> {
+        botonEditar.setOnAction(e -> {
             if (onEditar != null) onEditar.accept(producto);
         });
 
-        botonBorrar.setOnAction(actionEvent -> {
+        botonBorrar.setOnAction(e -> {
             if (onBorrar != null) {
-                Alert alert = new AdrysAlert(Alert.AlertType.CONFIRMATION, "Quieres borrar el Producto?");
+                Alert alert = new AdrysAlert(
+                        Alert.AlertType.CONFIRMATION,
+                        "¿Quieres borrar el producto?"
+                );
                 alert.showAndWait()
-                        .filter( response -> response == ButtonType.OK)
-                        .ifPresent(response -> onBorrar.accept(producto));
+                        .filter(r -> r == ButtonType.OK)
+                        .ifPresent(r -> onBorrar.accept(producto));
             }
         });
 
-        buttonHolder = new HBox();
-        buttonHolder.getChildren().addAll(botonEditar, botonBorrar);
+        buttonHolder = new HBox(10, botonEditar, botonBorrar);
         buttonHolder.getStyleClass().add("PC-button-holder");
         buttonHolder.setVisible(false);
         buttonHolder.setOpacity(0);
 
-
         botonEditar.getStyleClass().add("PC-boton-editar");
         botonBorrar.getStyleClass().add("PC-boton-eliminar");
 
-        this.getChildren().addAll(infoHolder, buttonHolder);
+        // ROOT
+        getChildren().addAll(infoGrid, buttonHolder);
     }
 }

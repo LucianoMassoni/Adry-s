@@ -4,6 +4,7 @@ import com.negocio.adris.model.entities.Gasto;
 import com.negocio.adris.model.exceptions.GastoNotFoundException;
 import com.negocio.adris.model.exceptions.ProveedorNotFoundException;
 import com.negocio.adris.utils.BotonAfirmar;
+import com.negocio.adris.utils.LabelTitulo;
 import com.negocio.adris.utils.VistaGastos;
 import com.negocio.adris.viewmodel.GastoViewModel;
 import com.negocio.adris.viewmodel.PagoViewModel;
@@ -99,15 +100,15 @@ public class GastoCenter extends StackPane {
         HBox.setHgrow(r, Priority.ALWAYS);
         botonHolder.getStyleClass().add("GCenter-botonHolder");
 
-        Label titulo = new Label("Cuentas");
-        titulo.getStyleClass().add("GCenter-titulo");
+        Label titulo = new LabelTitulo("Cuentas");
+        HBox tituloHolder = new HBox(titulo);
+        tituloHolder.getStyleClass().add("tituloHolder");
 
         listView.setMaxHeight(Double.MAX_VALUE);
         VBox.setVgrow(listView, Priority.ALWAYS);
 
-        VBox vbox = new VBox(titulo, selectHolder, listView, botonHolder);
-        VBox.setMargin(vbox, new Insets(20,20,20,20));
-
+        VBox vbox = new VBox(tituloHolder, selectHolder, listView, botonHolder);
+        vbox.getStyleClass().add("gastoCenter-contenedor");
 
         // para des-seleccionar el card cuando se toca fuera.
         this.sceneProperty().addListener((obs, oldScene, newScene) -> {

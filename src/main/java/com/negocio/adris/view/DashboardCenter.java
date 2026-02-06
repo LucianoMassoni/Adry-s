@@ -5,6 +5,7 @@ import com.negocio.adris.model.entities.Venta;
 import com.negocio.adris.model.exceptions.ProveedorNotFoundException;
 import com.negocio.adris.model.exceptions.VentaNotFoundException;
 import com.negocio.adris.utils.BotonAfirmar;
+import com.negocio.adris.utils.LabelNegrita;
 import com.negocio.adris.utils.Utils;
 import com.negocio.adris.viewmodel.PagoViewModel;
 import com.negocio.adris.viewmodel.ProveedorViewModel;
@@ -51,13 +52,17 @@ public class DashboardCenter extends StackPane {
         VBox hoyHolder = new BalanceCard("Hoy", ventaViewModel.gananciaDiariaProperty(), pagoViewModel.montoPagadoDiarioProperty());
         VBox mesHolder = new BalanceCard("Mes", ventaViewModel.gananciaMensualProperty(), pagoViewModel.montoPagadoMensualProperty());
 
-        balanceHolder.getChildren().addAll(hoyHolder, mesHolder);
-
-
+        balanceHolder.getChildren().addAll(new Region(), hoyHolder, new Region(),mesHolder, new Region());
+        balanceHolder.getChildren().forEach(node -> {
+            if (node instanceof Region r){
+                r.setMaxWidth(Double.MAX_VALUE);
+                HBox.setHgrow(r, Priority.ALWAYS);
+            }
+        });
 
         // Ventas y proveedores
         // Proveedores
-        Label proveedoresTitle = new Label("Proveedores");
+        Label proveedoresTitle = new LabelNegrita("Proveedores");
         Button agregarProveedor = new BotonAfirmar("+");
         ListView<Proveedor> proveedorListView = new ListView<>();
         VBox proveedorBox = new VBox(10, proveedoresTitle, proveedorListView, agregarProveedor);
@@ -92,9 +97,9 @@ public class DashboardCenter extends StackPane {
 
 
         // Ventas
-        Label ventaTitulo = new Label("Ventas");
+        Label ventaTitulo = new LabelNegrita("Ventas");
         DatePicker fechaPicker = new DatePicker(LocalDate.now());
-        fechaPicker.setMaxWidth(Double.MAX_VALUE); // que se estire al ancho del wrapper
+        fechaPicker.setMaxWidth(Double.MAX_VALUE);
         VBox ventaBox = new VBox(10); // 10 px de spacing entre DatePicker y ListView
         ventaBox.setPadding(new Insets(10));
         ventaBox.getStyleClass().add("dashboardCenter-listViewBox");
@@ -148,8 +153,8 @@ public class DashboardCenter extends StackPane {
 
         //  GridPane
         GridPane cuentasGrid = new GridPane();
-        cuentasGrid.setHgap(15); // separa columnas
-        cuentasGrid.setVgap(10); // si querés más separación vertical
+        cuentasGrid.setHgap(15);
+        cuentasGrid.setVgap(10);
         cuentasGrid.getStyleClass().add("dashboardCenter-cuentasGrid");
 
         ColumnConstraints ventasCol = new ColumnConstraints();

@@ -27,8 +27,6 @@ public class DetalleVentaForm extends VBox {
         this.productoViewModel = productoViewModel;
         this.onDetalleAgregado = ConsumerItem;
 
-
-
         getStyleClass().add("DetalleVentaForm");
 
         ComboBox<Producto> productoCardComboBox = new ComboBox<>();
@@ -124,13 +122,9 @@ public class DetalleVentaForm extends VBox {
                 if (empty || producto == null){
                     setGraphic(null);
                 } else {
-                    try {
-                        ProductoCard card = new ProductoCard(producto);
+                    ProductoCard card = new ProductoCard(producto);
 
-                        setGraphic(card);
-                    } catch (InstantiationException | IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
+                    setGraphic(card);
                 }
             }
         });
@@ -186,6 +180,7 @@ public class DetalleVentaForm extends VBox {
                 new Label("producto:"), productoCardComboBox,
                 stackPane,
                 new Label("descuento: %"), descuentoField,
+                new Label(),
                 buttonHolder
         );
     }

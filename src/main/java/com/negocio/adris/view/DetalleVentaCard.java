@@ -134,7 +134,7 @@ public class DetalleVentaCard extends HBox {
                 Bindings.createStringBinding(
                         () -> {
                             var d = item.descuentoProperty().get();
-                            return d != null ? "descuento %" + d.toPlainString() : "0.00";
+                            return d != null ? "%" + d.toPlainString() : "0.00";
                         },
                         item.descuentoProperty()
                 )

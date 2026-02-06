@@ -55,7 +55,6 @@ public class App extends Application {
                 }
                 case "productos" -> {
                     borderPane.setCenter(productoCenter);
-                    borderPane.setRight(new ProductoForm(productoViewModel));
                 }
                 case "cuentas" -> {
                     borderPane.setCenter(new GastoCenter(gastoViewModel, proveedorViewModel, pagoViewModel));
