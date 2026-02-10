@@ -1,6 +1,7 @@
 package com.negocio.adris.view;
 
 import com.negocio.adris.utils.LabelNegrita;
+import com.negocio.adris.utils.LabelTitulo;
 import com.negocio.adris.utils.Utils;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
@@ -17,7 +18,7 @@ public class BalanceCard extends VBox {
     public BalanceCard(String titulo, ObservableValue<BigDecimal> ganancia, ObservableValue<BigDecimal> perdida){
         getStyleClass().add("balanceCard");
 
-        Label tituloLabel = new LabelNegrita(titulo);
+        Label tituloLabel = new LabelTitulo(titulo);
         tituloLabel.getStyleClass().add("balanceCard-titulo");
         Label gananciaLabel = new Label();
         Label perdidaLabel = new Label();
