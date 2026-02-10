@@ -182,13 +182,23 @@ public class DashboardCenter extends StackPane {
 
         Region spacer = new Region();
 
+        //boton exportar data
+        Button exportar = new BotonAfirmar("Exporta data");
+        HBox buttonHolder = new HBox(15, exportar);
+        buttonHolder.setAlignment(Pos.CENTER);
+
+        exportar.setOnAction(e -> abrirFormularioExportarDatos());
+
         // contenedor general
         VBox contenedorGeneral = new VBox(
                 tituloHolder,
                 balanceHolder,
                 spacer,
-                cuentasGrid
+                cuentasGrid,
+                buttonHolder
         );
+
+        contenedorGeneral.getStyleClass().add("dashboardCenter-Contenedor");
 
         spacer.setMaxWidth(Double.MAX_VALUE);
         spacer.prefHeightProperty().bind(
@@ -264,5 +274,9 @@ public class DashboardCenter extends StackPane {
     private void cerrarOverlay() {
         overlay.setVisible(false);
         overlay.getChildren().clear();
+    }
+
+    private void abrirFormularioExportarDatos(){
+        mostrarFormulario(new ExportarDatosForm(this::cerrarOverlay));
     }
 }

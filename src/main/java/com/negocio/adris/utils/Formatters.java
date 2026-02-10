@@ -7,6 +7,9 @@ import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 
 import java.math.BigDecimal;
+import java.time.Month;
+import java.time.format.TextStyle;
+import java.util.Locale;
 
 public class Formatters {
 
@@ -58,5 +61,20 @@ public class Formatters {
                 "",
                 c -> c.getControlNewText().matches("\\d*") ? c : null
         );
+    }
+
+    public static StringConverter<Month> mesFormatter(){
+        return new StringConverter<Month>() {
+            @Override
+            public String toString(Month month) {
+                if (month == null) return "";
+                return month.getDisplayName(TextStyle.FULL, new Locale("es", "ES"));
+            }
+
+            @Override
+            public Month fromString(String string) {
+                return null; // no se usa
+            }
+        };
     }
 }
