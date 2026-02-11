@@ -1,24 +1,23 @@
 package com.negocio.adris.view;
 
-import com.negocio.adris.utils.BotonAfirmar;
-import com.negocio.adris.utils.BotonCancelar;
-import com.negocio.adris.utils.Formatters;
-import com.negocio.adris.utils.LabelTitulo;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
+import com.google.inject.Inject;
+import com.negocio.adris.utils.*;
+import com.negocio.adris.viewmodel.BalanceVeiwModel;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.time.Year;
 import java.time.YearMonth;
 
 
 public class ExportarDatosForm extends VBox {
+    private final BalanceVeiwModel balanceVeiwModel;
     private final Runnable onClose;
-    
-    public ExportarDatosForm(Runnable onClose){
+
+    @Inject
+    public ExportarDatosForm(BalanceVeiwModel balanceVeiwModel, Runnable onClose){
+        this.balanceVeiwModel = balanceVeiwModel;
         this.onClose = onClose;
 
         getStyleClass().add("exportarDatosForm");
@@ -65,7 +64,13 @@ public class ExportarDatosForm extends VBox {
             Integer anio = anioChoiceBox.getValue();
 
             YearMonth yearMonth = YearMonth.of(anio, mes);
-            System.out.println("desde: " + yearMonth.atDay(1) + "\nHasta: " + yearMonth.atEndOfMonth());
+
+            try {
+                balanceVeiwModel.exportarDatos(yearMonth);
+            } catch (IllegalArgumentException ex){
+                Alert a = new AdrysAlert(Alert.AlertType.CONFIRMATION, ex.getMessage(), ButtonType.OK);
+                a.showAndWait();
+            }
 
             onClose.run();
         });
