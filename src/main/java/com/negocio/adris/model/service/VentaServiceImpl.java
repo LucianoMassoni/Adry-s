@@ -12,10 +12,13 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -166,5 +169,11 @@ public class VentaServiceImpl implements VentaService{
                 .setScale(2);
 
         return ganancia;
+    }
+
+    @Override
+    public Map<LocalDate, BigDecimal> getFacturacionMes(YearMonth yearMonth) {
+        if (yearMonth.isAfter(YearMonth.now())) throw new IllegalArgumentException("No se puede obtener la facturación de un mes futuro");
+        return repo.getFacturacionMes(yearMonth);
     }
 }

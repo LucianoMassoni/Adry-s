@@ -5,8 +5,11 @@ import com.negocio.adris.model.entities.Venta;
 import com.negocio.adris.model.exceptions.VentaNotFoundException;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
+import java.util.Map;
 
 public interface VentaService {
     void crearVenta(VentaDto dto);
@@ -17,4 +20,5 @@ public interface VentaService {
     BigDecimal obtenerGananciaPorDia(LocalDateTime fecha) throws VentaNotFoundException;
     List<Venta> obtenerVentasPorMes(LocalDateTime fecha) throws VentaNotFoundException;
     BigDecimal obtenerGananciaPorMes(LocalDateTime fecha) throws VentaNotFoundException;
+    Map<LocalDate, BigDecimal> getFacturacionMes(YearMonth yearMonth);
 }

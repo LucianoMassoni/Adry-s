@@ -10,13 +10,13 @@ import com.negocio.adris.model.enums.TipoProducto;
 import com.negocio.adris.model.enums.UnidadMedida;
 import com.negocio.adris.model.exceptions.VentaNotFoundException;
 
+import java.math.BigDecimal;
 import java.sql.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class VentaRepositoryImpl implements VentaRepository{
     private final Provider<Connection> connectionProvider;
@@ -346,5 +346,34 @@ public class VentaRepositoryImpl implements VentaRepository{
         } catch (SQLException e) {
             throw new RuntimeException("Error al obtener ventas", e);
         }
+    }
+
+    @Override
+    public Map<LocalDate, BigDecimal> getFacturacionMes(YearMonth yearMonth) {
+        Map<LocalDate, BigDecimal> map = new HashMap<>();
+        String sql = String.format("""
+                SELECT substr(fecha, 1, 10) AS dia,
+                     SUM(total) AS facturacion
+                FROM Venta
+                WHERE substr(fecha, '%s') > 0
+                    AND activo = 1
+                GROUP BY dia
+                ORDER BY dia;
+                """, yearMonth);
+
+        try (Connection con = connectionProvider.get();
+            PreparedStatement preparedStatement = con.prepareStatement(sql);
+            ResultSet rs = preparedStatement.executeQuery())
+        {
+//            preparedStatement.setString(1, yearMonth.toString());
+
+            while (rs.next()){
+                map.put(LocalDate.parse(rs.getString("dia")), rs.getBigDecimal("facturacion"));
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return map;
     }
 }
