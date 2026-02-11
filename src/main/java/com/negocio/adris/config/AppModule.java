@@ -2,6 +2,8 @@ package com.negocio.adris.config;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
+import com.negocio.adris.model.exporter.BalanceExcelExporter;
+import com.negocio.adris.model.exporter.BalanceExcelExporterImpl;
 import com.negocio.adris.model.repositories.*;
 import com.negocio.adris.model.service.*;
 import jakarta.validation.Validation;
@@ -31,5 +33,9 @@ public class AppModule extends AbstractModule {
 
         // Configuración de base de datos   
         bind(Connection.class).toProvider(DBConnection.class);
+
+        // config balalnce
+        bind(BalanceService.class).to(BalanceServiceImpl.class);
+        bind(BalanceExcelExporter.class).to(BalanceExcelExporterImpl.class);
     }
 }
