@@ -14,9 +14,13 @@ import jakarta.validation.Validator;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.Connection;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -133,4 +137,12 @@ public class PagoServiceImpl implements PagoService {
 
         return ganancia;
     }
+
+    @Override
+    public Map<LocalDate, BigDecimal> getEgresosMes(YearMonth yearMonth) {
+        if (yearMonth.isAfter(YearMonth.now())) throw new IllegalArgumentException("No se puede obtener los egresos de un mes futuro");
+        return repo.getEgresosMes(yearMonth);
+    }
+
+
 }

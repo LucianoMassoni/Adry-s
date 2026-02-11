@@ -7,8 +7,11 @@ import com.negocio.adris.model.exceptions.PagoNotFoundException;
 import com.negocio.adris.model.exceptions.ProveedorNotFoundException;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
+import java.util.Map;
 
 public interface PagoService {
     Pago guardar(PagoDto dto) throws GastoNotFoundException, ProveedorNotFoundException;
@@ -20,4 +23,5 @@ public interface PagoService {
     BigDecimal getTotalPagoPorDia(LocalDateTime fecha);
     List<Pago> getAllPagosPorMes(LocalDateTime fecha);
     BigDecimal getTotalPagoPorMes(LocalDateTime fecha);
+    Map<LocalDate, BigDecimal> getEgresosMes(YearMonth yearMonth);
 }

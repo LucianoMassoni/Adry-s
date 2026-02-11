@@ -7,11 +7,16 @@ import com.negocio.adris.model.entities.Pago;
 import com.negocio.adris.model.entities.Proveedor;
 import com.negocio.adris.model.exceptions.PagoNotFoundException;
 
+import java.math.BigDecimal;
 import java.sql.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PagoRepositoryImpl implements PagoRepository {
     private final Provider<Connection> connectionProvider;
@@ -239,5 +244,32 @@ public class PagoRepositoryImpl implements PagoRepository {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public Map<LocalDate, BigDecimal> getEgresosMes(YearMonth yearMonth) {
+        Map<LocalDate, BigDecimal> map = new HashMap<>();
+        String sql = String.format("""
+                SELECT substr(fecha_pago, 1, 10) AS dia,
+                    SUM(monto_pagado) AS egresos
+                FROM Pago
+               WHERE instr(fecha_pago, '%s') > 0
+                    AND activo = 1
+                GROUP BY dia
+                ORDER BY dia;
+               """, yearMonth.toString());
+        try (Connection conn = connectionProvider.get();
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            ResultSet rs = preparedStatement.executeQuery())
+        {
+//            preparedStatement.setString(1, yearMonth.toString());
+
+            while (rs.next()){
+                map.put(LocalDate.parse(rs.getString("dia")), rs.getBigDecimal("egresos"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return map;
     }
 }
