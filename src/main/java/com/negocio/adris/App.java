@@ -34,6 +34,7 @@ public class App extends Application {
         ProveedorViewModel proveedorViewModel = injector.getInstance(ProveedorViewModel.class);
         GastoViewModel gastoViewModel =  injector.getInstance(GastoViewModel.class);
         PagoViewModel pagoViewModel = injector.getInstance(PagoViewModel.class);
+        BalanceVeiwModel balanceVeiwModel = injector.getInstance(BalanceVeiwModel.class);
 
         BorderPane borderPane = new BorderPane();
         NavSideBar navSideBar = new NavSideBar();
@@ -62,7 +63,7 @@ public class App extends Application {
                 }
                 case "dashboard" -> {
                     try {
-                        borderPane.setCenter(new DashboardCenter(pagoViewModel, proveedorViewModel, ventaViewModel));
+                        borderPane.setCenter(new DashboardCenter(pagoViewModel, proveedorViewModel, ventaViewModel, balanceVeiwModel));
                     } catch (VentaNotFoundException e) {
                         throw new RuntimeException(e);
                     }
