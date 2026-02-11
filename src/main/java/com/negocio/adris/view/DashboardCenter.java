@@ -1,16 +1,16 @@
 package com.negocio.adris.view;
 
+import com.google.inject.Inject;
 import com.negocio.adris.model.entities.Proveedor;
 import com.negocio.adris.model.entities.Venta;
 import com.negocio.adris.model.exceptions.ProveedorNotFoundException;
 import com.negocio.adris.model.exceptions.VentaNotFoundException;
 import com.negocio.adris.utils.BotonAfirmar;
 import com.negocio.adris.utils.LabelNegrita;
-import com.negocio.adris.utils.Utils;
+import com.negocio.adris.viewmodel.BalanceVeiwModel;
 import com.negocio.adris.viewmodel.PagoViewModel;
 import com.negocio.adris.viewmodel.ProveedorViewModel;
 import com.negocio.adris.viewmodel.VentaViewModel;
-import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
@@ -20,19 +20,22 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class DashboardCenter extends StackPane {
     private final PagoViewModel pagoViewModel;
     private final ProveedorViewModel proveedorViewModel;
     private final VentaViewModel ventaViewModel;
+    private final BalanceVeiwModel balanceVeiwModel;
+
     private final StackPane overlay = new StackPane();
 
-    public DashboardCenter(PagoViewModel pagoViewModel, ProveedorViewModel proveedorViewModel, VentaViewModel ventaViewModel) throws VentaNotFoundException {
+    @Inject
+    public DashboardCenter(PagoViewModel pagoViewModel, ProveedorViewModel proveedorViewModel, VentaViewModel ventaViewModel, BalanceVeiwModel balanceVeiwModel) throws VentaNotFoundException {
         this.pagoViewModel = pagoViewModel;
         this.proveedorViewModel = proveedorViewModel;
         this.ventaViewModel = ventaViewModel;
+        this.balanceVeiwModel = balanceVeiwModel;
 
         getStyleClass().add("dashboardCenter");
 
@@ -277,6 +280,6 @@ public class DashboardCenter extends StackPane {
     }
 
     private void abrirFormularioExportarDatos(){
-        mostrarFormulario(new ExportarDatosForm(this::cerrarOverlay));
+        mostrarFormulario(new ExportarDatosForm(balanceVeiwModel, this::cerrarOverlay));
     }
 }
