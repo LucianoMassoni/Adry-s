@@ -68,7 +68,7 @@ public class Formatters {
             @Override
             public String toString(Month month) {
                 if (month == null) return "";
-                return month.getDisplayName(TextStyle.FULL, new Locale("es", "AR"));
+                return month.getDisplayName(TextStyle.FULL, Locale.getDefault());
             }
 
             @Override
