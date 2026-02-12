@@ -95,6 +95,12 @@ public class DetalleVentaForm extends VBox {
                     }
                 });
             }
+
+
+            // des-seleccionar item si textProperty está vacío.
+            if (newText.trim().isEmpty()){
+                productoCardComboBox.setValue(null);
+            }
         });
 
         productoCardComboBox.setConverter(new StringConverter<Producto>() {
