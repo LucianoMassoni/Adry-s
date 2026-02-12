@@ -3,6 +3,7 @@ package com.negocio.adris.view;
 import com.google.inject.Inject;
 import com.negocio.adris.utils.*;
 import com.negocio.adris.viewmodel.BalanceVeiwModel;
+import javafx.concurrent.Task;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
@@ -65,12 +66,26 @@ public class ExportarDatosForm extends VBox {
 
             YearMonth yearMonth = YearMonth.of(anio, mes);
 
-            try {
-                balanceVeiwModel.exportarDatos(yearMonth);
-            } catch (IllegalArgumentException ex){
-                Alert a = new AdrysAlert(Alert.AlertType.CONFIRMATION, ex.getMessage(), ButtonType.OK);
-                a.showAndWait();
-            }
+            // task para ejecutar en segundo plano.
+            Task<Void> task = new Task<>() {
+                @Override
+                protected Void call() throws Exception {
+                    // llamo a exportar datos
+                    balanceVeiwModel.exportarDatos(yearMonth);
+
+                    return null;
+                }
+            };
+
+            task.setOnFailed(event -> {
+                Alert alert = new AdrysAlert(Alert.AlertType.ERROR, task.getException().getMessage(), ButtonType.OK);
+                alert.showAndWait();
+            });
+
+            // el task necesita un Thread para funcionar.
+            Thread thread = new Thread(task);
+            thread.setDaemon(true); // Daemon: si se cierra la app el proceso muere incompleto. No deja la JVM corriendo.
+            thread.start();
 
             onClose.run();
         });
