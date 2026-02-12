@@ -2,6 +2,7 @@ package com.negocio.adris.view;
 
 import com.negocio.adris.model.entities.Proveedor;
 import com.negocio.adris.utils.BotonAfirmar;
+import com.negocio.adris.utils.LabelNegrita;
 import javafx.animation.FadeTransition;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -65,7 +66,7 @@ public class ProveedorCard extends HBox {
         fadeActual.play();
     }
 
-    private Label nombre = new Label();
+    private Label nombre = new LabelNegrita();
     private Label telefono = new Label();
 
     public ProveedorCard(Proveedor proveedor){

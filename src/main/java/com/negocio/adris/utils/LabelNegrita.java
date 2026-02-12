@@ -8,4 +8,9 @@ public class LabelNegrita extends Label {
         super(s);
         this.setStyle("-fx-font-weight: bold;");
     }
+
+    public LabelNegrita(){
+        super();
+        this.setStyle("-fx-font-weight: bold;");
+    }
 }

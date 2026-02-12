@@ -46,11 +46,15 @@ public class ExportarDatosForm extends VBox {
 
         anioChoiceBox.setValue(anioActual);
 
+        // gridPane
         GridPane gridPane = new GridPane();
         gridPane.add(mesLabel, 0, 0);
         gridPane.add(mesChoiceBox, 1, 0);
         gridPane.add(anioLabel, 0, 1);
         gridPane.add(anioChoiceBox, 1, 1);
+
+        gridPane.setVgap(10);
+        gridPane.setHgap(15);
 
         // Botones
         Region reg = new Region();

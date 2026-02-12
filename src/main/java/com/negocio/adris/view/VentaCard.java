@@ -103,7 +103,7 @@ public class VentaCard extends VBox {
         detalleGrid.setVgap(5);
 
         String[] titulos = {
-                "Nombre", "Marca", "Unidad", "Precio", "Descuento", "Subtotal"
+                "Nombre", "Marca", "Unidad", "Precio", "cantidad", "Descuento", "Subtotal"
         };
 
         for (int col = 0; col < titulos.length; col++) {
@@ -130,8 +130,9 @@ public class VentaCard extends VBox {
                                dv.getProducto().getUnidadMedida().getSimbolo())), 2, fila);
             detalleGrid.add(new Label("$" + (dv.getPrecioUnitario() == null ? dv.getSubtotal() :
                     dv.getPrecioUnitario())), 3, fila);
-            detalleGrid.add(new Label("%" + dv.getDescuento()), 4, fila);
-            detalleGrid.add(new Label("$" + dv.getSubtotal()), 5, fila);
+            detalleGrid.add(new Label(dv.getCantidad().toString()), 4, fila);
+            detalleGrid.add(new Label("%" + dv.getDescuento()), 5, fila);
+            detalleGrid.add(new Label("$" + dv.getSubtotal()), 6, fila);
 
             fila++;
         }
