@@ -10,6 +10,7 @@ import com.negocio.adris.viewmodel.*;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
@@ -78,6 +79,7 @@ public class App extends Application {
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/stylesheet.css")).toExternalForm());
 
         stage.setTitle("Adry's");
+        stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/adrys_logo_verde.png")), 0, 0, true, true));
         stage.setScene(scene);
         stage.show();
     }

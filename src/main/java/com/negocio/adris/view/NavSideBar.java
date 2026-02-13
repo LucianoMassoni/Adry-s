@@ -40,10 +40,8 @@ public class NavSideBar extends VBox {
 
     public NavSideBar(){
         this.getStyleClass().add("nav-side-bar");
-        Image logo = new Image(getClass().getResource("/Logo-Test.png").toExternalForm());
+        Image logo = new Image(getClass().getResourceAsStream("/Almacen-de-sabores.png"),0,125, true, true);
         ImageView logoHolder = new ImageView(logo);
-        logoHolder.setFitWidth(120);
-        logoHolder.setFitHeight(50);
 
         Pane ventasPane = buttonPane("Ventas", "ventas");
         Pane productosPane = buttonPane("Productos", "productos");
