@@ -167,8 +167,8 @@ public class ProductoRepositoryImpl implements ProductoRepository {
     }
 
     @Override
-    public List<Producto> findAll() throws ProductoNotFoundException {
-        String sql = "SELECT * FROM Producto WHERE activo = 1";
+    public List<Producto> findAll() {
+        String sql = "SELECT * FROM Producto WHERE activo = 1 ORDER BY id;";
 
         try(Connection conn = connectionProvider.get();
             Statement statement = conn.createStatement();
@@ -200,7 +200,6 @@ public class ProductoRepositoryImpl implements ProductoRepository {
             }
             return productos;
 
-            //if (productos.isEmpty()) throw new ProductoNotFoundException("No hay productos cargados");
         } catch (SQLException e) {
             throw new RuntimeException("Error al obtener todos los productos " + e.getMessage(), e);
         }
