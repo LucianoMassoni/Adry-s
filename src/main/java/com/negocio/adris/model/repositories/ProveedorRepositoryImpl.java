@@ -24,7 +24,7 @@ public class ProveedorRepositoryImpl implements ProveedorRepository {
                         nombre, telefono, activo
                     )
                     VALUES(
-                        ?, ?,1
+                        ?, ?, 1
                     )
                 """;
 
@@ -84,7 +84,7 @@ public class ProveedorRepositoryImpl implements ProveedorRepository {
 
     @Override
     public Proveedor findById(long id) throws ProveedorNotFoundException {
-        String sql = "SELECT * FROM Proveedor WHERE id = ?";
+        String sql = "SELECT * FROM Proveedor WHERE id = ? AND activo = 1;";
 
         try (Connection conn = connectionProvider.get();
             PreparedStatement preparedStatement = conn.prepareStatement(sql))
@@ -109,7 +109,7 @@ public class ProveedorRepositoryImpl implements ProveedorRepository {
 
     @Override
     public List<Proveedor> findAll() {
-        String sql = "SELECT * FROM Proveedor";
+        String sql = "SELECT * FROM Proveedor WHERE activo = 1;";
 
         try (Connection conn = connectionProvider.get();
             PreparedStatement preparedStatement = conn.prepareStatement(sql))
