@@ -84,22 +84,39 @@ public class VentaRepositoryImpl implements VentaRepository{
 
     @Override
     public void delete(long id) {
-        String sql = """
-                        UPDATE Venta
-                        SET activo = 0
-                        WHERE id = ?
-                    
-                        UPDATE DetalleVenta
-                        SET activo = 0
-                        WHERE id_venta = ?
-                    """;
 
-        try(Connection conn = connectionProvider.get();
-            PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-            preparedStatement.setLong(1, id);
-            preparedStatement.executeUpdate();
+        String sqlVenta = """
+        UPDATE Venta
+        SET activo = 0
+        WHERE id = ?
+    """;
+
+        String sqlDetalle = """
+        UPDATE DetalleVenta
+        SET activo = 0
+        WHERE id_venta = ?
+    """;
+
+        try (Connection conn = connectionProvider.get()) {
+
+            conn.setAutoCommit(false);
+
+            // 1️⃣ Inactivar venta
+            try (PreparedStatement psVenta = conn.prepareStatement(sqlVenta)) {
+                psVenta.setLong(1, id);
+                psVenta.executeUpdate();
+            }
+
+            // 2️⃣ Inactivar detalles
+            try (PreparedStatement psDetalle = conn.prepareStatement(sqlDetalle)) {
+                psDetalle.setLong(1, id);
+                psDetalle.executeUpdate();
+            }
+
+            conn.commit();
+
         } catch (SQLException e) {
-            throw new RuntimeException("Error al eliminar una Venta por Id" + e.getMessage(), e);
+            throw new RuntimeException("Error al eliminar una Venta por Id", e);
         }
     }
 
@@ -137,6 +154,7 @@ public class VentaRepositoryImpl implements VentaRepository{
             ResultSet resultSet = preparedStatement.executeQuery();
 
             List<DetalleVenta> detalleVentas = new ArrayList<>();
+            Venta venta = new Venta();
             while (resultSet.next()){
                 String unidadMedidaStr = resultSet.getString("producto_unidad_medida");
                 UnidadMedida unidadMedida = (unidadMedidaStr == null) ? null : UnidadMedida.valueOf(unidadMedidaStr);
@@ -152,7 +170,6 @@ public class VentaRepositoryImpl implements VentaRepository{
                         unidadMedida
                 );
 
-
                 detalleVentas.add(new DetalleVenta(
                         resultSet.getLong("id"),
                         p,
@@ -161,16 +178,21 @@ public class VentaRepositoryImpl implements VentaRepository{
                         resultSet.getBigDecimal("descuento"),
                         resultSet.getBigDecimal("subtotal")
                 ));
+
+                String formaPagoStr = resultSet.getString("venta_forma_de_pago");
+                FormaDePago formaDePago = (formaPagoStr == null) ? null : FormaDePago.valueOf(formaPagoStr);
+
+                venta.setId(resultSet.getLong("venta_id"));
+                venta.setFormaDePago(formaDePago);
+                venta.setFecha(LocalDateTime.parse(resultSet.getString("venta_fecha"), DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                venta.setTotal(resultSet.getBigDecimal("venta_total"));
+
             }
+            venta.setDetalleVentas(detalleVentas);
 
-            return new Venta(
-                    resultSet.getLong("venta_id"),
-                    FormaDePago.valueOf(resultSet.getString("venta_forma_de_pago")),
-                    LocalDateTime.parse(resultSet.getString("venta_fecha"), DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                    resultSet.getBigDecimal("venta_total"),
-                    detalleVentas
-            );
+            if (detalleVentas.isEmpty()) throw new VentaNotFoundException("No se econtrò una venta con id: " + id);
 
+            return venta;
         } catch (SQLException e) {
             throw new RuntimeException("error al encontrar una venta por id" + e.getMessage(), e);
         }
