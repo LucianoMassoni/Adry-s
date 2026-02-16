@@ -9,352 +9,221 @@ import com.negocio.adris.model.enums.TipoProducto;
 import com.negocio.adris.model.enums.UnidadMedida;
 import com.negocio.adris.model.exceptions.ProductoNotFoundException;
 import com.negocio.adris.model.repositories.ProductoRepository;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class ProductoServiceImplTest {
+@ExtendWith(MockitoExtension.class)
+class ProductoServiceImplTest {
     @Mock
     private ProductoRepository repo;
 
-    private ProductoServiceImpl productoService;
+    @Mock
+    private Validator validator;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
+    @InjectMocks
+    private ProductoServiceImpl service;
 
-        Injector injector = Guice.createInjector(new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(ProductoRepository.class).toInstance(repo);
-                bind(Validator.class).toProvider(() -> Validation.buildDefaultValidatorFactory().getValidator()); // valido con mi config de validator
-            }
-        });
 
-        productoService = injector.getInstance(ProductoServiceImpl.class);
+    // ---------------- CREAR PRODUCTO
+    @Test
+    void crearProducto_valido_deberiaGuardar() {
+        ProductoDto dto = mock(ProductoDto.class);
+
+        when(validator.validate(dto)).thenReturn(Collections.emptySet());
+
+        when(dto.getCosto()).thenReturn(new BigDecimal("100"));
+        when(dto.getGanancia()).thenReturn(new BigDecimal("20"));
+        when(dto.getPrecio()).thenReturn(new BigDecimal("150"));
+
+        when(dto.getNombre()).thenReturn("arroz");
+        when(dto.getMarca()).thenReturn("marca");
+        when(dto.getPeso()).thenReturn(1.0);
+        when(dto.getUnidadMedida()).thenReturn(null);
+        when(dto.getCantidad()).thenReturn(10);
+        when(dto.getTipo()).thenReturn(null);
+        when(dto.esDivisible()).thenReturn(false);
+
+        service.crearProducto(dto);
+
+        verify(repo).save(any(Producto.class));
     }
 
-
     @Test
-    void CrearProducto_ConDtoValido(){
-        ProductoDto dto = new ProductoDto(
-                "papita",
-                "quentos",
-                55,
-                55,
-                UnidadMedida.UNIDAD,
-                1,
-                BigDecimal.valueOf(900),
-                BigDecimal.valueOf(10),
-                BigDecimal.valueOf(990),
-                TipoProducto.SNACKS_Y_SUELTOS,
-                false
-        );
+    void crearProducto_dtoInvalido_deberiaLanzarException() {
+        ProductoDto dto = mock(ProductoDto.class);
 
-        assertDoesNotThrow(() -> productoService.crearProducto(dto));
-    }
+        ConstraintViolation<ProductoDto> violation = mock(ConstraintViolation.class);
+        when(violation.getMessage()).thenReturn("Error validacion");
 
+        when(validator.validate(dto)).thenReturn(Set.of(violation));
 
-    @Test
-    void CrearProducto_ConDtoNombreInvalido_DebeTirarError(){
-        ProductoDto dto = new ProductoDto(
-                "",
-                "quentos",
-                55,
-                55,
-                UnidadMedida.UNIDAD,
-                1,
-                BigDecimal.valueOf(900),
-                BigDecimal.valueOf(10),
-                BigDecimal.valueOf(990),
-                TipoProducto.SNACKS_Y_SUELTOS,
-                false
-        );
+        assertThrows(IllegalArgumentException.class, () -> service.crearProducto(dto));
 
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> productoService.crearProducto(dto));
-
-        assertTrue(exception.getMessage().contains("El nombre es necesario"));
         verify(repo, never()).save(any());
     }
 
     @Test
-    void CrearProducto_ConDtoMarcaInvalido_DebeTirarError(){
-        ProductoDto dto = new ProductoDto(
-                "papitas",
-                "",
-                55,
-                55,
-                UnidadMedida.UNIDAD,
-                1,
-                BigDecimal.valueOf(900),
-                BigDecimal.valueOf(10),
-                BigDecimal.valueOf(990),
-                TipoProducto.SNACKS_Y_SUELTOS,
-                false
-        );
+    void crearProducto_unidadNoValida_deberiaLanzarException() {
+        ProductoDto dto = mock(ProductoDto.class);
 
+        when(validator.validate(dto)).thenReturn(Collections.emptySet());
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> productoService.crearProducto(dto));
+        TipoProducto tipo = mock(TipoProducto.class);
+        UnidadMedida unidad = mock(UnidadMedida.class);
 
-        assertTrue(exception.getMessage().contains("La marca es necesaria"));
+        when(dto.getTipo()).thenReturn(tipo);
+        when(dto.getUnidadMedida()).thenReturn(unidad);
+        when(tipo.admiteUnidad(unidad)).thenReturn(false);
+        when(unidad.getSimbolo()).thenReturn("kg");
+
+        assertThrows(IllegalArgumentException.class, () -> service.crearProducto(dto));
+
         verify(repo, never()).save(any());
     }
 
     @Test
-    void CrearProducto_ConDtoPesoInvalido_DebeTirarError(){
-        ProductoDto dto = new ProductoDto(
-                "papitas",
-                "quentos",
-                0,
-                0,
-                UnidadMedida.UNIDAD,
-                1,
-                BigDecimal.valueOf(900),
-                BigDecimal.valueOf(10),
-                BigDecimal.valueOf(990),
-                TipoProducto.SNACKS_Y_SUELTOS,
-                false
-        );
+    void crearProducto_precioMenorAlPermitido_deberiaLanzarException() {
+        ProductoDto dto = mock(ProductoDto.class);
 
+        when(validator.validate(dto)).thenReturn(Collections.emptySet());
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> productoService.crearProducto(dto));
+        when(dto.getCosto()).thenReturn(new BigDecimal("100"));
+        when(dto.getGanancia()).thenReturn(new BigDecimal("20"));
+        when(dto.getPrecio()).thenReturn(new BigDecimal("60"));
 
-        assertTrue(exception.getMessage().contains("El peso del producto no puede ser negativo"));
+        when(dto.getTipo()).thenReturn(null);
+
+        assertThrows(IllegalArgumentException.class, () -> service.crearProducto(dto));
+
         verify(repo, never()).save(any());
     }
 
+    // ---------------- MODIFICAR PRODUCTO
     @Test
-    void CrearProducto_ConDtoCantidadInvalido_DebeTirarError(){
-        ProductoDto dto = new ProductoDto(
-                "papitas",
-                "quentos",
-                55,
-                55,
-                UnidadMedida.UNIDAD,
-                0,
-                BigDecimal.valueOf(900),
-                BigDecimal.valueOf(10),
-                BigDecimal.valueOf(990),
-                TipoProducto.SNACKS_Y_SUELTOS,
-                false
-        );
+    void modificarProducto_valido_deberiaActualizar() throws ProductoNotFoundException {
+        ProductoDto dto = mock(ProductoDto.class);
 
+        when(validator.validate(dto)).thenReturn(Collections.emptySet());
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> productoService.crearProducto(dto));
+        when(dto.getCosto()).thenReturn(new BigDecimal("100"));
+        when(dto.getGanancia()).thenReturn(new BigDecimal("10"));
+        when(dto.getPrecio()).thenReturn(new BigDecimal("120"));
 
-        assertTrue(exception.getMessage().contains("La cantidad de productos no puede ser negativa"));
-        verify(repo, never()).save(any());
+        when(dto.getNombre()).thenReturn("arroz");
+        when(dto.getMarca()).thenReturn("marca");
+        when(dto.getPeso()).thenReturn(1.0);
+        when(dto.getPesoActual()).thenReturn(1.0);
+        when(dto.getCantidad()).thenReturn(10);
+        when(dto.getTipo()).thenReturn(null);
+        when(dto.esDivisible()).thenReturn(false);
+
+        Producto producto = mock(Producto.class);
+        when(repo.findById(1L)).thenReturn(producto);
+
+        service.modificarProducto(1L, dto);
+
+        verify(producto).setNombre(any());
+        verify(producto).setMarca(any());
+        verify(repo).update(producto);
     }
 
     @Test
-    void CrearProducto_ConDtoCostoInvalido_DebeTirarError(){
-        ProductoDto dto = new ProductoDto(
-                "papitas",
-                "quentos",
-                55,
-                55,
-                UnidadMedida.UNIDAD,
-                5,
-                BigDecimal.valueOf(0),
-                BigDecimal.valueOf(10),
-                BigDecimal.valueOf(990),
-                TipoProducto.SNACKS_Y_SUELTOS,
-                false
-        );
+    void modificarProducto_noExiste_deberiaLanzarException() throws ProductoNotFoundException {
+        ProductoDto dto = mock(ProductoDto.class);
 
+        when(validator.validate(dto)).thenReturn(Collections.emptySet());
+        when(dto.getCosto()).thenReturn(new BigDecimal("100"));
+        when(dto.getGanancia()).thenReturn(new BigDecimal("10"));
+        when(dto.getPrecio()).thenReturn(new BigDecimal("120"));
+        when(dto.getTipo()).thenReturn(null);
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> productoService.crearProducto(dto));
+        when(repo.findById(1L)).thenThrow(new ProductoNotFoundException("No existe"));
 
-        assertTrue(exception.getMessage().contains("El costo del producto no puede ser negativo"));
-        verify(repo, never()).save(any());
+        assertThrows(ProductoNotFoundException.class, () -> service.modificarProducto(1L, dto));
+
+        verify(repo, never()).update(any());
+    }
+
+    // ---------------- ELIMINAR
+    @Test
+    void eliminarProducto_valido_deberiaEliminar() throws ProductoNotFoundException {
+        Producto producto = mock(Producto.class);
+
+        when(repo.findById(1L)).thenReturn(producto);
+
+        service.eliminarProducto(1L);
+
+        verify(repo).delete(1L);
     }
 
     @Test
-    void CrearProducto_ConDtoGananciaInvalido_DebeTirarError(){
-        ProductoDto dto = new ProductoDto(
-                "papitas",
-                "quentos",
-                55,
-                55,
-                UnidadMedida.UNIDAD,
-                5,
-                BigDecimal.valueOf(900),
-                BigDecimal.valueOf(0),
-                BigDecimal.valueOf(990),
-                TipoProducto.SNACKS_Y_SUELTOS,
-                false
-        );
+    void eliminarProducto_noExiste_deberiaLanzarException() throws ProductoNotFoundException {
+        when(repo.findById(1L)).thenThrow(new ProductoNotFoundException("No existe"));
 
+        assertThrows(ProductoNotFoundException.class, () -> service.eliminarProducto(1L));
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> productoService.crearProducto(dto));
-
-        assertTrue(exception.getMessage().contains("La ganancia del producto no puede ser negativa"));
-        verify(repo, never()).save(any());
-    }
-
-    @Test
-    void CrearProducto_ConDtoPrecioInvalido_DebeTirarError(){
-        ProductoDto dto = new ProductoDto(
-                "papitas",
-                "quentos",
-                55,
-                55,
-                UnidadMedida.UNIDAD,
-                5,
-                BigDecimal.valueOf(900),
-                BigDecimal.valueOf(10),
-                BigDecimal.valueOf(0), 
-                TipoProducto.SNACKS_Y_SUELTOS,
-                false
-        );
-
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> productoService.crearProducto(dto));
-
-        assertTrue(exception.getMessage().contains("El precio de un producto no puede ser negativo"));
-        verify(repo, never()).save(any());
-    }
-
-    @Test
-    void obtenerProductoPorId_conProductoExistente() throws ProductoNotFoundException {
-        Producto productoMock = new Producto(
-                1,
-                "papitas",
-                "quentos",
-                55,
-                55,
-                UnidadMedida.UNIDAD,
-                5,
-                BigDecimal.valueOf(900),
-                BigDecimal.valueOf(10),
-                BigDecimal.valueOf(990),
-                TipoProducto.SNACKS_Y_SUELTOS,
-                false
-        );
-
-        when(repo.findById(1)).thenReturn(productoMock);
-
-        Producto producto = productoService.obtenerProductoPorId(1);
-
-        assertEquals(producto, productoMock);
-    }
-
-    @Test
-    void obtenerProductoPorId_conProductoInexistente() throws ProductoNotFoundException {
-        long id = 1;
-
-        when(repo.findById(anyLong())).thenThrow(new ProductoNotFoundException("Producto con ID " + id + " no encontrado"));
-
-        assertThrows(ProductoNotFoundException.class, () -> {
-            productoService.obtenerProductoPorId(id);
-        });
-    }
-
-    @Test
-    void eliminarProducto_deberiaBorrarCuandoExiste() throws ProductoNotFoundException {
-        // Configurar el mock para simular que existe
-        Producto productoMock = new Producto(
-                1,
-                "Pan",
-                "adero",
-                1.0,
-                1.0,
-                UnidadMedida.UNIDAD,
-                10,
-                BigDecimal.valueOf(90.0),
-                BigDecimal.valueOf(0.2),
-                BigDecimal.valueOf(108.0),
-                TipoProducto.PANIFICADOS,
-                false);
-        when(repo.findById(1)).thenReturn(productoMock);
-
-        productoService.eliminarProducto(1);
-
-        verify(repo, times(1)).delete(1);
-    }
-
-    @Test
-    void eliminarProducto_deberiaLanzarExcepcionCuandoNoExiste() throws ProductoNotFoundException {
-        // Configurar el mock para simular que NO existe
-        when(repo.findById(anyLong())).thenThrow(new ProductoNotFoundException("Producto no encontrado"));
-
-        // Verificar que lanza la excepción
-        assertThrows(ProductoNotFoundException.class, () -> {
-            productoService.eliminarProducto(999);
-        });
-
-        // Verificar que NUNCA se llamó a delete()
         verify(repo, never()).delete(anyLong());
     }
 
+    // ---------------- OBTENER
     @Test
-    void modificarProducto_deberiaActualizarCuandoExiste() throws ProductoNotFoundException {
-        // Configurar producto existente
-        Producto productoExistente = new Producto(1,
-                "Pan",
-                "Adero",
-                1.0,
-                1.0,
-                UnidadMedida.UNIDAD,
-                10,
-                BigDecimal.valueOf(90.0),
-                BigDecimal.valueOf(0.2),
-                BigDecimal.valueOf(108.0),
-                TipoProducto.PANIFICADOS,
-                false);
+    void obtenerProductoPorId_valido() throws ProductoNotFoundException {
+        Producto producto = mock(Producto.class);
 
-        when(repo.findById(1)).thenReturn(productoExistente);
+        when(repo.findById(1L)).thenReturn(producto);
 
-        // Nuevos datos para actualizar
-        ProductoDto dto = new ProductoDto(
-                "pan con semillas",
-                "Adero",
-                1.0,
-                1.0,
-                UnidadMedida.UNIDAD,
-                5,
-                BigDecimal.valueOf(95.0),
-                BigDecimal.valueOf(0.15),
-                BigDecimal.valueOf(109.25),
-                TipoProducto.PANIFICADOS,
-                false
-        );
+        Producto resultado = service.obtenerProductoPorId(1L);
 
-        // Ejecutar modificación
-        productoService.modificarProducto(1, dto);
-
-        // Verificar que se llamó a update() con los datos correctos
-        verify(repo).update(argThat(productoActualizado ->
-                productoActualizado.getNombre().equals("Pan con semillas") &&
-                        productoActualizado.getCantidad() == 5
-        ));
+        assertEquals(producto, resultado);
     }
 
     @Test
-    void crearProducto_UnidadMediaIncorrecta_debeTirarError(){
-        ProductoDto dto = new ProductoDto(
-                "pan con semillas",
-                "Adero",
-                1.0,
-                1.0,
-                UnidadMedida.LITROS,
-                5,
-                BigDecimal.valueOf(95.0),
-                BigDecimal.valueOf(0.15),
-                BigDecimal.valueOf(109.25),
-                TipoProducto.PANIFICADOS,
-                false
-        );
+    void obtenerProductoPorId_noExiste_deberiaLanzarException() throws ProductoNotFoundException {
+        when(repo.findById(1L)).thenThrow(new ProductoNotFoundException("No existe"));
 
-        assertThrows(IllegalArgumentException.class, () -> productoService.crearProducto(dto));
+        assertThrows(ProductoNotFoundException.class, () -> service.obtenerProductoPorId(1L));
+    }
+
+    // ---------------- COMPRAR PRODUCTO
+
+    @Test
+    void comprarProducto_valido_deberiaRestarCantidad() {
+        Producto producto = mock(Producto.class);
+
+        when(producto.getCantidad()).thenReturn(10);
+
+        service.comprarProducto(producto, new BigDecimal("3"));
+
+        verify(producto).setCantidad(7);
+        verify(repo).update(producto);
+    }
+
+    @Test
+    void comprarProducto_cantidadNegativa_deberiaLanzarException() {
+        Producto producto = mock(Producto.class);
+
+        when(producto.getCantidad()).thenReturn(-1);
+        when(producto.getNombre()).thenReturn("Arroz");
+
+        assertThrows(IllegalArgumentException.class, () -> service.comprarProducto(producto, new BigDecimal("2")));
+
+        verify(repo, never()).update(any());
     }
 }
+

@@ -12,6 +12,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -144,7 +145,7 @@ public class VentaServiceImpl implements VentaService{
         BigDecimal ganancia = lista.stream()
                 .map(Venta::getTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add)
-                .setScale(2);
+                .setScale(2, RoundingMode.HALF_UP);
 
         return ganancia;
     }

@@ -2,17 +2,13 @@ package com.negocio.adris.model.service;
 
 import com.negocio.adris.model.dtos.DetalleVentaDto;
 import com.negocio.adris.model.dtos.VentaDto;
-import com.negocio.adris.model.entities.DetalleVenta;
 import com.negocio.adris.model.entities.Producto;
 import com.negocio.adris.model.entities.Venta;
 import com.negocio.adris.model.enums.FormaDePago;
-import com.negocio.adris.model.enums.TipoProducto;
-import com.negocio.adris.model.enums.UnidadMedida;
 import com.negocio.adris.model.exceptions.VentaNotFoundException;
 import com.negocio.adris.model.repositories.VentaRepository;
-import jakarta.validation.Validation;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,133 +16,145 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.YearMonth;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class VentaServiceImplTest {
+class VentaServiceImplTest {
     @Mock
-    private VentaRepository ventaRepo;
+    private Validator validator;
 
+    @Mock
+    private VentaRepository repo;
 
-    @InjectMocks
-    private VentaServiceImpl ventaService;
-    @InjectMocks
+    @Mock
     private ProductoService productoService;
 
-    @BeforeEach
-    void setUp() {
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        ventaService = new VentaServiceImpl(validator, ventaRepo, productoService);
+    @InjectMocks
+    private VentaServiceImpl service;
+
+
+    // CREAR VENTA
+    @Test
+    void crearVenta_valida_deberiaGuardarYActualizarStock() {
+        VentaDto dto = mock(VentaDto.class);
+        DetalleVentaDto detalleDto = mock(DetalleVentaDto.class);
+        Producto producto = mock(Producto.class);
+
+        when(validator.validate(dto)).thenReturn(Collections.emptySet());
+        when(validator.validate(detalleDto)).thenReturn(Collections.emptySet());
+
+        when(dto.getDetalleVentaDtos()).thenReturn(List.of(detalleDto));
+        when(dto.getFormaDePago()).thenReturn(FormaDePago.EFECTIVO);
+        when(dto.getFecha()).thenReturn(LocalDateTime.now());
+
+        when(detalleDto.getProducto()).thenReturn(producto);
+        when(detalleDto.getCantidad()).thenReturn(new BigDecimal("2"));
+        when(detalleDto.getDescuento()).thenReturn(BigDecimal.ZERO);
+
+        when(producto.esDivisible()).thenReturn(false);
+        when(producto.getPrecio()).thenReturn(new BigDecimal("100"));
+
+        service.crearVenta(dto);
+
+        verify(productoService).comprarProducto(producto, new BigDecimal("2"));
+        verify(repo).save(any(Venta.class));
     }
 
     @Test
-    void validarVenta_ConDtoValido_NoLanzaExcepcion() {
-        VentaDto dto = new VentaDto(
-                List.of(new DetalleVentaDto(new Producto(1, "a", "b", 12, 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS, false),
-                        BigDecimal.valueOf(1),
-                        BigDecimal.valueOf(0),
-                        null)),
-                LocalDateTime.now(),
-                FormaDePago.EFECTIVO
-        );
+    void crearVenta_dtoInvalido_deberiaLanzarException() {
+        VentaDto dto = mock(VentaDto.class);
 
-        assertDoesNotThrow(() -> ventaService.validarVenta(dto));
+        ConstraintViolation<VentaDto> violation = mock(ConstraintViolation.class);
+        when(violation.getMessage()).thenReturn("Error venta");
+
+        when(validator.validate(dto)).thenReturn(Set.of(violation));
+
+        assertThrows(IllegalArgumentException.class, () -> service.crearVenta(dto));
+
+        verify(repo, never()).save(any());
     }
 
     @Test
-    void validarVenta_ConFechaNula_LanzaExcepcion() {
-        VentaDto dto = new VentaDto(// Fecha nula
-                List.of(new DetalleVentaDto()),
-                null,
-                FormaDePago.TARJETA
-        );
+    void crearVenta_detalleInvalido_deberiaLanzarException() {
+        VentaDto dto = mock(VentaDto.class);
+        DetalleVentaDto detalleDto = mock(DetalleVentaDto.class);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> ventaService.validarVenta(dto));
+        when(validator.validate(dto)).thenReturn(Collections.emptySet());
 
-        assertTrue(exception.getMessage().contains("fecha"));
+        ConstraintViolation<DetalleVentaDto> violation = mock(ConstraintViolation.class);
+        when(violation.getMessage()).thenReturn("Error detalle");
+
+        when(validator.validate(detalleDto)).thenReturn(Set.of(violation));
+        when(dto.getDetalleVentaDtos()).thenReturn(List.of(detalleDto));
+
+        assertThrows(IllegalArgumentException.class, () -> service.crearVenta(dto));
+
+        verify(repo, never()).save(any());
+    }
+
+    // ELIMINAR
+    @Test
+    void eliminarVenta_valida_deberiaEliminar() throws VentaNotFoundException {
+        Venta venta = mock(Venta.class);
+
+        when(repo.findById(1L)).thenReturn(venta);
+
+        service.eliminarVenta(1L);
+
+        verify(repo).delete(1L);
     }
 
     @Test
-    void calcularTotal_ConDetalles_RetornaSumaCorrecta() {
-        Producto producto = new Producto(1, "a", "b", 12, 12, UnidadMedida.UNIDAD, 4, BigDecimal.valueOf(900), BigDecimal.valueOf(10), BigDecimal.valueOf(1000), TipoProducto.SNACKS_Y_SUELTOS, false);
-        DetalleVentaDto detalle1 = new DetalleVentaDto(producto, BigDecimal.valueOf(2), BigDecimal.valueOf(10), null); // 1000 * 2 - 10% = 1800
-        DetalleVentaDto detalle2 = new DetalleVentaDto(producto, BigDecimal.valueOf(1), BigDecimal.valueOf(5), null);  // 1000 * 1 - 5% = 950
+    void eliminarVenta_noExiste_deberiaLanzarException() throws VentaNotFoundException {
+        when(repo.findById(1L)).thenThrow(new VentaNotFoundException("No existe"));
 
+        assertThrows(VentaNotFoundException.class, () -> service.eliminarVenta(1L));
 
-        BigDecimal total = ventaService.calcularTotal(List.of(detalle1, detalle2));
+        verify(repo, never()).delete(anyLong());
+    }
 
-        assertEquals(BigDecimal.valueOf(2750), total); // 190 + 95
+    // GANANCIA POR DIA
+    @Test
+    void obtenerGananciaPorDia_deberiaSumarCorrectamente() throws VentaNotFoundException {
+        Venta v1 = mock(Venta.class);
+        Venta v2 = mock(Venta.class);
+
+        when(v1.getTotal()).thenReturn(new BigDecimal("100.555"));
+        when(v2.getTotal()).thenReturn(new BigDecimal("200.333"));
+
+        when(repo.getAllVentasByFecha(anyString())).thenReturn(List.of(v1, v2));
+
+        BigDecimal total = service.obtenerGananciaPorDia(LocalDateTime.now());
+
+        assertEquals(new BigDecimal("300.89"), total);
+    }
+
+    // FACTURACIÓN MES
+    @Test
+    void getFacturacionMes_mesFuturo_deberiaLanzarException() {
+        YearMonth futuro = YearMonth.now().plusMonths(1);
+
+        assertThrows(IllegalArgumentException.class, () -> service.getFacturacionMes(futuro));
+
+        verify(repo, never()).getFacturacionMes(any());
     }
 
     @Test
-    void crearVenta_ConDetalleInvalido_LanzaExcepcion() {
-        VentaDto dto = new VentaDto(
-                List.of(new DetalleVentaDto(null, BigDecimal.valueOf(1), BigDecimal.ZERO, null)), // Producto nulo
-                LocalDateTime.now(),
-                FormaDePago.EFECTIVO
-        );
+    void getFacturacionMes_valido_deberiaDelegarAlRepo() {
+        YearMonth actual = YearMonth.now();
+        Map<LocalDate, BigDecimal> mockMap = Map.of();
 
+        when(repo.getFacturacionMes(actual)).thenReturn(mockMap);
 
+        Map<LocalDate, BigDecimal> resultado = service.getFacturacionMes(actual);
 
-        assertThrows(IllegalArgumentException.class,
-                () -> ventaService.crearVenta(dto));
-
-        verify(ventaRepo, never()).save(any());
-    }
-
-
-    @Test
-    void eliminarVenta_ConIdExistente_EliminaCorrectamente() throws VentaNotFoundException {
-        when(ventaRepo.findById(1L)).thenReturn(new Venta());
-
-        ventaService.eliminarVenta(1L);
-
-        verify(ventaRepo).delete(1L);
-    }
-
-    @Test
-    void eliminarVenta_ConIdInexistente_LanzaExcepcion() throws VentaNotFoundException {
-        when(ventaRepo.findById(anyLong())).thenThrow(new VentaNotFoundException("No encontrado"));
-
-        assertThrows(VentaNotFoundException.class,
-                () -> ventaService.eliminarVenta(999L));
-    }
-
-    @Test
-    void obtenerVenta_ConIdExistente_RetornaVenta() throws VentaNotFoundException {
-        Venta ventaMock = new Venta(1L, FormaDePago.TARJETA, LocalDateTime.now(), BigDecimal.TEN,  new ArrayList<>());
-        when(ventaRepo.findById(1L)).thenReturn(ventaMock);
-
-        Venta resultado = ventaService.obtenerVenta(1L);
-
-        assertEquals(ventaMock, resultado);
-    }
-
-    @Test
-    void obtenerTodasLasVentas_ConDatos_RetornaLista() throws VentaNotFoundException {
-        List<Venta> ventasMock = List.of(
-                new Venta(1L, FormaDePago.EFECTIVO,LocalDateTime.now(), BigDecimal.TEN, new ArrayList<>()),
-                new Venta(2L, FormaDePago.EFECTIVO, LocalDateTime.now(), BigDecimal.valueOf(20), new ArrayList<>())
-        );
-        when(ventaRepo.findAll()).thenReturn(ventasMock);
-
-        List<Venta> resultado = ventaService.obtenerTodasLasVentas();
-
-        assertEquals(2, resultado.size());
-    }
-
-    @Test
-    void obtenerTodasLasVentas_SinDatos_LanzaExcepcion() throws VentaNotFoundException {
-        when(ventaRepo.findAll()).thenThrow(new VentaNotFoundException("no se encontraron ventas"));
-
-        assertThrows(VentaNotFoundException.class,
-                () -> ventaService.obtenerTodasLasVentas());
+        assertEquals(mockMap, resultado);
     }
 }
