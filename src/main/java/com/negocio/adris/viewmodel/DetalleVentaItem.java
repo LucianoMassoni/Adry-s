@@ -11,8 +11,8 @@ public class DetalleVentaItem {
     private final ObjectProperty<Producto> producto = new SimpleObjectProperty<>();
     private final ObjectProperty<BigDecimal> cantidad = new SimpleObjectProperty<>(BigDecimal.ONE);
     private final ObjectProperty<BigDecimal> descuento = new SimpleObjectProperty<>(BigDecimal.ZERO);
-    private final ObjectProperty<BigDecimal> precio = new SimpleObjectProperty<>();
-    private final ObjectProperty<BigDecimal> subtotal = new SimpleObjectProperty<>();
+    private final ObjectProperty<BigDecimal> precio = new SimpleObjectProperty<>(BigDecimal.ZERO);
+    private final ObjectProperty<BigDecimal> subtotal = new SimpleObjectProperty<>(BigDecimal.ZERO);
 
     public DetalleVentaItem() {
         producto.addListener((obs, o, n) -> recalcSubtotal());
@@ -22,7 +22,6 @@ public class DetalleVentaItem {
     }
 
     private void recalcSubtotal() {
-
         if (producto.get() == null) {
             subtotal.set(BigDecimal.ZERO);
             return;
@@ -87,7 +86,7 @@ public class DetalleVentaItem {
         producto.set(null);
         cantidad.set(BigDecimal.ONE);
         descuento.set(BigDecimal.ZERO);
-        precio.set(null);
+        precio.set(BigDecimal.ZERO);
         subtotal.set(BigDecimal.ZERO);
     }
 

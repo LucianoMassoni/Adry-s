@@ -25,6 +25,4 @@ public class BalanceVeiwModel {
 
         excelExporter.exportar(balancesMap);
     }
-
-
 }

@@ -40,7 +40,7 @@ public class ProductoViewModel {
     private final ProductoService productoService;
 
     @Inject
-    ProductoViewModel(ProductoService service) throws ProductoNotFoundException {
+    public ProductoViewModel(ProductoService service) throws ProductoNotFoundException {
         this.productoService = service;
 
         // Vincula el precio automáticamente cuando se cambia el costo o la ganancia
