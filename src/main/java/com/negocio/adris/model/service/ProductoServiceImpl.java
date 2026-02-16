@@ -152,7 +152,9 @@ public class ProductoServiceImpl implements ProductoService {
     public void comprarProducto(Producto producto, BigDecimal cantidad) {
         if (producto.getCantidad() < 0) throw new IllegalArgumentException("No hay " + cantidad + " de " + producto.getNombre());
 
-        producto.setCantidad(producto.getCantidad() - cantidad.intValue());
+        if (!producto.esDivisible()){
+            producto.setCantidad(producto.getCantidad() - cantidad.intValue());
+        }
 
         repo.update(producto);
     }

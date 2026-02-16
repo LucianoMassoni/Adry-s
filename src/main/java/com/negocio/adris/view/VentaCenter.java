@@ -91,8 +91,10 @@ public class VentaCenter extends VBox {
             }
         });
 
-//        detalleVentaListView.setPrefHeight(600);
+        detalleVentaListView.setPrefHeight(600);
         detalleVentaListView.getStyleClass().add("VC-ListView");
+        detalleVentaListView.setMaxHeight(Double.MAX_VALUE);
+//        VBox.setVgrow(detalleVentaListView, Priority.ALWAYS);
 
 
         // totalHolder
@@ -112,7 +114,7 @@ public class VentaCenter extends VBox {
         );
 
         separadorTotal.setMaxWidth(Double.MAX_VALUE);
-        HBox.setHgrow(separadorTotal, Priority.ALWAYS);
+        HBox.setHgrow(separadorTotal, Priority.SOMETIMES);
 
         totalHolder.getStyleClass().add("VC-totalHolder");
 
@@ -166,9 +168,13 @@ public class VentaCenter extends VBox {
         // botonAceptar
         Button botonAceptar = new BotonAfirmar();
         botonAceptar.setOnAction(actionEvent -> {
-            ventaViewModel.guardarVenta();
-            formaDePagoToggleGroup.selectToggle(efectivoRadioButton);
-            ventaViewModel.formaDePagoProperty().set(FormaDePago.EFECTIVO);
+            try {
+                ventaViewModel.guardarVenta();
+                formaDePagoToggleGroup.selectToggle(efectivoRadioButton);
+                ventaViewModel.formaDePagoProperty().set(FormaDePago.EFECTIVO);
+            } catch (IllegalArgumentException ex){
+                Alert a = new AdrysAlert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK);
+            }
         });
 
 
@@ -180,7 +186,7 @@ public class VentaCenter extends VBox {
 
         VBox formaDePagoHolder = new VBox(
                 new Label("Forma de pago:"),
-                new Label(),
+//                new Label(),
                 radioButtonsHolder
         );
 
@@ -209,7 +215,7 @@ public class VentaCenter extends VBox {
                 detalleVentaListView,
                 formaDePagoHolder,
                 totalHolder,
-                idField,
+//                idField,
                 botonHolder
         );
 

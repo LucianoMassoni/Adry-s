@@ -93,7 +93,9 @@ public class ProductoCenter extends StackPane {
         listView.setMaxHeight(Double.MAX_VALUE);
         listView.setMaxWidth(Double.MAX_VALUE);
         VBox.setVgrow(listView, Priority.ALWAYS);
-        listView.getItems().reversed();
+        // listView.getItems().reversed();
+        listView.getItems();
+
 
         Button botonAgregar = new BotonAfirmar("+");
         botonAgregar.setOnAction(e ->{

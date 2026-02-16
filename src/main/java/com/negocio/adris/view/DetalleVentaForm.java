@@ -170,22 +170,53 @@ public class DetalleVentaForm extends VBox {
         );
         precioVBox.setVisible(false);
 
-        StackPane stackPane = new StackPane(cantidadVBox, precioVBox);
+//        StackPane stackPane = new StackPane(cantidadVBox, precioVBox);
+
+        Label cantidadLabel = new Label("Cantidad:");
+        Label precioLabel = new Label("Precio:");
+
+        // setup
+        precioLabel.setVisible(false);
+        precioField.setVisible(false);
+
+        StackPane labelSP = new StackPane(cantidadLabel, precioLabel);
+        StackPane fieldSP = new StackPane(cantidadField, precioField);
+
 
         productoCardComboBox.valueProperty().addListener((obs, oldv, newv) -> {
             if (newv == null || !newv.esDivisible()){
-                precioVBox.setVisible(false);
-                cantidadVBox.setVisible(true);
+//                precioVBox.setVisible(false);
+//                cantidadVBox.setVisible(true);
+                precioLabel.setVisible(false);
+                precioField.setVisible(false);
+                cantidadLabel.setVisible(true);
+                cantidadField.setVisible(true);
             } else {
-                precioVBox.setVisible(true);
-                cantidadVBox.setVisible(false);
+//                precioVBox.setVisible(true);
+//                cantidadVBox.setVisible(false);
+                precioLabel.setVisible(true);
+                precioField.setVisible(true);
+                cantidadLabel.setVisible(false);
+                cantidadField.setVisible(false);
             }
         });
 
+        GridPane gridPane = new GridPane();
+        gridPane.setHgap(25);
+        gridPane.setVgap(10);
+
+        gridPane.add(new Label("producto:"), 0, 0);
+        gridPane.add(productoCardComboBox, 1, 0);
+        gridPane.add(labelSP, 0, 1);
+        gridPane.add(fieldSP, 1, 1);
+        gridPane.add(new Label("descuento: %"), 0, 2);
+        gridPane.add(descuentoField, 1, 2);
+
         this.getChildren().addAll(
-                new Label("producto:"), productoCardComboBox,
-                stackPane,
-                new Label("descuento: %"), descuentoField,
+//                new Label("producto:"), productoCardComboBox,
+//                stackPane,
+//                new Label("descuento: %"), descuentoField,
+                gridPane,
                 new Label(),
                 buttonHolder
         );

@@ -217,7 +217,6 @@ public class ProductoForm extends VBox {
         getChildren().addAll(
                 tituloHolder,
                 contenedorGrid,
-                precioSugeridoField,
                 buttonContainer
         );
 
