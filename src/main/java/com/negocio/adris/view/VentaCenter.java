@@ -1,6 +1,7 @@
 package com.negocio.adris.view;
 
 import com.negocio.adris.model.enums.FormaDePago;
+import com.negocio.adris.model.exceptions.StockInsuficienteException;
 import com.negocio.adris.utils.AdrysAlert;
 import com.negocio.adris.utils.BotonAfirmar;
 import com.negocio.adris.utils.BotonCancelar;
@@ -157,7 +158,12 @@ public class VentaCenter extends VBox {
             a.showAndWait().
                     filter(response -> response == ButtonType.OK)
                     .ifPresent(response -> {
-                        ventaViewModel.cancelar();
+                        try {
+                            ventaViewModel.cancelar();
+                        } catch (IllegalArgumentException ex){
+                            Alert alert = new AdrysAlert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK);
+                            alert.show();
+                        }
                         formaDePagoToggleGroup.selectToggle(efectivoRadioButton);
                         ventaViewModel.formaDePagoProperty().set(FormaDePago.EFECTIVO);
                     });
@@ -166,7 +172,12 @@ public class VentaCenter extends VBox {
         // botonAceptar
         Button botonAceptar = new BotonAfirmar();
         botonAceptar.setOnAction(actionEvent -> {
-            ventaViewModel.guardarVenta();
+            try {
+                ventaViewModel.guardarVenta();
+            } catch (StockInsuficienteException ex){
+                Alert alert = new AdrysAlert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK);
+                alert.show();
+            }
             formaDePagoToggleGroup.selectToggle(efectivoRadioButton);
             ventaViewModel.formaDePagoProperty().set(FormaDePago.EFECTIVO);
         });

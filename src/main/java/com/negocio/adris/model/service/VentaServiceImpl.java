@@ -4,8 +4,10 @@ import com.google.inject.Inject;
 import com.negocio.adris.model.dtos.DetalleVentaDto;
 import com.negocio.adris.model.dtos.VentaDto;
 import com.negocio.adris.model.entities.DetalleVenta;
+import com.negocio.adris.model.entities.Producto;
 import com.negocio.adris.model.entities.Venta;
 import com.negocio.adris.model.enums.FormaDePago;
+import com.negocio.adris.model.exceptions.StockInsuficienteException;
 import com.negocio.adris.model.exceptions.VentaNotFoundException;
 import com.negocio.adris.model.repositories.VentaRepository;
 import jakarta.validation.ConstraintViolation;
@@ -17,10 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class VentaServiceImpl implements VentaService{
@@ -105,9 +104,43 @@ public class VentaServiceImpl implements VentaService{
         );
     }
 
+    private void checkProductosVenta(List<DetalleVentaDto> lista) {
+
+        Map<Producto, BigDecimal> productosMap = new HashMap<>();
+
+        for (DetalleVentaDto detalle : lista) {
+            Producto producto = detalle.getProducto();
+            BigDecimal cantidad = detalle.getCantidad();
+
+            productosMap.merge(
+                    producto,
+                    cantidad,
+                    BigDecimal::add
+            );
+        }
+
+        productosMap.forEach((producto, cantidadTotal) -> {
+            BigDecimal stockDisponible = BigDecimal.valueOf(producto.getCantidad());
+
+            if (stockDisponible.compareTo(cantidadTotal) < 0) {
+                throw new StockInsuficienteException("No hay stock suficiente de "
+                        + producto.getNombre()
+                        + " "
+                        + producto.getMarca()
+                        + ". Disponible: "
+                        + stockDisponible
+                        + ", solicitado: "
+                        + cantidadTotal
+                );
+            }
+        });
+    }
+
+
     @Override
-    public void crearVenta(VentaDto dto) {
+    public void crearVenta(VentaDto dto) throws StockInsuficienteException {
         validarVenta(dto);
+        checkProductosVenta(dto.getDetalleVentaDtos());
         dto.getDetalleVentaDtos().forEach(this::validarDetalleVentaDto);
 
         Venta v = convertirDtoAVenta(dto);

@@ -2,6 +2,7 @@ package com.negocio.adris.model.service;
 
 import com.negocio.adris.model.dtos.VentaDto;
 import com.negocio.adris.model.entities.Venta;
+import com.negocio.adris.model.exceptions.StockInsuficienteException;
 import com.negocio.adris.model.exceptions.VentaNotFoundException;
 
 import java.math.BigDecimal;
@@ -11,8 +12,8 @@ import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
 
-public interface VentaService {
-    void crearVenta(VentaDto dto);
+public interface VentaService{
+    void crearVenta(VentaDto dto) throws StockInsuficienteException;
     void eliminarVenta(long id) throws VentaNotFoundException;
     Venta obtenerVenta(long id) throws VentaNotFoundException;
     List<Venta> obtenerTodasLasVentas() throws VentaNotFoundException;
