@@ -88,7 +88,6 @@ public class GastoCenter extends StackPane {
         });
 
         Button botonAgregar = new BotonAfirmar("+");
-        botonAgregar.getStyleClass().add("GCenter-botonAgregar");
 
         botonAgregar.setOnAction(actionEvent -> {
             abrirFormularioNuevo(gastoViewModel, proveedorViewModel);

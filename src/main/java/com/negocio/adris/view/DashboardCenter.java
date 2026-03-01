@@ -161,9 +161,9 @@ public class DashboardCenter extends StackPane {
         cuentasGrid.getStyleClass().add("dashboardCenter-cuentasGrid");
 
         ColumnConstraints ventasCol = new ColumnConstraints();
-        ventasCol.setPercentWidth(70);
+        ventasCol.setPercentWidth(65);
         ColumnConstraints proveedoresCol = new ColumnConstraints();
-        proveedoresCol.setPercentWidth(30);
+        proveedoresCol.setPercentWidth(35);
 
         cuentasGrid.getColumnConstraints().addAll(ventasCol, proveedoresCol);
 
