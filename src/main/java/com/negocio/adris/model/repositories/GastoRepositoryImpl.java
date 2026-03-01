@@ -11,6 +11,7 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class GastoRepositoryImpl implements GastoRepository {
@@ -149,7 +150,8 @@ public class GastoRepositoryImpl implements GastoRepository {
                     SELECT g.id, g.fecha_deuda_contraida, g.fecha_vencimiento, g.monto ,g.nota, g.saldado,
                     p.id as id_proveedor, p.nombre as proveedor_nombre, p.telefono as proveedor_telefono
                     FROM Gasto g JOIN Proveedor p ON g.id_proveedor = p.id
-                    WHERE g.activo = 1;
+                    WHERE g.activo = 1
+                    ORDER BY g.fecha_vencimiento ASC;
                 """;
 
         try (Connection conn = connectionProvider.get();
@@ -157,7 +159,7 @@ public class GastoRepositoryImpl implements GastoRepository {
         {
             ResultSet rs = preparedStatement.executeQuery();
 
-            List<Gasto> lista = new ArrayList<>();
+            List<Gasto> lista = new LinkedList<>();
 
             while (rs.next()){
                 Proveedor p = new Proveedor(
