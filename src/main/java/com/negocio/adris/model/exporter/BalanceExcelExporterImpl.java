@@ -4,6 +4,8 @@ import com.negocio.adris.model.entities.BalanceDiario;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import javax.swing.filechooser.FileSystemView;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
@@ -51,9 +53,18 @@ public class BalanceExcelExporterImpl implements BalanceExcelExporter {
                 SizeColumnas(sheet);
             }
 
-            String home = System.getProperty("user.home");
+            // Obtener el Escritorio real del sistema
+            File desktopDir = FileSystemView.getFileSystemView().getHomeDirectory();
+            Path desktopPath = desktopDir.toPath();
 
-            Path ruta = Path.of(home, "balance_" + anio + ".xlsx");
+            // Crear carpeta "balances" dentro del Escritorio
+            Path carpetaBalances = desktopPath.resolve("balances");
+
+            // Crea la carpeta si no existe (no falla si ya existe)
+            Files.createDirectories(carpetaBalances);
+
+            // Crear archivo dentro de la carpeta
+            Path ruta = carpetaBalances.resolve("balance_" + anio + ".xlsx");
 
             try (OutputStream os = Files.newOutputStream(ruta)) {
                 workbook.write(os);
