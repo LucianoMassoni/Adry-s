@@ -113,7 +113,7 @@ public class VentaCenter extends VBox {
         );
 
         separadorTotal.setMaxWidth(Double.MAX_VALUE);
-        HBox.setHgrow(separadorTotal, Priority.ALWAYS);
+        HBox.setHgrow(separadorTotal, Priority.SOMETIMES);
 
         totalHolder.getStyleClass().add("VC-totalHolder");
 
@@ -191,7 +191,7 @@ public class VentaCenter extends VBox {
 
         VBox formaDePagoHolder = new VBox(
                 new Label("Forma de pago:"),
-                new Label(),
+//                new Label(),
                 radioButtonsHolder
         );
 
@@ -220,7 +220,7 @@ public class VentaCenter extends VBox {
                 detalleVentaListView,
                 formaDePagoHolder,
                 totalHolder,
-                idField,
+//                idField,
                 botonHolder
         );
 
